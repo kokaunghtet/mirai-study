@@ -49,7 +49,7 @@
                 @endif
 
                 {{-- Content --}}
-                <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                <div class="text-gray-700 leading-relaxed">
                     {{ $post->content }}
                 </div>
 
