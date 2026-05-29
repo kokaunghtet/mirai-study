@@ -1,11 +1,13 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -54,10 +56,12 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'   => 'nullable|string|max:255',
-            'content' => 'required|string|max:5000',
-            'tags'    => 'nullable|array',
-            'tags.*'  => 'exists:tags,id',
+            'title'     => 'nullable|string|max:255',
+            'content'   => 'required|string|max:5000',
+            'tags'      => 'nullable|array',
+            'tags.*'    => 'exists:tags,id',
+            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,mp4,mov|max:51200',
+            'files.*'   => 'nullable|file|max:20480',
         ]);
 
         $post = $request->user()->posts()->create([
@@ -69,8 +73,92 @@ class PostController extends Controller
             $post->tags()->attach($validated['tags']);
         }
 
+        // Handle media uploads (images/videos)
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $path = $file->store('posts/media', 'public');
+
+                $post->media()->create([
+                    'url'  => Storage::url($path),
+                    'type' => 'image',
+                ]);
+            }
+        }
+
+        // Handle document/file uploads
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('posts/files', 'public');
+
+                $post->media()->create([
+                    'url'      => Storage::url($path),
+                    'type'     => 'document',
+                    'filename' => $file->getClientOriginalName(),
+                    'filesize' => $file->getSize(),
+                ]);
+            }
+        }
+
         return redirect()->route('posts.show', $post)
             ->with('success', 'Post created successfully.');
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        $this->authorize('update', $post);
+
+        $validated = $request->validate([
+            'title'           => 'nullable|string|max:255',
+            'content'         => 'required|string|max:5000',
+            'tags'            => 'nullable|array',
+            'tags.*'          => 'exists:tags,id',
+            'media.*'         => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,mp4,mov|max:51200',
+            'files.*'         => 'nullable|file|max:20480',
+            'remove_media'    => 'nullable|array',
+            'remove_media.*'  => 'exists:post_media,id',
+        ]);
+
+        $post->update([
+            'title'   => $validated['title'] ?? null,
+            'content' => $validated['content'],
+        ]);
+
+        $post->tags()->sync($validated['tags'] ?? []);
+
+        // Remove media the user deleted
+        if (!empty($validated['remove_media'])) {
+            $post->media()->whereIn('id', $validated['remove_media'])->delete();
+        }
+
+        // Add new media
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $path = $file->store('posts/media', 'public');
+                $mime = $file->getMimeType();
+                $type = str_starts_with($mime, 'video') ? 'video' : 'image';
+
+                $post->media()->create([
+                    'url'  => Storage::url($path),
+                    'type' => $type,
+                ]);
+            }
+        }
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('posts/files', 'public');
+
+                $post->media()->create([
+                    'url'      => Storage::url($path),
+                    'type'     => 'document',
+                    'filename' => $file->getClientOriginalName(),
+                    'filesize' => $file->getSize(),
+                ]);
+            }
+        }
+
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Post updated successfully.');
     }
 
     public function edit(Post $post)
@@ -82,28 +170,6 @@ class PostController extends Controller
         $post->load('tags');
 
         return view('feed.edit', compact('post', 'tags'));
-    }
-
-    public function update(Request $request, Post $post)
-    {
-        $this->authorize('update', $post);
-
-        $validated = $request->validate([
-            'title'   => 'nullable|string|max:255',
-            'content' => 'required|string|max:5000',
-            'tags'    => 'nullable|array',
-            'tags.*'  => 'exists:tags,id',
-        ]);
-
-        $post->update([
-            'title'   => $validated['title'] ?? null,
-            'content' => $validated['content'],
-        ]);
-
-        $post->tags()->sync($validated['tags'] ?? []);
-
-        return redirect()->route('posts.show', $post)
-            ->with('success', 'Post updated successfully.');
     }
 
     public function destroy(Post $post)

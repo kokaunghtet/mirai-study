@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
             $table->string('url');
             $table->enum('type', ['image', 'document']);
+            $table->string('filename')->nullable();
+            $table->unsignedBigInteger('filesize')->nullable();
             $table->timestamp('created_at')->useCurrent();
         });
     }

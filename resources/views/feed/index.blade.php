@@ -9,7 +9,7 @@
             {{-- Create Post Button --}}
             @auth
                 <a href="{{ route('posts.create') }}"
-                   class="block w-full text-center bg-indigo-600 text-white font-medium py-3 rounded-xl hover:bg-indigo-700 transition">
+                   class="block w-full text-center bg-green-600 text-white font-medium py-3 rounded-xl hover:bg-green-700 transition">
                     + Create Post
                 </a>
             @endauth
@@ -39,7 +39,7 @@
                         Connect with learners, share knowledge, and track your study progress.
                     </p>
                     <a href="{{ route('register') }}"
-                       class="block w-full text-center bg-indigo-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-indigo-700">
+                       class="block w-full text-center bg-green-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-green-700">
                         Create Account
                     </a>
                 </div>
@@ -48,9 +48,9 @@
             <div class="bg-white border border-gray-200 rounded-xl p-5">
                 <h3 class="font-semibold text-gray-900 mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm text-gray-600">
-                    <li><a href="{{ route('exams.index') }}" class="hover:text-indigo-600">📄 Exam Papers</a></li>
-                    <li><a href="{{ route('quiz.index') }}" class="hover:text-indigo-600">📝 Take a Quiz</a></li>
-                    <li><a href="{{ route('timer.index') }}" class="hover:text-indigo-600">⏱ Focus Timer</a></li>
+                    <li><a href="{{ route('exams.index') }}" class="hover:text-green-600">📄 Exam Papers</a></li>
+                    <li><a href="{{ route('quiz.index') }}" class="hover:text-green-600">📝 Take a Quiz</a></li>
+                    <li><a href="{{ route('timer.index') }}" class="hover:text-green-600">⏱ Focus Timer</a></li>
                 </ul>
             </div>
         </aside>

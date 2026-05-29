@@ -16,7 +16,7 @@
                     <input type="text" name="title"
                            value="{{ old('title', $post->title) }}"
                            placeholder="Give your post a title..."
-                           class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                           class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
                     @error('title')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -27,7 +27,7 @@
                         Content <span class="text-red-500">*</span>
                     </label>
                     <textarea name="content" rows="6"
-                              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-300"
                               required>{{ old('content', $post->content) }}</textarea>
                     @error('content')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -41,7 +41,7 @@
                             <label class="flex items-center gap-1.5 cursor-pointer">
                                 <input type="checkbox" name="tags[]" value="{{ $tag->id }}"
                                        {{ $post->tags->contains($tag->id) ? 'checked' : '' }}
-                                       class="rounded text-indigo-600">
+                                       class="rounded text-green-600">
                                 <span class="text-sm text-gray-700">{{ $tag->name }}</span>
                             </label>
                         @endforeach
@@ -50,7 +50,7 @@
 
                 <div class="flex items-center gap-3 pt-2">
                     <button type="submit"
-                            class="bg-indigo-600 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-indigo-700 transition">
+                            class="bg-green-600 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-green-700 transition">
                         Save Changes
                     </button>
                     <a href="{{ route('posts.show', $post) }}"

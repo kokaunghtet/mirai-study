@@ -14,26 +14,26 @@
         <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
 
             {{-- Logo --}}
-            <a href="{{ route('feed.index') }}" class="font-bold text-xl text-indigo-600">
+            <a href="{{ route('feed.index') }}" class="font-bold text-xl text-green-600">
                 MiraiStudy
             </a>
 
             {{-- Nav Links --}}
             <div class="flex items-center gap-6 text-sm font-medium text-gray-600">
                 <a href="{{ route('feed.index') }}"
-                   class="{{ request()->routeIs('feed.*') ? 'text-indigo-600' : 'hover:text-indigo-600' }}">
+                   class="{{ request()->routeIs('feed.*') ? 'text-green-600' : 'hover:text-green-600' }}">
                     Feed
                 </a>
                 <a href="{{ route('exams.index') }}"
-                   class="{{ request()->routeIs('exams.*') ? 'text-indigo-600' : 'hover:text-indigo-600' }}">
+                   class="{{ request()->routeIs('exams.*') ? 'text-green-600' : 'hover:text-green-600' }}">
                     Exams
                 </a>
                 <a href="{{ route('quiz.index') }}"
-                   class="{{ request()->routeIs('quiz.*') ? 'text-indigo-600' : 'hover:text-indigo-600' }}">
+                   class="{{ request()->routeIs('quiz.*') ? 'text-green-600' : 'hover:text-green-600' }}">
                     Quiz
                 </a>
                 <a href="{{ route('timer.index') }}"
-                   class="{{ request()->routeIs('timer.*') ? 'text-indigo-600' : 'hover:text-indigo-600' }}">
+                   class="{{ request()->routeIs('timer.*') ? 'text-green-600' : 'hover:text-green-600' }}">
                     Focus
                 </a>
             </div>
@@ -42,7 +42,7 @@
             <div class="flex items-center gap-3">
                 @auth
                     {{-- Notifications --}}
-                    <a href="{{ route('notifications.index') }}" class="relative text-gray-500 hover:text-indigo-600">
+                    <a href="{{ route('notifications.index') }}" class="relative text-gray-500 hover:text-green-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -52,7 +52,7 @@
                     {{-- User dropdown --}}
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open"
-                                class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-indigo-600">
+                                class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-green-600">
                             {{ auth()->user()->display_name }}
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -85,11 +85,11 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}"
-                       class="text-sm font-medium text-gray-600 hover:text-indigo-600">
+                       class="text-sm font-medium text-gray-600 hover:text-green-600">
                         Login
                     </a>
                     <a href="{{ route('register') }}"
-                       class="text-sm font-medium bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                       class="text-sm font-medium bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
                         Sign up
                     </a>
                 @endauth

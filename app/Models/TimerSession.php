@@ -4,15 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PomodoroSetting extends Model
+class TimerSession extends Model
 {
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
-        'focus_minutes',
-        'short_break_minutes',
-        'long_break_minutes',
-        'sessions_before_long_break',
-        'daily_goal_sessions',
+        'planned_duration',
+        'actual_duration',
+        'completed',
+        'started_at',
+        'ended_at',
+    ];
+
+    protected $casts = [
+        'completed'  => 'boolean',
+        'started_at' => 'datetime',
+        'ended_at'   => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function user()

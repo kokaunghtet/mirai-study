@@ -14,7 +14,7 @@
 
             <div class="flex flex-col gap-3">
                 <a href="{{ route('register') }}"
-                   class="w-full text-center bg-indigo-600 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-700">
+                   class="w-full text-center bg-green-600 text-white font-medium py-2.5 rounded-lg hover:bg-green-700">
                     Create Account
                 </a>
                 <a href="{{ route('login') }}"
