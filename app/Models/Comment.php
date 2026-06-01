@@ -17,6 +17,17 @@ class Comment extends Model
         'content',
     ];
 
+    // added this function to get the comment counting right
+    protected static function booted(): void
+    {
+        static::deleting(function (Comment $comment) {
+            // Soft-delete all replies when the parent comment is soft-deleted
+            $comment->replies()->each(function (Comment $reply) {
+                $reply->delete();
+            });
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

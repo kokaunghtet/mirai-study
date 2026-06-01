@@ -210,11 +210,15 @@
 
             {{-- Like --}}
             @auth
+                <?php $liked = $post->likes->contains('user_id', auth()->id()); ?>
                 <form method="POST" action="{{ route('posts.like', $post) }}">
                     @csrf
                     <button type="submit"
-                            class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                            class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-green-600' : 'text-gray-500' }} hover:bg-gray-100 hover:text-green-600 transition-all">
+                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
+                            fill="{{ $liked ? 'currentColor' : 'none' }}"
+                            stroke="currentColor"
+                            stroke-width="1.9">
                             <path d="M7 10v10"/>
                             <path d="M15 5.5 14 10h5.2a2 2 0 0 1 2 2.3l-.8 5.4A4 4 0 0 1 16.4 21H7V10h2.4a2 2 0 0 0 1.8-1.1L14 3.5a1 1 0 0 1 1.9.6z"/>
                         </svg>

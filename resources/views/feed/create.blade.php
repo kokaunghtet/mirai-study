@@ -9,7 +9,7 @@
                 <header class="flex items-center justify-between px-[18px] py-4 border-b border-gray-100">
                     <h2 class="text-[15px] font-bold text-gray-900">Create post</h2>
                     <a href="{{ route('feed.index') }}"
-                       class="grid h-8 w-8 place-items-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors">
+                       class="grid h-8 w-8 place-items-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-red-500 transition-colors">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 6 6 18M6 6l12 12"/>
                         </svg>
@@ -73,9 +73,9 @@
                     <section class="px-[18px] pb-2.5">
 
                         {{-- Text — always visible --}}
-                        <textarea name="content" rows="4"
+                        <textarea name="content" rows="1"
                                   placeholder="What's on your mind?"
-                                  class="min-h-[90px] w-full resize-none rounded-xl bg-gray-50 px-3.5 py-3 text-sm leading-6 text-gray-900 border border-gray-200 outline-none placeholder:text-gray-400 focus:border-green-400 transition-colors"
+                                  class="min-h-[60px] w-full resize-none rounded-xl bg-gray-50 px-3.5 py-3 text-sm leading-6 text-gray-900 border border-gray-200 outline-none placeholder:text-gray-400 focus:border-green-400 transition-colors"
                                   required>{{ old('content') }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

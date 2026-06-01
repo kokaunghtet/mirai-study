@@ -14,7 +14,8 @@ class PostLikeController extends Controller
         $existing = $post->likes()->where('user_id', $user->id)->first();
 
         if ($existing) {
-            $existing->delete();
+            // $post->delete();
+            $post->likes()->where('user_id', $user->id)->delete();
             $liked = false;
         } else {
             $post->likes()->create(['user_id' => $user->id]);
