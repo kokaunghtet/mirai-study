@@ -98,7 +98,7 @@
                             @if ($existingMedia->isNotEmpty())
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
-                                        Existing images — check to remove
+                                        Existing images — click to remove
                                     </p>
                                     <div class="grid grid-cols-3 gap-2">
                                         @foreach ($existingMedia as $item)
@@ -182,7 +182,7 @@
                             @if ($existingFiles->isNotEmpty())
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
-                                        Existing files — check to remove
+                                        Existing files — click to remove
                                     </p>
                                     <div class="flex flex-col gap-1.5">
                                         @foreach ($existingFiles as $file)

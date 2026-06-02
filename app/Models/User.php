@@ -2,36 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-// use Database\Factories\UserFactory;
-// use Illuminate\Database\Eloquent\Attributes\Fillable;
-// use Illuminate\Database\Eloquent\Attributes\Hidden;
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
-// use Illuminate\Notifications\Notifiable;
-
-// #[Fillable(['name', 'email', 'password'])]
-// #[Hidden(['password', 'remember_token'])]
-// class User extends Authenticatable
-// {
-
-/** @use HasFactory<UserFactory> */
-//     use HasFactory, Notifiable;
-
-//     /**
-//      * Get the attributes that should be cast.
-//      *
-//      * @return array<string, string>
-//      */
-//     protected function casts(): array
-//     {
-//         return [
-//             'email_verified_at' => 'datetime',
-//             'password' => 'hashed',
-//         ];
-//     }
-// }
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -97,7 +67,7 @@ class User extends Authenticatable
         return $this->hasMany(Otp::class);
     }
 
-    public function notifications()
+    public function appNotifications()
     {
         return $this->hasMany(Notification::class);
     }
@@ -109,12 +79,12 @@ class User extends Authenticatable
 
     public function likedPosts()
     {
-        return $this->belongsToMany(Post::class, 'post_likes')->withTimestamps();
+        return $this->belongsToMany(Post::class, 'post_likes');
     }
 
     public function bookmarkedPosts()
     {
-        return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
+        return $this->belongsToMany(Post::class, 'bookmarks');
     }
 
     // Users this user is following

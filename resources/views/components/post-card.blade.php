@@ -1,6 +1,6 @@
 @props(['post'])
 
-<article class="relative rounded-2xl bg-white border border-gray-200 shadow-sm transition-all hover:shadow-md">
+<article class="relative rounded-2xl bg-white border border-gray-200 shadow-sm">
 
     {{-- Header: Avatar + Name + Actions --}}
     <header class="flex items-center justify-between px-4 py-3.5">
@@ -252,11 +252,15 @@
 
             {{-- Bookmark --}}
             @auth
+                @php $isBookmarked = $post->bookmarks->isNotEmpty(); @endphp
                 <form method="POST" action="{{ route('posts.bookmark', $post) }}">
                     @csrf
                     <button type="submit"
-                            class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                            title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"
+                            class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-green-600' : 'text-gray-500 hover:bg-gray-100 hover:text-green-600' }}">
+                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
+                            fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"
+                            stroke="currentColor" stroke-width="1.9">
                             <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
                         </svg>
                     </button>

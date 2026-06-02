@@ -9,23 +9,28 @@ class BookmarkController extends Controller
 {
     public function index(Request $request)
     {
-        $bookmarks = $request->user()
+        $posts = $request->user()
             ->bookmarkedPosts()
-            ->with(['user', 'tags'])
+            ->with([
+                'user',
+                'tags',
+                'media',
+                'bookmarks' => fn($q) => $q->where('user_id', $request->user()->id),
+            ])
             ->withCount(['likes', 'comments'])
             ->latest('bookmarks.created_at')
-            ->paginate(15);
+            ->paginate(10);
 
-        return view('bookmarks.index', compact('bookmarks'));
+        return view('bookmarks.index', compact('posts'));
     }
 
     public function toggle(Request $request, Post $post)
     {
         $user = $request->user();
 
-        $existing = $user->bookmarkedPosts()->where('post_id', $post->id)->first();
+        $isBookmarked = $user->bookmarkedPosts()->where('post_id', $post->id)->exists();
 
-        if ($existing) {
+        if ($isBookmarked) {
             $user->bookmarkedPosts()->detach($post->id);
             $bookmarked = false;
         } else {

@@ -1,4 +1,14 @@
 <x-app-layout>
+    <!-- Back button to go back to feed page -->
+    <a href="{{ route('feed.index') }}"
+       class="mb-5 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-600 shadow-sm transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200 active:scale-95">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"/>
+            <path d="m12 19-7-7 7-7"/>
+        </svg>
+        Back
+    </a>
+
     <x-slot name="title">Create Post — MiraiStudy</x-slot>
 
     <div class="flex justify-center px-4 py-6">

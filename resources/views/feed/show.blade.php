@@ -1,4 +1,15 @@
 <x-app-layout>
+
+    <!-- Back button to go back to feed page -->
+    <a href="{{ route('feed.index') }}"
+       class="mb-5 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-600 shadow-sm transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200 active:scale-95">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"/>
+            <path d="m12 19-7-7 7-7"/>
+        </svg>
+        Back
+    </a>
+
     <x-slot name="title">{{ $post->title ?? 'Post' }} — MiraiStudy</x-slot>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -197,11 +208,15 @@
 
                         {{-- Bookmark --}}
                         @auth
+                            @php $isBookmarked = $post->bookmarks->isNotEmpty(); @endphp
                             <form method="POST" action="{{ route('posts.bookmark', $post) }}">
                                 @csrf
                                 <button type="submit"
-                                        class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                                        title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"
+                                        class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-green-600' : 'text-gray-500 hover:bg-gray-100 hover:text-green-600' }}">
+                                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
+                                        fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"
+                                        stroke="currentColor" stroke-width="1.9">
                                         <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
                                     </svg>
                                 </button>
