@@ -311,7 +311,7 @@
                                                 <form method="POST"
                                                       action="{{ route('comments.destroy', $comment) }}"
                                                       onsubmit="return confirm('Delete this comment?')"
-                                                      class="flex items-center">
+                                                      class="inline-flex items-center">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

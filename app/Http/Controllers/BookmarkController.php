@@ -9,17 +9,27 @@ class BookmarkController extends Controller
 {
     public function index(Request $request)
     {
+        $userId = $request->user()->id;
+
         $posts = $request->user()
             ->bookmarkedPosts()
             ->with([
                 'user',
                 'tags',
                 'media',
-                'bookmarks' => fn($q) => $q->where('user_id', $request->user()->id),
+                'bookmarks' => fn($q) => $q->where('user_id', $userId),
+                'likes'     => fn($q) => $q->where('user_id', $userId),
             ])
             ->withCount(['likes', 'comments'])
             ->latest('bookmarks.created_at')
             ->paginate(10);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html'          => view('bookmarks._posts', compact('posts'))->render(),
+                'next_page_url' => $posts->nextPageUrl(),
+            ]);
+        }
 
         return view('bookmarks.index', compact('posts'));
     }
@@ -28,7 +38,9 @@ class BookmarkController extends Controller
     {
         $user = $request->user();
 
-        $isBookmarked = $user->bookmarkedPosts()->where('post_id', $post->id)->exists();
+        $isBookmarked = $user->bookmarkedPosts()
+            ->where('post_id', $post->id)
+            ->exists();
 
         if ($isBookmarked) {
             $user->bookmarkedPosts()->detach($post->id);
@@ -37,11 +49,6 @@ class BookmarkController extends Controller
             $user->bookmarkedPosts()->attach($post->id);
             $bookmarked = true;
         }
-
-        if ($request->expectsJson()) {
-            return response()->json(['bookmarked' => $bookmarked]);
-        }
-
-        return back();
+        return response()->json(['bookmarked' => $bookmarked]);
     }
 }

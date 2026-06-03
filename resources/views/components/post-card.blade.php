@@ -108,7 +108,7 @@
         @endif
     </div>
 
-    {{-- Media (images/videos) --}}
+    {{-- Media (images) --}}
     @php $mediaItems = $post->media->where('type', '!=', 'document'); @endphp
     @if ($mediaItems->isNotEmpty())
         <div class="mx-3 mb-3" x-data="{ idx: 0 }">
@@ -117,12 +117,8 @@
                 {{-- Slides --}}
                 @foreach ($mediaItems->values() as $i => $item)
                     <div x-show="idx === {{ $i }}" class="h-full w-full">
-                        @if ($item->type === 'video')
-                            <video src="{{ $item->url }}" class="h-full w-full object-cover" controls></video>
-                        @else
-                            <img src="{{ $item->url }}" alt="post media"
-                                class="h-full w-full object-cover cursor-zoom-in">
-                        @endif
+                        <img src="{{ $item->url }}" alt="post media" loading="lazy"
+                            class="h-full w-full object-cover cursor-zoom-in">
                     </div>
                 @endforeach
 
@@ -210,26 +206,52 @@
 
             {{-- Like --}}
             @auth
-                <?php $liked = $post->likes->contains('user_id', auth()->id()); ?>
-                <form method="POST" action="{{ route('posts.like', $post) }}">
-                    @csrf
-                    <button type="submit"
-                            class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-green-600' : 'text-gray-500' }} hover:bg-gray-100 hover:text-green-600 transition-all">
+                @php $isLiked = $post->likes->where('user_id', auth()->id())->isNotEmpty(); @endphp
+                <div x-data="{
+                        liked: {{ $isLiked ? 'true' : 'false' }},
+                        count: {{ $post->likes_count }},
+                        loading: false,
+                        async toggle() {
+                            if (this.loading) return;
+                            this.loading = true;
+                            try {
+                                const res = await fetch('{{ route('posts.like', $post) }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                        'Accept': 'application/json',
+                                    }
+                                });
+                                const data = await res.json();
+                                this.liked  = data.liked;
+                                this.count  = data.likes_count;
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                    }">
+                    <button type="button"
+                            @click="toggle()"
+                            :disabled="loading"
+                            :class="liked
+                                ? 'text-green-600'
+                                : 'text-gray-500 hover:bg-gray-100 hover:text-green-600'"
+                            class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-all">
                         <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
-                            fill="{{ $liked ? 'currentColor' : 'none' }}"
-                            stroke="currentColor"
-                            stroke-width="1.9">
+                            :fill="liked ? 'currentColor' : 'none'"
+                            stroke="currentColor" stroke-width="1.9">
                             <path d="M7 10v10"/>
                             <path d="M15 5.5 14 10h5.2a2 2 0 0 1 2 2.3l-.8 5.4A4 4 0 0 1 16.4 21H7V10h2.4a2 2 0 0 0 1.8-1.1L14 3.5a1 1 0 0 1 1.9.6z"/>
                         </svg>
-                        <span class="text-xs font-semibold">{{ $post->likes_count }}</span>
+                        <span class="text-xs font-semibold" x-text="count"></span>
                     </button>
-                </form>
+                </div>
             @else
                 <button type="button"
                         onclick="window.dispatchEvent(new Event('open-auth-modal'))"
                         class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.9">
                         <path d="M7 10v10"/>
                         <path d="M15 5.5 14 10h5.2a2 2 0 0 1 2 2.3l-.8 5.4A4 4 0 0 1 16.4 21H7V10h2.4a2 2 0 0 0 1.8-1.1L14 3.5a1 1 0 0 1 1.9.6z"/>
                     </svg>
@@ -253,23 +275,48 @@
             {{-- Bookmark --}}
             @auth
                 @php $isBookmarked = $post->bookmarks->isNotEmpty(); @endphp
-                <form method="POST" action="{{ route('posts.bookmark', $post) }}">
-                    @csrf
-                    <button type="submit"
-                            title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"
-                            class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-green-600' : 'text-gray-500 hover:bg-gray-100 hover:text-green-600' }}">
+                <div x-data="{
+                        bookmarked: {{ $isBookmarked ? 'true' : 'false' }},
+                        loading: false,
+                        async toggle() {
+                            if (this.loading) return;
+                            this.loading = true;
+                            try {
+                                const res = await fetch('{{ route('posts.bookmark', $post) }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                        'Accept': 'application/json',
+                                    }
+                                });
+                                const data = await res.json();
+                                this.bookmarked = data.bookmarked;
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                    }">
+                    <button type="button"
+                            @click="toggle()"
+                            :disabled="loading"
+                            :title="bookmarked ? 'Remove bookmark' : 'Bookmark'"
+                            :class="bookmarked
+                                ? 'text-green-600'
+                                : 'text-gray-500 hover:bg-gray-100 hover:text-green-600'"
+                            class="rounded-lg px-2.5 py-1.5 transition-all">
                         <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
-                            fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"
+                            :fill="bookmarked ? 'currentColor' : 'none'"
                             stroke="currentColor" stroke-width="1.9">
                             <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
                         </svg>
                     </button>
-                </form>
+                </div>
             @else
                 <button type="button"
                         onclick="window.dispatchEvent(new Event('open-auth-modal'))"
                         class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.9">
                         <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
                     </svg>
                 </button>

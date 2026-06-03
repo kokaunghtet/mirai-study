@@ -86,9 +86,26 @@
                 return response.json();
             }
 
+            // const MAX_PAGES = 5;
+
             // ── Infinite scroll ──────────────────────────────────────
             async function loadMore() {
                 if (isFetching || !hasMore) return;
+
+                // // Soft cap — suggest refresh instead of loading forever
+                // if (currentPage >= MAX_PAGES) {
+                //     loader.innerHTML = `
+                //         <div class="text-center py-4">
+                //             <p class="text-sm text-gray-400 mb-2">You've seen a lot of posts.</p>
+                //             <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+                //                     class="text-sm font-semibold text-green-600 hover:underline">
+                //                 Back to top ↑
+                //             </button>
+                //         </div>`;
+                //     loader.style.display = 'block';
+                //     observer.disconnect();
+                //     return;
+                // }
 
                 isFetching  = true;
                 let success = false;

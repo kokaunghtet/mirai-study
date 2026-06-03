@@ -16,15 +16,15 @@ class PostController extends Controller
     // Anyone can view the feed
     public function index(Request $request)
     {
-        $posts = Post::with([
-                'user',
-                'tags',
-                'media',
-                'bookmarks' => fn($q) => $q->when(
-                    auth()->check(),
-                    fn($q) => $q->where('user_id', auth()->id())
-                ),
-            ])
+        $with = ['user', 'tags', 'media'];
+
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $with['bookmarks'] = fn($q) => $q->where('user_id', $userId);
+            $with['likes']     = fn($q) => $q->where('user_id', $userId);
+        }
+
+        $posts = Post::with($with)
             ->withCount(['likes', 'comments'])
             ->latest()
             ->paginate(10);
