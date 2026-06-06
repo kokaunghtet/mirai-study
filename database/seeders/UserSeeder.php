@@ -38,9 +38,10 @@ class UserSeeder extends Seeder
         // Give all users default preferences and pomodoro settings
         User::all()->each(function (User $user) {
             UserPreference::create([
-                'user_id'      => $user->id,
-                'theme_mode'   => 'light',
-                'accent_color' => 'aurora',
+                'user_id'          => $user->id,
+                'theme_mode'       => 'light',
+                'accent_color'     => 'venom',
+                'show_liked_posts' => true,
             ]);
 
             PomodoroSetting::create([

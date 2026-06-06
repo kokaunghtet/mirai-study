@@ -7,6 +7,7 @@
     <title>{{ $title ?? 'MiraiStudy' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        [x-cloak] { display: none !important; }
         /* Sidebar transition */
         .sidebar-link {
             transition: all 0.15s ease;
@@ -197,7 +198,16 @@
                             :class="sidebarCollapsed ? 'justify-center p-2' : 'px-3 py-2.5'"
                             :title="sidebarCollapsed ? '{{ auth()->user()->display_name }}' : ''">
                         <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
-                            {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                            @if (auth()->user()->profile_image)
+                                <img src="{{ auth()->user()->profile_image }}"
+                                    alt="{{ auth()->user()->display_name }}"
+                                    loading="lazy"
+                                    class="h-full w-full rounded-full object-cover">
+                            @else
+                                <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                                    {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                                </div>
+                            @endif
                         </div>
                         <div x-show="!sidebarCollapsed" class="flex-1 min-w-0 text-left">
                             <div class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->display_name }}</div>
@@ -217,7 +227,8 @@
                          x-transition:leave="transition ease-in duration-75"
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
-                         class="absolute bottom-full left-0 right-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                         :class="sidebarCollapsed ? 'bottom-0 left-full ml-2 w-56' : 'bottom-full left-0 right-0 mb-1'"
+                         class="absolute bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
                         <a href="{{ route('profile.show', auth()->user()->username) }}"
                            @click="sidebarOpen = false; userMenu = false"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
@@ -227,7 +238,7 @@
                             </svg>
                             My Profile
                         </a>
-                        <a href="{{ route('profile.edit') }}"
+                        <a href="#"
                            @click="sidebarOpen = false; userMenu = false"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                             <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">

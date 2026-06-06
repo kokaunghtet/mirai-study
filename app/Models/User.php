@@ -95,7 +95,7 @@ class User extends Authenticatable
             'follows',
             'follower_id',
             'following_id'
-        )->withPivot('status')->withTimestamps();
+        )->withPivot('status');
     }
 
     // Users who follow this user
@@ -106,7 +106,7 @@ class User extends Authenticatable
             'follows',
             'following_id',
             'follower_id'
-        )->withPivot('status')->withTimestamps();
+        )->withPivot('status');
     }
 
     // ---- Helpers ----

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserPreference extends Model
 {
-    protected $fillable = ['user_id', 'theme_mode', 'accent_color'];
+    protected $fillable = ['user_id', 'theme_mode', 'accent_color', 'show_liked_posts'];
 
     public function user()
     {

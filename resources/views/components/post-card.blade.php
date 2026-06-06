@@ -1,14 +1,25 @@
 @props(['post'])
 
-<article class="relative rounded-2xl bg-white border border-gray-200 shadow-sm">
+<article x-data
+    @dblclick="if (!$event.target.closest('a,button,input,textarea,video,form,[data-no-nav]')) window.location='{{ route('posts.show', $post) }}'"
+    class="relative rounded-2xl bg-white border border-gray-200 shadow-sm">
 
     {{-- Header: Avatar + Name + Actions --}}
     <header class="flex items-center justify-between px-4 py-3.5">
         <div class="flex items-center gap-2.5">
 
             {{-- Avatar --}}
-            <div class="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
-                {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
+            <div class="grid h-[38px] w-[38px] shrink-0 place-items-center overflow-hidden rounded-full border border-gray-100">
+                @if ($post->user->profile_image)
+                    <img src="{{ $post->user->profile_image }}"
+                        alt="{{ $post->user->display_name }}"
+                        loading="lazy"
+                        class="h-full w-full object-cover">
+                @else
+                    <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                        {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
+                    </div>
+                @endif
             </div>
 
             <div>
@@ -28,13 +39,41 @@
             {{-- Follow button — shown to everyone except post owner --}}
             @if (auth()->id() !== $post->user_id)
                 @auth
-                    <form method="POST" action="{{ route('users.follow', $post->user) }}">
-                        @csrf
-                        <button type="submit"
-                                class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[12px] font-bold text-gray-700 transition-all hover:bg-gray-50 active:scale-95">
-                            Follow
+                    <div x-data="{
+                            following: {{ auth()->user()->following()->where('following_id', $post->user_id)->exists() ? 'true' : 'false' }},
+                            loading: false,
+                            async toggle() {
+                                if (this.loading) return;
+                                this.loading = true;
+                                try {
+                                    const res = await fetch('{{ route('users.follow', $post->user) }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                            'Accept': 'application/json',
+                                        }
+                                    });
+                                    const data = await res.json();
+                                    this.following = data.following;
+                                    window.dispatchEvent(new CustomEvent('follow-changed', {
+                                        detail: { userId: {{ $post->user_id }}, following: data.following }
+                                    }));
+                                } finally {
+                                    this.loading = false;
+                                }
+                            }
+                         }"
+                         @follow-changed.window="if ($event.detail.userId === {{ $post->user_id }}) following = $event.detail.following">
+                        <button type="button"
+                                @click="toggle()"
+                                :disabled="loading"
+                                :class="following
+                                    ? 'bg-white border-gray-200 text-gray-700 hover:border-red-200 hover:text-red-600 hover:bg-red-50'
+                                    : 'bg-green-600 border-transparent text-white hover:bg-green-700'"
+                                class="shrink-0 rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
+                            <span x-text="following ? 'Following' : 'Follow'"></span>
                         </button>
-                    </form>
+                    </div>
                 @else
                     <button type="button"
                             onclick="window.dispatchEvent(new Event('open-auth-modal'))"
@@ -100,7 +139,7 @@
     @endif
 
     {{-- Content --}}
-    <div class="px-4 pb-4 pt-0 break-words {{ strlen($post->content) < 80 ? 'text-lg leading-7 font-medium text-gray-900' : 'text-sm leading-6 text-gray-700' }}">
+    <div data-no-nav class="px-4 pb-4 pt-0 break-words {{ strlen($post->content) < 80 ? 'text-lg leading-7 font-medium text-gray-900' : 'text-sm leading-6 text-gray-700' }}">
         {{ Str::limit($post->content, 300) }}
         @if (strlen($post->content) > 300)
             <a href="{{ route('posts.show', $post) }}"

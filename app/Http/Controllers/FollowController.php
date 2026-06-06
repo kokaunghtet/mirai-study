@@ -11,14 +11,15 @@ class FollowController extends Controller
     {
         $authUser = $request->user();
 
-        // Prevent self-following
         if ($authUser->id === $user->id) {
-            return back()->with('error', 'You cannot follow yourself.');
+            return response()->json(['error' => 'You cannot follow yourself.'], 422);
         }
 
-        $existing = $authUser->following()->where('following_id', $user->id)->first();
+        $isFollowing = $authUser->following()
+            ->where('following_id', $user->id)
+            ->exists();
 
-        if ($existing) {
+        if ($isFollowing) {
             $authUser->following()->detach($user->id);
             $following = false;
         } else {
@@ -26,10 +27,23 @@ class FollowController extends Controller
             $following = true;
         }
 
-        if ($request->expectsJson()) {
-            return response()->json(['following' => $following]);
+        return response()->json(['following' => $following]);
+    }
+
+    /**
+     * Remove a user from the authenticated user's followers list.
+     */
+    public function removeFollower(Request $request, User $user)
+    {
+        $authUser = $request->user();
+
+        if ($authUser->id === $user->id) {
+            return response()->json(['error' => 'You cannot remove yourself.'], 422);
         }
 
-        return back();
+        // Detach: $user was following $authUser, so remove that relationship
+        $authUser->followers()->detach($user->id);
+
+        return response()->json(['removed' => true]);
     }
 }

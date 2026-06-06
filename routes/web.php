@@ -39,6 +39,11 @@ Route::get('/questions', [QuestionController::class, 'index'])->name('questions.
 // Timer (guest: browser only)
 Route::get('/timer', [TimerController::class, 'index'])->name('timer.index');
 
+// User profiles (public)
+Route::get('/users/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/users/{user:username}/followers', [ProfileController::class, 'followers'])->name('profile.followers');
+Route::get('/users/{user:username}/following', [ProfileController::class, 'following'])->name('profile.following');
+
 // -------------------------------------------------------
 // Authenticated routes — must be logged in
 // -------------------------------------------------------
@@ -46,8 +51,9 @@ Route::get('/timer', [TimerController::class, 'index'])->name('timer.index');
 Route::middleware('auth')->group(function () {
 
     // --- Profile ---
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // --- Posts ---
@@ -73,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     // --- Follows ---
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
+    Route::post('/users/{user}/remove-follower', [FollowController::class, 'removeFollower'])->name('users.remove-follower');
 
     // --- Exam downloads ---
     Route::get('/exams/papers/{paper}/download', [ExamPaperController::class, 'download'])->name('exams.download');

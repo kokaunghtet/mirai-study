@@ -52,9 +52,9 @@
             <div class="bg-white border border-gray-200 rounded-xl p-5">
                 <h3 class="font-semibold text-gray-900 mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm text-gray-600">
-                    <li><a href="{{ route('exams.index') }}" class="hover:text-green-600">📄 Exam Papers</a></li>
-                    <li><a href="{{ route('quiz.index') }}" class="hover:text-green-600">📝 Take a Quiz</a></li>
-                    <li><a href="{{ route('timer.index') }}" class="hover:text-green-600">⏱ Focus Timer</a></li>
+                    <li><a href="{{ route('exams.index') }}" class="hover:text-green-600">Exam Papers</a></li>
+                    <li><a href="{{ route('quiz.index') }}" class="hover:text-green-600">Take a Quiz</a></li>
+                    <li><a href="{{ route('timer.index') }}" class="hover:text-green-600">Focus Timer</a></li>
                 </ul>
             </div>
         </aside>
@@ -86,26 +86,9 @@
                 return response.json();
             }
 
-            // const MAX_PAGES = 5;
-
             // ── Infinite scroll ──────────────────────────────────────
             async function loadMore() {
                 if (isFetching || !hasMore) return;
-
-                // // Soft cap — suggest refresh instead of loading forever
-                // if (currentPage >= MAX_PAGES) {
-                //     loader.innerHTML = `
-                //         <div class="text-center py-4">
-                //             <p class="text-sm text-gray-400 mb-2">You've seen a lot of posts.</p>
-                //             <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
-                //                     class="text-sm font-semibold text-green-600 hover:underline">
-                //                 Back to top ↑
-                //             </button>
-                //         </div>`;
-                //     loader.style.display = 'block';
-                //     observer.disconnect();
-                //     return;
-                // }
 
                 isFetching  = true;
                 let success = false;

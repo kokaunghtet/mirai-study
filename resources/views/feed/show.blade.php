@@ -149,7 +149,7 @@
 
                 {{-- Tags --}}
                 @if ($post->tags->isNotEmpty())
-                    <div class="flex flex-wrap gap-2 mt-4">
+                    <div class="flex flex-wrap gap-2 my-4">
                         @foreach ($post->tags as $tag)
                             <span class="text-xs bg-green-50 text-green-600 px-2.5 py-1 rounded-full">
                                 {{ $tag->name }}
@@ -159,7 +159,7 @@
                 @endif
 
                 {{-- Footer: Actions --}}
-                <div class="flex items-center justify-between px-3.5 py-3 border-t border-gray-100">
+                <div class="flex items-center justify-between px-3.5 pt-3 border-t border-gray-100">
 
                     {{-- Left: Like + Comment --}}
                     <div class="flex items-center gap-1">
@@ -291,9 +291,18 @@
                 <div class="space-y-5">
                     @forelse ($post->comments as $comment)
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-xs flex-shrink-0">
-                                {{ strtoupper(substr($comment->user->display_name, 0, 1)) }}
-                            </div>
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
+                            @if ($comment->user->profile_image)
+                                <img src="{{ $comment->user->profile_image }}"
+                                    alt="{{ $comment->user->display_name }}"
+                                    loading="lazy"
+                                    class="h-full w-full rounded-full object-cover">
+                            @else
+                                <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                                    {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
                             <div class="flex-1">
                                 <div class="bg-gray-50 rounded-lg px-4 py-3">
                                     <div class="flex items-center justify-between mb-1">
@@ -335,8 +344,17 @@
                                     <div class="mt-3 space-y-3 pl-4 border-l-2 border-gray-100">
                                         @foreach ($comment->replies as $reply)
                                             <div class="flex gap-2">
-                                                <div class="w-7 h-7 rounded-full bg-green-50 flex items-center justify-center text-green-500 font-bold text-xs flex-shrink-0">
-                                                    {{ strtoupper(substr($reply->user->display_name, 0, 1)) }}
+                                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
+                                                    @if ($reply->user->profile_image)
+                                                        <img src="{{ $reply->user->profile_image }}"
+                                                            alt="{{ $reply->user->display_name }}"
+                                                            loading="lazy"
+                                                            class="h-full w-full rounded-full object-cover">
+                                                    @else
+                                                        <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                                                            {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <div class="flex-1 bg-gray-50 rounded-lg px-3 py-2">
                                                     <div class="flex items-center justify-between mb-0.5">

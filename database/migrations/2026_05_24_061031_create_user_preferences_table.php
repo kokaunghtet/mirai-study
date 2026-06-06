@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
             $table->enum('theme_mode', ['light', 'dark'])->default('light');
-            $table->enum('accent_color', ['aurora', 'venom', 'inferno', 'twilight', 'sangria'])->default('aurora');
+            $table->enum('accent_color', ['aurora', 'venom', 'inferno', 'twilight', 'sangria'])->default('venom');
+            $table->boolean('show_liked_posts')->default(true);
             $table->timestamps();
         });
     }
