@@ -38,15 +38,13 @@
          Mobile Top Bar (visible on small screens only)
     ═══════════════════════════════════════════════ --}}
     <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4">
-        <a href="{{ route('feed.index') }}" class="font-bold text-lg text-green-600">
+        <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-mirai-lime to-mirai-dark bg-clip-text text-transparent whitespace-nowrap">
             MiraiStudy
         </a>
         <button @click="sidebarOpen = !sidebarOpen"
                 class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            <i data-lucide="menu" x-show="!sidebarOpen" class="w-6 h-6"></i>
+            <i data-lucide="x" x-show="sidebarOpen" class="w-6 h-6"></i>
         </button>
     </div>
 
@@ -82,13 +80,9 @@
                     class="hidden lg:flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                     :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
                 {{-- Chevron left (collapse) --}}
-                <svg x-show="!sidebarCollapsed" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
+                <i data-lucide="chevron-left" x-show="!sidebarCollapsed" class="w-4 h-4"></i>
                 {{-- Chevron right (expand) --}}
-                <svg x-show="sidebarCollapsed" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
+                <i data-lucide="chevron-right" x-show="sidebarCollapsed" class="w-4 h-4"></i>
             </button>
         </div>
 
@@ -101,10 +95,7 @@
                title="Feed"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('feed.*') || request()->routeIs('posts.*') ? 'active' : 'text-gray-600' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('feed.*') || request()->routeIs('posts.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
+                <i data-lucide="home" class="w-5 h-5 shrink-0 {{ request()->routeIs('feed.*') || request()->routeIs('posts.*') ? '' : 'text-gray-400' }}"></i>
                 <span x-show="!sidebarCollapsed">Feed</span>
             </a>
 
@@ -114,13 +105,7 @@
                title="Exams"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('exams.*') ? 'active' : 'text-gray-600' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('exams.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                </svg>
+                <i data-lucide="file-text" class="w-5 h-5 shrink-0 {{ request()->routeIs('exams.*') ? '' : 'text-gray-400' }}"></i>
                 <span x-show="!sidebarCollapsed">Exams</span>
             </a>
 
@@ -130,11 +115,7 @@
                title="Quiz"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('quiz.*') ? 'active' : 'text-gray-600' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('quiz.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
+                <i data-lucide="circle-help" class="w-5 h-5 shrink-0 {{ request()->routeIs('quiz.*') ? '' : 'text-gray-400' }}"></i>
                 <span x-show="!sidebarCollapsed">Quiz</span>
             </a>
 
@@ -144,10 +125,7 @@
                title="Focus"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('timer.*') ? 'active' : 'text-gray-600' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('timer.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                </svg>
+                <i data-lucide="clock" class="w-5 h-5 shrink-0 {{ request()->routeIs('timer.*') ? '' : 'text-gray-400' }}"></i>
                 <span x-show="!sidebarCollapsed">Focus</span>
             </a>
 
@@ -161,10 +139,7 @@
                    title="Notifications"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('notifications.*') ? 'active' : 'text-gray-600' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                    <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('notifications.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
+                    <i data-lucide="bell" class="w-5 h-5 shrink-0 {{ request()->routeIs('notifications.*') ? '' : 'text-gray-400' }}"></i>
                     <span x-show="!sidebarCollapsed">Notifications</span>
                 </a>
 
@@ -174,9 +149,7 @@
                    title="Bookmarks"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('bookmarks.*') ? 'active' : 'text-gray-600' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                    <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('bookmarks.*') ? '' : 'text-gray-400' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                    </svg>
+                    <i data-lucide="bookmark" class="w-5 h-5 shrink-0 {{ request()->routeIs('bookmarks.*') ? '' : 'text-gray-400' }}"></i>
                     <span x-show="!sidebarCollapsed">Bookmarks</span>
                 </a>
             @endauth
@@ -206,9 +179,7 @@
                             <div class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->display_name }}</div>
                             <div class="text-xs text-gray-400 truncate">{{ '@' . auth()->user()->username }}</div>
                         </div>
-                        <svg x-show="!sidebarCollapsed" class="w-4 h-4 text-gray-400 shrink-0 transition-transform" :class="userMenu ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-                        </svg>
+                        <i data-lucide="chevron-up" x-show="!sidebarCollapsed" class="w-4 h-4 text-gray-400 shrink-0 transition-transform" :class="userMenu ? 'rotate-180' : ''"></i>
                     </button>
 
                     {{-- Dropdown menu (opens upward) --}}
@@ -225,31 +196,28 @@
                         <a href="{{ route('profile.show', auth()->user()->username) }}"
                            @click="sidebarOpen = false; userMenu = false"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                            <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
+                            <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
                             My Profile
                         </a>
                         <a href="{{ route('profile.edit') }}"
                            @click="sidebarOpen = false; userMenu = false"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('profile.edit') ? 'bg-gray-50' : '' }}">
-                            <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
+                            <i data-lucide="square-pen" class="w-4 h-4 text-gray-400"></i>
                             Edit Profile
                         </a>
+                        <a href="{{ route('settings.index') }}"
+                           @click="sidebarOpen = false; userMenu = false"
+                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('settings.*') ? 'bg-gray-50' : '' }}">
+                            <i data-lucide="settings" class="w-4 h-4 text-gray-400"></i>
+                            Settings
+                        </a>
+                        
                         <hr class="my-1 border-gray-100">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
                                     class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                    <polyline points="16 17 21 12 16 7"/>
-                                    <line x1="21" y1="12" x2="9" y2="12"/>
-                                </svg>
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
                                 Logout
                             </button>
                         </form>
@@ -260,22 +228,13 @@
                     <a href="{{ route('login') }}"
                        class="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-green-600 px-3 py-2 rounded-lg border border-gray-200 hover:border-green-200 transition-colors"
                        :title="sidebarCollapsed ? 'Login' : ''">
-                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                            <polyline points="10 17 15 12 10 7"/>
-                            <line x1="15" y1="12" x2="3" y2="12"/>
-                        </svg>
+                        <i data-lucide="log-in" class="w-4 h-4 shrink-0"></i>
                         <span x-show="!sidebarCollapsed">Login</span>
                     </a>
                     <a href="{{ route('register') }}"
                        class="flex items-center justify-center gap-2 text-sm font-medium bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors"
                        :title="sidebarCollapsed ? 'Sign up' : ''">
-                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="8.5" cy="7" r="4"/>
-                            <line x1="20" y1="8" x2="20" y2="14"/>
-                            <line x1="23" y1="11" x2="17" y2="11"/>
-                        </svg>
+                        <i data-lucide="user-plus" class="w-4 h-4 shrink-0"></i>
                         <span x-show="!sidebarCollapsed">Sign up</span>
                     </a>
                 </div>

@@ -9,7 +9,7 @@
             {{-- Create Post Button --}}
             @auth
                 <a href="{{ route('posts.create') }}"
-                   class="block w-full text-center bg-green-600 text-white font-medium py-3 rounded-xl hover:bg-green-700 transition">
+                   class="block w-full text-center bg-gradient-to-tr from-mirai-lime to-mirai-dark text-white font-medium py-3 rounded-xl hover:bg-green-700 transition">
                     + Create Post
                 </a>
             @endauth
@@ -65,10 +65,7 @@
                     <button type="button" @click="close()"
                             class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
                             title="Close">
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6 6 18"/>
-                            <path d="m6 6 12 12"/>
-                        </svg>
+                        <i data-lucide="x" class="h-4 w-4"></i>
                     </button>
                 </div>
 
@@ -148,6 +145,7 @@
                         });
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         this.$refs.content.innerHTML = await res.text();
+                        window.renderIcons(this.$refs.content);
                         this.syncCount();
                     } catch (err) {
                         console.error('Failed to load comments:', err);
@@ -188,6 +186,7 @@
                             });
                             if (!res.ok) throw new Error('HTTP ' + res.status);
                             this.$refs.content.innerHTML = await res.text();
+                            window.renderIcons(this.$refs.content);
                             this.syncCount();
                         } catch (err) {
                             console.error('Comment action failed:', err);
@@ -237,7 +236,7 @@
                         sleep(1000)
                     ]);
 
-                    container.insertAdjacentHTML('beforeend', data.html);
+                    window.appendWithIcons(container, data.html);
                     success = true;
 
                     if (!data.next_page_url) {
@@ -298,7 +297,7 @@
                 for (let page = 2; page <= savedPage; page++) {
                     try {
                         const data = await fetchPage(page);
-                        container.insertAdjacentHTML('beforeend', data.html);
+                        window.appendWithIcons(container, data.html);
                         currentPage = page;
 
                         if (!data.next_page_url) {

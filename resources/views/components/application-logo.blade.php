@@ -2,5 +2,5 @@
     <img src="{{ asset('images/logo.png') }}" 
      alt="MiraiStudy Logo" 
      class="w-16 h-16 rounded-lg shrink-0 object-contain">
-    <span class="font-semibold text-lg text-gray-900 whitespace-nowrap">MiraiStudy</span>
+    <span class="font-semibold text-lg bg-gradient-to-tr from-mirai-lime to-mirai-dark bg-clip-text text-transparent whitespace-nowrap">MiraiStudy</span>
 </div>

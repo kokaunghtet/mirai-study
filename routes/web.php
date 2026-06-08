@@ -56,6 +56,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // --- Settings ---
+    Route::view('/settings', 'settings.index')->name('settings.index');
+
     // --- Posts ---
     // IMPORTANT: static routes (/posts/create) must come before wildcard (/posts/{post})
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');

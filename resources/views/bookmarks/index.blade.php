@@ -17,9 +17,7 @@
                 @if ($posts->isEmpty())
                     <div class="flex flex-col items-center justify-center py-20 text-center">
                         <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                            <svg class="h-7 w-7 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                                <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
-                            </svg>
+                            <i data-lucide="bookmark" class="h-7 w-7 text-gray-400"></i>
                         </div>
                         <p class="text-sm font-semibold text-gray-500">No bookmarks yet</p>
                         <p class="text-xs text-gray-400 mt-1">Posts you bookmark will appear here.</p>
@@ -81,7 +79,7 @@
                         sleep(1000)
                     ]);
 
-                    container.insertAdjacentHTML('beforeend', data.html);
+                    window.appendWithIcons(container, data.html);
                     success = true;
 
                     if (!data.next_page_url) {
@@ -142,7 +140,7 @@
                 for (let page = 2; page <= savedPage; page++) {
                     try {
                         const data = await fetchPage(page);
-                        container.insertAdjacentHTML('beforeend', data.html);
+                        window.appendWithIcons(container, data.html);
                         currentPage = page;
 
                         if (!data.next_page_url) {

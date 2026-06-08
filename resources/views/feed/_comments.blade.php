@@ -70,11 +70,7 @@
                                         <button type="submit"
                                                 class="text-gray-400 hover:text-red-500 transition-colors"
                                                 title="Delete comment">
-                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M3 6h18"/>
-                                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                            </svg>
+                                            <i data-lucide="trash" class="h-4 w-4"></i>
                                         </button>
                                     </form>
                                 @endif
@@ -122,11 +118,7 @@
                                                         <button type="submit"
                                                                 class="text-gray-400 hover:text-red-500 transition-colors"
                                                                 title="Delete reply">
-                                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                                <path d="M3 6h18"/>
-                                                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                            </svg>
+                                                            <i data-lucide="trash" class="h-3.5 w-3.5"></i>
                                                         </button>
                                                     </form>
                                                 @endif

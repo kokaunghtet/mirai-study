@@ -3,10 +3,7 @@
     <!-- Back button to go back to feed page -->
     <a href="{{ route('feed.index') }}"
        class="mb-5 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-600 shadow-sm transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200 active:scale-95">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5"/>
-            <path d="m12 19-7-7 7-7"/>
-        </svg>
+        <i data-lucide="arrow-left" class="h-4 w-4"></i>
         Back
     </a>
 
@@ -122,10 +119,7 @@
                             <a href="{{ $file->url }}" target="_blank"
                             class="flex items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 hover:bg-gray-50 transition-colors">
                                 <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                        <path d="M14 2v6h6"/>
-                                    </svg>
+                                    <i data-lucide="file" class="h-4 w-4"></i>
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div class="truncate text-xs font-semibold text-gray-900">
@@ -137,11 +131,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <svg class="h-4 w-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="17 8 12 3 7 8"/>
-                                    <line x1="12" y1="3" x2="12" y2="15"/>
-                                </svg>
+                                <i data-lucide="upload" class="h-4 w-4 text-gray-400 shrink-0"></i>
                             </a>
                         @endforeach
                     </div>
@@ -171,13 +161,8 @@
                                 @csrf
                                 <button type="submit"
                                         class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-green-600' : 'text-gray-500' }} hover:bg-gray-100 hover:text-green-600 transition-all">
-                                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
-                                        fill="{{ $liked ? 'currentColor' : 'none' }}"
-                                        stroke="currentColor"
-                                        stroke-width="1.9">
-                                        <path d="M7 10v10"/>
-                                        <path d="M15 5.5 14 10h5.2a2 2 0 0 1 2 2.3l-.8 5.4A4 4 0 0 1 16.4 21H7V10h2.4a2 2 0 0 0 1.8-1.1L14 3.5a1 1 0 0 1 1.9.6z"/>
-                                    </svg>
+                                    <i data-lucide="thumbs-up" class="h-[18px] w-[18px]"
+                                        fill="{{ $liked ? 'currentColor' : 'none' }}"></i>
                                     <span class="text-xs font-semibold">{{ $post->likes_count }}</span>
                                 </button>
                             </form>
@@ -185,10 +170,7 @@
                             <button type="button"
                                     onclick="window.dispatchEvent(new Event('open-auth-modal'))"
                                     class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
-                                    <path d="M7 10v10"/>
-                                    <path d="M15 5.5 14 10h5.2a2 2 0 0 1 2 2.3l-.8 5.4A4 4 0 0 1 16.4 21H7V10h2.4a2 2 0 0 0 1.8-1.1L14 3.5a1 1 0 0 1 1.9.6z"/>
-                                </svg>
+                                <i data-lucide="thumbs-up" class="h-[18px] w-[18px]"></i>
                                 <span class="text-xs font-semibold">{{ $post->likes_count }}</span>
                             </button>
                         @endauth
@@ -196,9 +178,7 @@
                         {{-- Comment --}}
                         <a href="{{ route('posts.show', $post) }}#comments"
                         class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
-                                <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12z"/>
-                            </svg>
+                            <i data-lucide="message-circle" class="h-[18px] w-[18px]"></i>
                             <span class="text-xs font-semibold">{{ $post->comments_count }}</span>
                         </a>
                     </div>
@@ -214,20 +194,15 @@
                                 <button type="submit"
                                         title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"
                                         class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-green-600' : 'text-gray-500 hover:bg-gray-100 hover:text-green-600' }}">
-                                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24"
-                                        fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"
-                                        stroke="currentColor" stroke-width="1.9">
-                                        <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
-                                    </svg>
+                                    <i data-lucide="bookmark" class="h-[18px] w-[18px]"
+                                        fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"></i>
                                 </button>
                             </form>
                         @else
                             <button type="button"
                                     onclick="window.dispatchEvent(new Event('open-auth-modal'))"
                                     class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
-                                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
-                                    <path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-3-6 3z"/>
-                                </svg>
+                                <i data-lucide="bookmark" class="h-[18px] w-[18px]"></i>
                             </button>
                         @endauth
 
@@ -241,13 +216,8 @@
                                     "
                                     class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all"
                                     :title="copied ? 'Link copied!' : 'Copy link'">
-                                <svg x-show="!copied" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
-                                    <path d="M22 2 11 13"/>
-                                    <path d="M22 2 15 22 11 13 2 9l20-7z"/>
-                                </svg>
-                                <svg x-show="copied" class="h-[18px] w-[18px] text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 6 9 17l-5-5"/>
-                                </svg>
+                                <i data-lucide="send" x-show="!copied" class="h-[18px] w-[18px]"></i>
+                                <i data-lucide="check" x-show="copied" class="h-[18px] w-[18px] text-green-600"></i>
                             </button>
                         </div>
 

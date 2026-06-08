@@ -10,9 +10,7 @@
                     <h2 class="text-[15px] font-bold text-gray-900">Edit post</h2>
                     <a href="{{ route('posts.show', $post) }}"
                        class="grid h-8 w-8 place-items-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors">
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6 6 18M6 6l12 12"/>
-                        </svg>
+                        <i data-lucide="x" class="h-4 w-4"></i>
                     </a>
                 </header>
 
@@ -40,9 +38,7 @@
                                     ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
                                     : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 6h16M4 12h10M4 18h14"/>
-                            </svg>
+                            <i data-lucide="align-left" class="h-3.5 w-3.5"></i>
                             Text
                         </button>
                         <button type="button" @click="setTab('media')"
@@ -50,11 +46,7 @@
                                     ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
                                     : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="3"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <path d="M21 15l-5-5L5 21"/>
-                            </svg>
+                            <i data-lucide="image" class="h-3.5 w-3.5"></i>
                             Media
                         </button>
                         <button type="button" @click="setTab('file')"
@@ -62,10 +54,7 @@
                                     ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
                                     : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <path d="M14 2v6h6"/>
-                            </svg>
+                            <i data-lucide="file" class="h-3.5 w-3.5"></i>
                             File
                         </button>
                     </nav>
@@ -112,9 +101,7 @@
                                                 {{-- Remove overlay --}}
                                                 <div class="absolute inset-0 rounded-lg peer-checked:bg-red-500/10 transition-all pointer-events-none"></div>
                                                 <div class="absolute top-1 right-1 hidden peer-checked:flex items-center justify-center h-5 w-5 rounded-full bg-red-500">
-                                                    <svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                                        <path d="M18 6 6 18M6 6l12 12"/>
-                                                    </svg>
+                                                    <i data-lucide="x" class="h-3 w-3 text-white"></i>
                                                 </div>
                                             </label>
                                         @endforeach
@@ -127,11 +114,7 @@
                                 <div x-show="newMediaPreviews.length === 0">
                                     <label for="editMediaInput"
                                            class="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 px-4 py-4 text-center hover:bg-gray-50 transition-all">
-                                        <svg class="h-7 w-7 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                                            <rect x="3" y="3" width="18" height="18" rx="3"/>
-                                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                                            <path d="M21 15l-5-5L5 21"/>
-                                        </svg>
+                                        <i data-lucide="image" class="h-7 w-7 text-gray-400"></i>
                                         <p class="text-[13px] font-semibold text-gray-700">Add more photos</p>
                                     </label>
                                 </div>
@@ -192,10 +175,7 @@
                                                        value="{{ $file->id }}"
                                                        class="peer rounded text-red-500 border-gray-300">
                                                 <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
-                                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                        <path d="M14 2v6h6"/>
-                                                    </svg>
+                                                    <i data-lucide="file" class="h-4 w-4"></i>
                                                 </div>
                                                 <div class="min-w-0 flex-1">
                                                     <div class="truncate text-xs font-semibold text-gray-900 peer-checked:line-through">
@@ -218,11 +198,7 @@
                             <div>
                                 <label for="editFileInput"
                                        class="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 px-4 py-4 text-center hover:bg-gray-50 transition-all">
-                                    <svg class="h-7 w-7 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="17 8 12 3 7 8"/>
-                                        <line x1="12" y1="3" x2="12" y2="15"/>
-                                    </svg>
+                                    <i data-lucide="upload" class="h-7 w-7 text-gray-400"></i>
                                     <p class="text-[13px] font-semibold text-gray-700">Attach new files</p>
                                 </label>
 
@@ -230,10 +206,7 @@
                                     <template x-for="(file, i) in newFiles" :key="i">
                                         <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5">
                                             <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
-                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                    <path d="M14 2v6h6"/>
-                                                </svg>
+                                                <i data-lucide="file" class="h-4 w-4"></i>
                                             </div>
                                             <div class="min-w-0 flex-1">
                                                 <div class="truncate text-xs font-semibold text-gray-900" x-text="file.name"></div>
@@ -241,9 +214,7 @@
                                             </div>
                                             <button type="button" @click="newFiles.splice(i, 1)"
                                                     class="text-gray-400 hover:text-red-500 transition-colors">
-                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M18 6 6 18M6 6l12 12"/>
-                                                </svg>
+                                                <i data-lucide="x" class="h-4 w-4"></i>
                                             </button>
                                         </div>
                                     </template>
@@ -278,9 +249,7 @@
                     <footer class="flex items-center justify-end px-[18px] py-4 border-t border-gray-100">
                         <button type="submit"
                                 class="flex items-center gap-1.5 rounded-lg bg-green-600 px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-green-700 active:scale-95 shadow-sm">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 6 9 17l-5-5"/>
-                            </svg>
+                            <i data-lucide="check" class="h-4 w-4"></i>
                             Save Changes
                         </button>
                     </footer>

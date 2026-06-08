@@ -30,9 +30,7 @@
                                     @click="open = false"
                                     class="absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
                                     aria-label="Close">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                                <i data-lucide="x" class="h-5 w-5"></i>
                             </button>
                         </div>
                     @else
@@ -57,10 +55,7 @@
                         @if ($isOwnProfile)
                             <a href="{{ route('profile.edit') }}"
                                class="shrink-0 flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95">
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
+                                <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
                                 Edit Profile
                             </a>
                         @else
@@ -170,9 +165,7 @@
             @if ($posts->isEmpty())
                 <div class="flex flex-col items-center justify-center py-20 text-center">
                     <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                        <svg class="h-7 w-7 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                            <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-                        </svg>
+                        <i data-lucide="message-circle" class="h-7 w-7 text-gray-400"></i>
                     </div>
                     <p class="text-sm font-semibold text-gray-400">
                         {{ $tab === 'liked' ? 'No liked posts yet' : 'No posts yet' }}
@@ -227,7 +220,7 @@
                         fetchPage(currentPage),
                         sleep(1000)
                     ]);
-                    container.insertAdjacentHTML('beforeend', data.html);
+                    window.appendWithIcons(container, data.html);
                     success = true;
 
                     if (!data.next_page_url) {
@@ -280,7 +273,7 @@
                 for (let page = 2; page <= savedPage; page++) {
                     try {
                         const data = await fetchPage(page);
-                        container.insertAdjacentHTML('beforeend', data.html);
+                        window.appendWithIcons(container, data.html);
                         currentPage = page;
                         if (!data.next_page_url) {
                             hasMore = false;

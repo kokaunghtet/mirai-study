@@ -40,11 +40,7 @@
                     <div>
                         <label for="profile_image_input"
                                class="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                             Upload Photo
                         </label>
                         <input id="profile_image_input"
