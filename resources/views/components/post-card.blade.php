@@ -1,6 +1,7 @@
 @props(['post'])
 
-<article x-data
+<article x-data="{ commentsCount: {{ $post->comments_count }} }"
+    @comments-updated.window="if ($event.detail.postId === {{ $post->id }}) commentsCount = $event.detail.count"
     @dblclick="if (!$event.target.closest('a,button,input,textarea,video,form,[data-no-nav]')) window.location='{{ route('posts.show', $post) }}'"
     class="relative rounded-2xl bg-white border border-gray-200 shadow-sm">
 
@@ -298,13 +299,19 @@
                 </button>
             @endauth
 
-            {{-- Comment --}}
+            {{-- Comment — opens the side drawer; falls back to the post page without JS --}}
             <a href="{{ route('posts.show', $post) }}#comments"
+               data-no-nav
+               @click.prevent="$dispatch('open-comments', {
+                    id: {{ $post->id }},
+                    url: '{{ route('comments.index', $post) }}',
+                    title: @js($post->title ?: $post->user->display_name . "'s post")
+               })"
                class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
                     <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12z"/>
                 </svg>
-                <span class="text-xs font-semibold">{{ $post->comments_count }}</span>
+                <span class="text-xs font-semibold" x-text="commentsCount">{{ $post->comments_count }}</span>
             </a>
         </div>
 

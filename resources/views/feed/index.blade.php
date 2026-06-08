@@ -35,7 +35,53 @@
         </div>
 
         {{-- Sidebar --}}
-        <aside class="space-y-4">
+        <aside class="space-y-4"
+               x-data="commentDrawer()"
+               x-on:open-comments.window="open($event.detail)">
+
+            {{-- ─────────────────────────────────────────────────────
+                 Comment box — appears at the top of the sidebar when
+                 a post's comment button is clicked. Slides in from the
+                 right; no backdrop, the feed stays fully visible.
+
+                 It stays in-flow in the sidebar column and grows along
+                 with the content area when the nav sidebar is collapsed
+                 (see <main> max-width in layouts/app.blade.php), so the
+                 whole layout widens in one continuous, synced motion.
+            ───────────────────────────────────────────────────────── --}}
+            <div x-show="isOpen"
+                 x-cloak
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-x-6"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-x-0"
+                 x-transition:leave-end="opacity-0 translate-x-6"
+                 class="sticky top-4 z-30 flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
+                    <h3 class="truncate pr-3 font-semibold text-gray-900" x-text="title">Comments</h3>
+                    <button type="button" @click="close()"
+                            class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                            title="Close">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6 6 18"/>
+                            <path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Body --}}
+                <div class="flex-1 overflow-y-auto px-5 py-4">
+                    <div x-show="loading" class="py-10 text-center text-sm text-gray-400">
+                        Loading comments…
+                    </div>
+                    {{-- Comments markup is injected here --}}
+                    <div x-ref="content" x-show="!loading"></div>
+                </div>
+            </div>
+
             @guest
                 <div class="bg-white border border-gray-200 rounded-xl p-5">
                     <h3 class="font-semibold text-gray-900 mb-2">Join MiraiStudy</h3>
@@ -62,6 +108,96 @@
     </div>
 
     @push('scripts')
+    <script>
+        function commentDrawer() {
+            return {
+                isOpen: false,
+                loading: false,
+                title: 'Comments',
+                url: null,
+                postId: null,
+
+                async open({ url, title, id }) {
+                    this.url     = url;
+                    this.title   = title || 'Comments';
+                    this.postId  = id ?? null;
+                    this.isOpen  = true;
+                    this.loading = true;
+                    await this.load();
+                },
+
+                close() {
+                    this.isOpen = false;
+                },
+
+                // Read the comment count baked into the partial and tell the
+                // matching post card to refresh its badge.
+                syncCount() {
+                    const root = this.$refs.content.querySelector('[data-comments-root]');
+                    if (!root || this.postId === null) return;
+                    window.dispatchEvent(new CustomEvent('comments-updated', {
+                        detail: { postId: this.postId, count: Number(root.dataset.count) }
+                    }));
+                },
+
+                async load() {
+                    this.loading = true;
+                    try {
+                        const res = await fetch(this.url, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        this.$refs.content.innerHTML = await res.text();
+                        this.syncCount();
+                    } catch (err) {
+                        console.error('Failed to load comments:', err);
+                        this.$refs.content.innerHTML =
+                            '<p class="py-10 text-center text-sm text-gray-400">Could not load comments. Please try again.</p>';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // Intercept comment / reply / delete form submits inside the
+                // drawer so they post via AJAX and refresh in place.
+                init() {
+                    const token = document.querySelector('meta[name=csrf-token]')?.content;
+
+                    this.$refs.content.addEventListener('submit', async (e) => {
+                        const form = e.target.closest('form');
+                        if (!form) return;
+
+                        // A delete form's inline confirm() may have already
+                        // cancelled the submit — respect that and bail.
+                        if (e.defaultPrevented) return;
+
+                        e.preventDefault();
+
+                        const submitBtn = form.querySelector('[type=submit]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        try {
+                            const res = await fetch(form.action, {
+                                method: 'POST', // _method spoofing handles DELETE
+                                body: new FormData(form),
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': token,
+                                    'Accept': 'text/html',
+                                }
+                            });
+                            if (!res.ok) throw new Error('HTTP ' + res.status);
+                            this.$refs.content.innerHTML = await res.text();
+                            this.syncCount();
+                        } catch (err) {
+                            console.error('Comment action failed:', err);
+                            if (submitBtn) submitBtn.disabled = false;
+                        }
+                    });
+                },
+            };
+        }
+    </script>
     <script>
         (function () {
             const container = document.getElementById('posts-container');

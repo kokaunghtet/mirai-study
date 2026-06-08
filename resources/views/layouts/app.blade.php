@@ -65,23 +65,16 @@
          Sidebar
     ═══════════════════════════════════════════════ --}}
     <aside :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'w-16' : 'w-64']"
-           class="fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-200 ease-in-out lg:translate-x-0">
+           class="fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
 
         {{-- Logo --}}
-        <div class="h-16 flex items-center border-b border-gray-100 shrink-0 px-4 gap-2">
+        <div class="h-16 flex justify-between items-center border-b border-gray-100 shrink-0 px-4 gap-2">
             {{-- Logo link — hidden when collapsed --}}
-            <a href="{{ route('feed.index') }}"
-               x-show="!sidebarCollapsed"
-               class="flex items-center gap-2.5 flex-1 min-w-0"
-               @click="sidebarOpen = false">
-                <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                    </svg>
-                </div>
-                <span class="font-bold text-lg text-gray-900 whitespace-nowrap">MiraiStudy</span>
-            </a>
+            <div>
+                <a href="{{ route('feed.index') }}" x-show="!sidebarCollapsed" class="flex items-center gap-2.5 flex-1 min-w-0" @click="sidebarOpen = false">
+                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                </a>
+            </div>
 
             {{-- Collapse / expand toggle — desktop only --}}
             <button @click="toggleCollapse()"
@@ -238,14 +231,14 @@
                             </svg>
                             My Profile
                         </a>
-                        <a href="#"
+                        <a href="{{ route('profile.edit') }}"
                            @click="sidebarOpen = false; userMenu = false"
-                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('profile.edit') ? 'bg-gray-50' : '' }}">
                             <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                 <circle cx="12" cy="12" r="3"/>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                             </svg>
-                            Settings
+                            Edit Profile
                         </a>
                         <hr class="my-1 border-gray-100">
                         <form method="POST" action="{{ route('logout') }}">
@@ -293,7 +286,7 @@
     {{-- ═══════════════════════════════════════════════
          Main Content Area
     ═══════════════════════════════════════════════ --}}
-    <div class="min-h-screen pt-14 lg:pt-0 transition-all duration-200" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
+    <div class="min-h-screen pt-14 lg:pt-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
 
         {{-- Flash Messages --}}
         @if (session('success'))
@@ -312,8 +305,10 @@
             </div>
         @endif
 
-        {{-- Page Content --}}
-        <main class="max-w-6xl mx-auto px-4 py-8">
+        {{-- Page Content — widens to use the freed space when the nav
+             sidebar is collapsed; animates in step with the nav (200ms). --}}
+        <main class="mx-auto py-8 transition-[max-width] duration-200 ease-in-out"
+              :class="sidebarCollapsed ? 'max-w-7xl' : 'max-w-6xl'">
             {{ $slot }}
         </main>
     </div>

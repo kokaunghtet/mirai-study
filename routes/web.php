@@ -105,6 +105,9 @@ Route::middleware('auth')->group(function () {
 // -------------------------------------------------------
 // Public wildcard routes — MUST come after all static /posts/* routes
 // -------------------------------------------------------
+// Comments partial for the feed drawer (loaded via AJAX) — public, like the show page
+Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
+
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
 // -------------------------------------------------------
