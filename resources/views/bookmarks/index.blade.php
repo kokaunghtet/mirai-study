@@ -6,8 +6,8 @@
 
             {{-- Header --}}
             <div class="mb-5"> 
-                <h1 class="text-xl font-bold text-gray-900">Bookmarks</h1>
-                <p class="text-sm text-gray-400 mt-0.5">Posts you've saved for later</p>
+                <h1 class="text-xl font-bold text-content">Bookmarks</h1>
+                <p class="text-sm text-muted mt-0.5">Posts you've saved for later</p>
             </div>
 
             {{-- Posts --}}
@@ -16,13 +16,13 @@
 
                 @if ($posts->isEmpty())
                     <div class="flex flex-col items-center justify-center py-20 text-center">
-                        <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                            <i data-lucide="bookmark" class="h-7 w-7 text-gray-400"></i>
+                        <div class="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center mb-4">
+                            <i data-lucide="bookmark" class="h-7 w-7 text-muted"></i>
                         </div>
-                        <p class="text-sm font-semibold text-gray-500">No bookmarks yet</p>
-                        <p class="text-xs text-gray-400 mt-1">Posts you bookmark will appear here.</p>
+                        <p class="text-sm font-semibold text-muted">No bookmarks yet</p>
+                        <p class="text-xs text-muted mt-1">Posts you bookmark will appear here.</p>
                         <a href="{{ route('feed.index') }}"
-                        class="mt-4 text-sm font-semibold text-green-600 hover:underline">
+                        class="mt-4 text-sm font-semibold text-accent hover:underline">
                             Browse the feed →
                         </a>
                     </div>

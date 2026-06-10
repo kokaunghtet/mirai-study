@@ -8,17 +8,17 @@
         {{-- Header --}}
         <div class="flex items-center gap-3 mb-5">
             <a href="{{ route('profile.show', $user->username) }}"
-               class="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+               class="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface-muted transition-colors">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </a>
             <div>
-                <h1 class="text-lg font-bold text-gray-900">Followers</h1>
-                <p class="text-xs text-gray-400"><span x-text="followersCount.toLocaleString()"></span> people follow {{ $user->display_name }}</p>
+                <h1 class="text-lg font-bold text-content">Followers</h1>
+                <p class="text-xs text-muted"><span x-text="followersCount.toLocaleString()"></span> people follow {{ $user->display_name }}</p>
             </div>
         </div>
 
         {{-- List --}}
-        <div class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+        <div class="bg-surface rounded-2xl border border-line divide-y divide-line overflow-hidden">
             @foreach ($followers as $follower)
                 <div class="follower-row flex items-center justify-between px-4 py-3.5">
                     <a href="{{ route('profile.show', $follower->username) }}"
@@ -29,15 +29,15 @@
                                  loading="lazy"
                                  class="w-10 h-10 rounded-full object-cover shrink-0">
                         @else
-                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0">
                                 {{ strtoupper(substr($follower->display_name, 0, 1)) }}
                             </div>
                         @endif
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold text-gray-900 truncate">
+                            <div class="text-sm font-semibold text-content truncate">
                                 {{ $follower->display_name }}
                             </div>
-                            <div class="text-xs text-gray-400 truncate">{{'@'.$follower->username }}</div>
+                            <div class="text-xs text-muted truncate">{{'@'.$follower->username }}</div>
                         </div>
                     </a>
 
@@ -86,7 +86,7 @@
             @endforeach
 
             <div x-show="remaining === 0" x-cloak class="flex flex-col items-center justify-center py-16 text-center">
-                <p class="text-sm font-semibold text-gray-400">No followers yet</p>
+                <p class="text-sm font-semibold text-muted">No followers yet</p>
             </div>
         </div>
 

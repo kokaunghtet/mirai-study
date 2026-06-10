@@ -2,7 +2,7 @@
 
     <!-- Back button to go back to feed page -->
     <a href="{{ route('feed.index') }}"
-       class="mb-5 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-600 shadow-sm transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200 active:scale-95">
+       class="mb-5 inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">
         <i data-lucide="arrow-left" class="h-4 w-4"></i>
         Back
     </a>
@@ -15,20 +15,20 @@
         <div class="lg:col-span-2 space-y-6">
 
             {{-- Post --}}
-            <article class="bg-white border border-gray-200 rounded-xl p-6">
+            <article class="bg-surface border border-line rounded-xl p-6">
 
                 {{-- Author --}}
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
+                        <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold">
                             {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
                         </div>
                         <div>
                             <a href="{{ route('profile.show', $post->user->username) }}"
-                               class="font-semibold text-gray-900 hover:text-green-600">
+                               class="font-semibold text-content hover:text-accent">
                                 {{ $post->user->display_name }}
                             </a>
-                            <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
+                            <p class="text-xs text-muted">{{ $post->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
 
@@ -37,12 +37,12 @@
                         @if (auth()->id() === $post->user_id)
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('posts.edit', $post) }}"
-                                    class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200 active:scale-95">Edit</a>
+                                    class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">Edit</a>
                                 <form method="POST" action="{{ route('posts.destroy', $post) }}"
                                       onsubmit="return confirm('Delete this post?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-500 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 active:scale-95">
+                                    <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-red-500 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 active:scale-95">
                                         Delete
                                     </button>
                                 </form>
@@ -53,11 +53,11 @@
 
                 {{-- Title --}}
                 @if ($post->title)
-                    <h1 class="text-2xl font-bold text-gray-900 mb-3">{{ $post->title }}</h1>
+                    <h1 class="text-2xl font-bold text-content mb-3">{{ $post->title }}</h1>
                 @endif
 
                 {{-- Content --}}
-                <div class="text-gray-700 leading-relaxed">
+                <div class="text-content leading-relaxed">
                     {{ $post->content }}
                 </div>
 
@@ -102,7 +102,7 @@
                             <div class="flex justify-center gap-1.5 py-2">
                                 @foreach ($mediaItems->values() as $i => $item)
                                     <button type="button" @click="idx = {{ $i }}"
-                                            :class="idx === {{ $i }} ? 'bg-green-500' : 'bg-gray-300'"
+                                            :class="idx === {{ $i }} ? 'bg-accent' : 'bg-gray-300'"
                                             class="h-1.5 w-1.5 rounded-full transition-colors">
                                     </button>
                                 @endforeach
@@ -117,21 +117,21 @@
                     <div class="flex flex-col gap-2 px-4 pb-3">
                         @foreach ($fileItems as $file)
                             <a href="{{ $file->url }}" target="_blank"
-                            class="flex items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 hover:bg-gray-50 transition-colors">
-                                <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
+                            class="flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 hover:bg-surface-muted transition-colors">
+                                <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">
                                     <i data-lucide="file" class="h-4 w-4"></i>
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <div class="truncate text-xs font-semibold text-gray-900">
+                                    <div class="truncate text-xs font-semibold text-content">
                                         {{ $file->filename ?? basename($file->url) }}
                                     </div>
                                     @if ($file->filesize)
-                                        <div class="text-[11px] text-gray-400">
+                                        <div class="text-[11px] text-muted">
                                             {{ max(1, round($file->filesize / 1024)) }} KB
                                         </div>
                                     @endif
                                 </div>
-                                <i data-lucide="upload" class="h-4 w-4 text-gray-400 shrink-0"></i>
+                                <i data-lucide="upload" class="h-4 w-4 text-muted shrink-0"></i>
                             </a>
                         @endforeach
                     </div>
@@ -141,7 +141,7 @@
                 @if ($post->tags->isNotEmpty())
                     <div class="flex flex-wrap gap-2 my-4">
                         @foreach ($post->tags as $tag)
-                            <span class="text-xs bg-green-50 text-green-600 px-2.5 py-1 rounded-full">
+                            <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-full">
                                 {{ $tag->name }}
                             </span>
                         @endforeach
@@ -149,7 +149,7 @@
                 @endif
 
                 {{-- Footer: Actions --}}
-                <div class="flex items-center justify-between px-3.5 pt-3 border-t border-gray-100">
+                <div class="flex items-center justify-between px-3.5 pt-3 border-t border-line">
 
                     {{-- Left: Like + Comment --}}
                     <div class="flex items-center gap-1">
@@ -160,7 +160,7 @@
                             <form method="POST" action="{{ route('posts.like', $post) }}">
                                 @csrf
                                 <button type="submit"
-                                        class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-green-600' : 'text-gray-500' }} hover:bg-gray-100 hover:text-green-600 transition-all">
+                                        class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-accent' : 'text-muted' }} hover:bg-surface-muted hover:text-accent transition-all">
                                     <i data-lucide="thumbs-up" class="h-[18px] w-[18px]"
                                         fill="{{ $liked ? 'currentColor' : 'none' }}"></i>
                                     <span class="text-xs font-semibold">{{ $post->likes_count }}</span>
@@ -169,7 +169,7 @@
                         @else
                             <button type="button"
                                     onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                                    class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
+                                    class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
                                 <i data-lucide="thumbs-up" class="h-[18px] w-[18px]"></i>
                                 <span class="text-xs font-semibold">{{ $post->likes_count }}</span>
                             </button>
@@ -177,7 +177,7 @@
 
                         {{-- Comment --}}
                         <a href="{{ route('posts.show', $post) }}#comments"
-                        class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
+                        class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
                             <i data-lucide="message-circle" class="h-[18px] w-[18px]"></i>
                             <span class="text-xs font-semibold">{{ $post->comments_count }}</span>
                         </a>
@@ -193,7 +193,7 @@
                                 @csrf
                                 <button type="submit"
                                         title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"
-                                        class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-green-600' : 'text-gray-500 hover:bg-gray-100 hover:text-green-600' }}">
+                                        class="rounded-lg px-2.5 py-1.5 transition-all {{ $isBookmarked ? 'text-accent' : 'text-muted hover:bg-surface-muted hover:text-accent' }}">
                                     <i data-lucide="bookmark" class="h-[18px] w-[18px]"
                                         fill="{{ $isBookmarked ? 'currentColor' : 'none' }}"></i>
                                 </button>
@@ -201,7 +201,7 @@
                         @else
                             <button type="button"
                                     onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                                    class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all">
+                                    class="rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
                                 <i data-lucide="bookmark" class="h-[18px] w-[18px]"></i>
                             </button>
                         @endauth
@@ -214,10 +214,10 @@
                                         copied = true;
                                         setTimeout(() => copied = false, 2000)
                                     "
-                                    class="rounded-lg px-2.5 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all"
+                                    class="rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all"
                                     :title="copied ? 'Link copied!' : 'Copy link'">
                                 <i data-lucide="send" x-show="!copied" class="h-[18px] w-[18px]"></i>
-                                <i data-lucide="check" x-show="copied" class="h-[18px] w-[18px] text-green-600"></i>
+                                <i data-lucide="check" x-show="copied" class="h-[18px] w-[18px] text-accent"></i>
                             </button>
                         </div>
 
@@ -226,22 +226,22 @@
             </article>
 
             {{-- Comments Section --}}
-            <section id="comments" class="bg-white border border-gray-200 rounded-xl p-6">
+            <section id="comments" class="bg-surface border border-line rounded-xl p-6">
                 @include('feed._comments', ['post' => $post])
             </section>
         </div>
 
         {{-- Sidebar --}}
         <aside class="space-y-4">
-            <div class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="font-semibold text-gray-900 mb-1">
+            <div class="bg-surface border border-line rounded-xl p-5">
+                <h3 class="font-semibold text-content mb-1">
                     {{ $post->user->display_name }}
                 </h3>
-                <p class="text-sm text-gray-500 mb-3">
+                <p class="text-sm text-muted mb-3">
                     {{ $post->user->bio ?? 'No bio yet.' }}
                 </p>
                 <a href="{{ route('profile.show', $post->user->username) }}"
-                   class="text-sm text-green-600 hover:underline">
+                   class="text-sm text-accent hover:underline">
                     View Profile →
                 </a>
             </div>

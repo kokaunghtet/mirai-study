@@ -3,25 +3,25 @@
 
     <div class="flex justify-center px-4 py-6">
         <div class="w-full max-w-[560px]">
-            <div class="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+            <div class="rounded-2xl bg-surface border border-line shadow-sm overflow-hidden">
 
                 {{-- Header --}}
-                <header class="flex items-center justify-between px-[18px] py-4 border-b border-gray-100">
-                    <h2 class="text-[15px] font-bold text-gray-900">Edit post</h2>
+                <header class="flex items-center justify-between px-[18px] py-4 border-b border-line">
+                    <h2 class="text-[15px] font-bold text-content">Edit post</h2>
                     <a href="{{ route('posts.show', $post) }}"
-                       class="grid h-8 w-8 place-items-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors">
+                       class="grid h-8 w-8 place-items-center rounded-full text-muted hover:bg-surface-muted transition-colors">
                         <i data-lucide="x" class="h-4 w-4"></i>
                     </a>
                 </header>
 
                 {{-- Author --}}
                 <section class="flex items-center gap-2.5 px-[18px] py-3.5">
-                    <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-green-100 text-[15px] font-bold text-green-600">
+                    <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/15 text-[15px] font-bold text-accent">
                         {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
                     </div>
                     <div>
-                        <div class="text-sm font-bold text-gray-900">{{ auth()->user()->display_name }}</div>
-                        <p class="text-[11px] text-gray-400">Public post</p>
+                        <div class="text-sm font-bold text-content">{{ auth()->user()->display_name }}</div>
+                        <p class="text-[11px] text-muted">Public post</p>
                     </div>
                 </section>
 
@@ -35,24 +35,24 @@
                     <nav class="flex gap-1 px-[18px] pb-3">
                         <button type="button" @click="setTab('text')"
                                 :class="tab === 'text'
-                                    ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
-                                    : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
+                                    ? 'bg-surface text-content font-bold border-line shadow-sm'
+                                    : 'bg-transparent text-muted border-transparent hover:bg-surface-muted'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
                             <i data-lucide="align-left" class="h-3.5 w-3.5"></i>
                             Text
                         </button>
                         <button type="button" @click="setTab('media')"
                                 :class="tab === 'media'
-                                    ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
-                                    : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
+                                    ? 'bg-surface text-content font-bold border-line shadow-sm'
+                                    : 'bg-transparent text-muted border-transparent hover:bg-surface-muted'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
                             <i data-lucide="image" class="h-3.5 w-3.5"></i>
                             Media
                         </button>
                         <button type="button" @click="setTab('file')"
                                 :class="tab === 'file'
-                                    ? 'bg-white text-gray-900 font-bold border-gray-200 shadow-sm'
-                                    : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-50'"
+                                    ? 'bg-surface text-content font-bold border-line shadow-sm'
+                                    : 'bg-transparent text-muted border-transparent hover:bg-surface-muted'"
                                 class="flex flex-1 items-center justify-center gap-1 rounded-lg border px-1 py-2 text-xs transition-colors">
                             <i data-lucide="file" class="h-3.5 w-3.5"></i>
                             File
@@ -64,7 +64,7 @@
                         {{-- Text --}}
                         <textarea name="content" rows="4"
                                   placeholder="What's on your mind?"
-                                  class="min-h-[90px] w-full resize-none rounded-xl bg-gray-50 px-3.5 py-3 text-sm leading-6 text-gray-900 border border-gray-200 outline-none placeholder:text-gray-400 focus:border-green-400 transition-colors"
+                                  class="min-h-[90px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
                                   required>{{ old('content', $post->content) }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -86,7 +86,7 @@
                             @php $existingMedia = $post->media->where('type', 'image'); @endphp
                             @if ($existingMedia->isNotEmpty())
                                 <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                                    <p class="text-[11px] font-semibold text-muted mb-2 uppercase tracking-wide">
                                         Existing images — click to remove
                                     </p>
                                     <div class="grid grid-cols-3 gap-2">
@@ -113,14 +113,14 @@
                             <div>
                                 <div x-show="newMediaPreviews.length === 0">
                                     <label for="editMediaInput"
-                                           class="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 px-4 py-4 text-center hover:bg-gray-50 transition-all">
-                                        <i data-lucide="image" class="h-7 w-7 text-gray-400"></i>
-                                        <p class="text-[13px] font-semibold text-gray-700">Add more photos</p>
+                                           class="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-line px-4 py-4 text-center hover:bg-surface-muted transition-all">
+                                        <i data-lucide="image" class="h-7 w-7 text-muted"></i>
+                                        <p class="text-[13px] font-semibold text-content">Add more photos</p>
                                     </label>
                                 </div>
 
                                 <div x-show="newMediaPreviews.length > 0">
-                                    <p class="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                                    <p class="text-[11px] font-semibold text-muted mb-2 uppercase tracking-wide">
                                         New images to add
                                     </p>
                                     <div class="relative aspect-video overflow-hidden rounded-xl bg-black">
@@ -164,25 +164,25 @@
                             @php $existingFiles = $post->media->where('type', 'document'); @endphp
                             @if ($existingFiles->isNotEmpty())
                                 <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                                    <p class="text-[11px] font-semibold text-muted mb-2 uppercase tracking-wide">
                                         Existing files — click to remove
                                     </p>
                                     <div class="flex flex-col gap-1.5">
                                         @foreach ($existingFiles as $file)
-                                            <label class="flex items-center gap-2.5 rounded-lg border border-gray-200 px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors peer-checked:border-red-300">
+                                            <label class="flex items-center gap-2.5 rounded-lg border border-line px-3 py-2.5 cursor-pointer hover:bg-surface-muted transition-colors peer-checked:border-red-300">
                                                 <input type="checkbox"
                                                        name="remove_media[]"
                                                        value="{{ $file->id }}"
-                                                       class="peer rounded text-red-500 border-gray-300">
-                                                <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
+                                                       class="peer rounded text-red-500 border-line">
+                                                <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">
                                                     <i data-lucide="file" class="h-4 w-4"></i>
                                                 </div>
                                                 <div class="min-w-0 flex-1">
-                                                    <div class="truncate text-xs font-semibold text-gray-900 peer-checked:line-through">
+                                                    <div class="truncate text-xs font-semibold text-content peer-checked:line-through">
                                                         {{ $file->filename ?? basename($file->url) }}
                                                     </div>
                                                     @if ($file->filesize)
-                                                        <div class="text-[11px] text-gray-400">
+                                                        <div class="text-[11px] text-muted">
                                                             {{ max(1, round($file->filesize / 1024)) }} KB
                                                         </div>
                                                     @endif
@@ -197,23 +197,23 @@
                             {{-- New file upload --}}
                             <div>
                                 <label for="editFileInput"
-                                       class="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 px-4 py-4 text-center hover:bg-gray-50 transition-all">
-                                    <i data-lucide="upload" class="h-7 w-7 text-gray-400"></i>
-                                    <p class="text-[13px] font-semibold text-gray-700">Attach new files</p>
+                                       class="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed border-line px-4 py-4 text-center hover:bg-surface-muted transition-all">
+                                    <i data-lucide="upload" class="h-7 w-7 text-muted"></i>
+                                    <p class="text-[13px] font-semibold text-content">Attach new files</p>
                                 </label>
 
                                 <div class="mt-2.5 flex flex-col gap-1.5">
                                     <template x-for="(file, i) in newFiles" :key="i">
-                                        <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5">
-                                            <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-green-100 text-green-600">
+                                        <div class="flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5">
+                                            <div class="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">
                                                 <i data-lucide="file" class="h-4 w-4"></i>
                                             </div>
                                             <div class="min-w-0 flex-1">
-                                                <div class="truncate text-xs font-semibold text-gray-900" x-text="file.name"></div>
-                                                <div class="text-[11px] text-gray-400" x-text="formatSize(file.size)"></div>
+                                                <div class="truncate text-xs font-semibold text-content" x-text="file.name"></div>
+                                                <div class="text-[11px] text-muted" x-text="formatSize(file.size)"></div>
                                             </div>
                                             <button type="button" @click="newFiles.splice(i, 1)"
-                                                    class="text-gray-400 hover:text-red-500 transition-colors">
+                                                    class="text-muted hover:text-red-500 transition-colors">
                                                 <i data-lucide="x" class="h-4 w-4"></i>
                                             </button>
                                         </div>
@@ -228,7 +228,7 @@
                         <input type="text" name="title"
                                value="{{ old('title', $post->title) }}"
                                placeholder="Add a title (optional)"
-                               class="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-300 border-b border-gray-100 pb-1 focus:border-green-300 transition-colors">
+                               class="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted border-b border-line pb-1 focus:border-accent transition-colors">
                     </div>
 
                     {{-- Tags --}}
@@ -238,17 +238,17 @@
                                 <label class="flex items-center gap-1.5 cursor-pointer">
                                     <input type="checkbox" name="tags[]" value="{{ $tag->id }}"
                                            {{ $post->tags->contains($tag->id) ? 'checked' : '' }}
-                                           class="rounded text-green-600 border-gray-300">
-                                    <span class="text-xs text-gray-600">{{ $tag->name }}</span>
+                                           class="rounded text-accent border-line">
+                                    <span class="text-xs text-muted">{{ $tag->name }}</span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
 
                     {{-- Submit --}}
-                    <footer class="flex items-center justify-end px-[18px] py-4 border-t border-gray-100">
+                    <footer class="flex items-center justify-end px-[18px] py-4 border-t border-line">
                         <button type="submit"
-                                class="flex items-center gap-1.5 rounded-lg bg-green-600 px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-green-700 active:scale-95 shadow-sm">
+                                class="flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-accent-strong active:scale-95 shadow-sm">
                             <i data-lucide="check" class="h-4 w-4"></i>
                             Save Changes
                         </button>

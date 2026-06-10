@@ -1,7 +1,7 @@
 {{-- _comments.blade.php — reusable comments section for a single $post.
      Used by feed/show.blade.php (full page) and the feed comment drawer (AJAX). --}}
 <div data-comments-root data-count="{{ $post->comments_count }}">
-    <h2 class="font-semibold text-gray-900 mb-5">
+    <h2 class="font-semibold text-content mb-5">
         Comments ({{ $post->comments_count }})
     </h2>
 
@@ -11,20 +11,20 @@
             @csrf
             <textarea name="content" rows="2"
                       placeholder="Write a comment..."
-                      class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-300"
+                      class="w-full border border-line rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent/40"
                       required>{{ old('content') }}</textarea>
             @error('content')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
             <button type="submit"
-                    class="mt-2 bg-green-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-green-700">
+                    class="mt-2 bg-accent text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-accent-strong">
                 Post Comment
             </button>
         </form>
     @else
-        <div class="mb-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-500 text-center">
+        <div class="mb-6 p-4 bg-surface-muted rounded-lg text-sm text-muted text-center">
             <button onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                    class="text-green-600 font-medium hover:underline">
+                    class="text-accent font-medium hover:underline">
                 Log in
             </button>
             to join the conversation.
@@ -35,26 +35,26 @@
     <div class="space-y-5">
         @forelse ($post->comments as $comment)
             <div class="flex gap-3">
-                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
+                <div class="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0">
                 @if ($comment->user->profile_image)
                     <img src="{{ $comment->user->profile_image }}"
                         alt="{{ $comment->user->display_name }}"
                         loading="lazy"
                         class="h-full w-full rounded-full object-cover">
                 @else
-                    <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                    <div class="grid h-full w-full place-items-center rounded-full bg-accent/15 text-sm font-bold text-accent">
                         {{ strtoupper(substr($comment->user->display_name, 0, 1)) }}
                     </div>
                 @endif
             </div>
                 <div class="flex-1">
-                    <div class="bg-gray-50 rounded-lg px-4 py-3">
+                    <div class="bg-surface-muted rounded-lg px-4 py-3">
                         <div class="flex items-center justify-between mb-1">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-semibold text-gray-900">
+                                <span class="text-sm font-semibold text-content">
                                     {{ $comment->user->display_name }}
                                 </span>
-                                <span class="text-xs text-gray-400">
+                                <span class="text-xs text-muted">
                                     {{ $comment->created_at->diffForHumans() }}
                                 </span>
                             </div>
@@ -68,7 +68,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                class="text-gray-400 hover:text-red-500 transition-colors"
+                                                class="text-muted hover:text-red-500 transition-colors"
                                                 title="Delete comment">
                                             <i data-lucide="trash" class="h-4 w-4"></i>
                                         </button>
@@ -76,33 +76,33 @@
                                 @endif
                             @endauth
                         </div>
-                        <p class="text-sm text-gray-700">{{ $comment->content }}</p>
+                        <p class="text-sm text-content">{{ $comment->content }}</p>
                     </div>
 
                     {{-- Replies --}}
                     @if ($comment->replies->isNotEmpty())
-                        <div class="mt-3 space-y-3 pl-4 border-l-2 border-gray-100">
+                        <div class="mt-3 space-y-3 pl-4 border-l-2 border-line">
                             @foreach ($comment->replies as $reply)
                                 <div class="flex gap-2">
-                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm shrink-0">
+                                    <div class="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0">
                                         @if ($reply->user->profile_image)
                                             <img src="{{ $reply->user->profile_image }}"
                                                 alt="{{ $reply->user->display_name }}"
                                                 loading="lazy"
                                                 class="h-full w-full rounded-full object-cover">
                                         @else
-                                            <div class="grid h-full w-full place-items-center rounded-full bg-green-100 text-sm font-bold text-green-600">
+                                            <div class="grid h-full w-full place-items-center rounded-full bg-accent/15 text-sm font-bold text-accent">
                                                 {{ strtoupper(substr($reply->user->display_name, 0, 1)) }}
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="flex-1 bg-gray-50 rounded-lg px-3 py-2">
+                                    <div class="flex-1 bg-surface-muted rounded-lg px-3 py-2">
                                         <div class="flex items-center justify-between mb-0.5">
                                             <div class="flex items-center gap-2">
-                                                <span class="text-xs font-semibold text-gray-900">
+                                                <span class="text-xs font-semibold text-content">
                                                     {{ $reply->user->display_name }}
                                                 </span>
-                                                <span class="text-xs text-gray-400">
+                                                <span class="text-xs text-muted">
                                                     {{ $reply->created_at->diffForHumans() }}
                                                 </span>
                                             </div>
@@ -116,7 +116,7 @@
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
-                                                                class="text-gray-400 hover:text-red-500 transition-colors"
+                                                                class="text-muted hover:text-red-500 transition-colors"
                                                                 title="Delete reply">
                                                             <i data-lucide="trash" class="h-3.5 w-3.5"></i>
                                                         </button>
@@ -124,7 +124,7 @@
                                                 @endif
                                             @endauth
                                         </div>
-                                        <p class="text-xs text-gray-700">{{ $reply->content }}</p>
+                                        <p class="text-xs text-content">{{ $reply->content }}</p>
                                     </div>
                                 </div>
                             @endforeach
@@ -140,9 +140,9 @@
                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                             <input type="text" name="content"
                                    placeholder="Reply..."
-                                   class="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-300">
+                                   class="flex-1 border border-line rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-accent/40">
                             <button type="submit"
-                                    class="text-xs bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-700 px-3 py-1.5 rounded-lg transition">
+                                    class="text-xs bg-surface-muted hover:bg-accent/15 text-content hover:text-accent px-3 py-1.5 rounded-lg transition">
                                 Reply
                             </button>
                         </form>
@@ -150,7 +150,7 @@
                 </div>
             </div>
         @empty
-            <p class="text-sm text-gray-400 text-center py-4">
+            <p class="text-sm text-muted text-center py-4">
                 No comments yet. Be the first to comment.
             </p>
         @endforelse

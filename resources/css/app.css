@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ | Theme tokens
+ | ---------------------------------------------------------------
+ | Colors are stored as space-separated RGB channels so Tailwind's
+ | `<alpha-value>` opacity modifiers (e.g. bg-accent/10) keep working.
+ |
+ |  • Surfaces  -> swapped by light/dark mode  (.dark on <html>)
+ |  • Accent    -> swapped by the chosen theme ([data-theme] on <html>)
+ |
+ | Both attributes are rendered server-side in layouts/app.blade.php,
+ | and updated live by the Settings "Save Changes" button.
+*/
+@layer base {
+    :root {
+        /* Surfaces — light (default) */
+        --canvas:        249 250 251; /* gray-50  : page background */
+        --surface:       255 255 255; /* white    : cards, sidebar  */
+        --surface-muted: 243 244 246; /* gray-100 : insets, hovers  */
+        --content:        17  24  39; /* gray-900 : primary text    */
+        --muted:         107 114 128; /* gray-500 : secondary text  */
+        --line:          229 231 235; /* gray-200 : borders         */
+
+        /* Accent — default (venom); overridden per [data-theme] below */
+        --accent:         22 163  74;
+        --accent-strong:  22 101  52;
+        --accent-from:    22 163  74;
+        --accent-to:      22 101  52;
+    }
+
+    /* Surfaces — dark (neutral gray) */
+    .dark {
+        --canvas:         28  28  28; /* page background  */
+        --surface:        44  44  44; /* cards, sidebar   */
+        --surface-muted:  58  58  58; /* insets, hovers   */
+        --content:       235 235 235; /* primary text     */
+        --muted:         160 160 160; /* secondary text   */
+        --line:           64  64  64; /* borders          */
+    }
+
+    /* ── Accent palettes (match the picker gradients in Settings) ── */
+    [data-theme="venom"]    { --accent: 22 163 74;   --accent-strong: 22 101 52;   --accent-from: 22 163 74;   --accent-to: 22 101 52;  }
+    [data-theme="aurora"]   { --accent: 91 15 190;   --accent-strong: 74 12 153;   --accent-from: 0 212 255;   --accent-to: 91 15 190;  }
+    [data-theme="sangria"]  { --accent: 190 18 60;   --accent-strong: 159 18 57;   --accent-from: 190 18 60;   --accent-to: 76 5 25;    }
+    [data-theme="twilight"] { --accent: 124 58 237;  --accent-strong: 109 40 217;  --accent-from: 244 114 182; --accent-to: 124 58 237; }
+    [data-theme="inferno"]  { --accent: 234 88 12;   --accent-strong: 194 65 12;   --accent-from: 234 88 12;   --accent-to: 127 29 29;  }
+}

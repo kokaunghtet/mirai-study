@@ -4,10 +4,10 @@
     <div class="max-w-[560px] mx-auto space-y-5">
 
         {{-- Profile Info --}}
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-[15px] font-bold text-gray-900">Profile Information</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Update your display name, username, bio, and photo.</p>
+        <div class="bg-surface rounded-2xl border border-line overflow-hidden">
+            <div class="px-6 py-4 border-b border-line">
+                <h2 class="text-[15px] font-bold text-content">Profile Information</h2>
+                <p class="text-xs text-muted mt-0.5">Update your display name, username, bio, and photo.</p>
             </div>
 
             <form method="POST" action="{{ route('profile.update') }}"
@@ -22,15 +22,15 @@
                     <div class="relative shrink-0">
                         <template x-if="preview">
                             <img :src="preview"
-                                 class="w-16 h-16 rounded-full object-cover border-2 border-gray-100">
+                                 class="w-16 h-16 rounded-full object-cover border-2 border-line">
                         </template>
                         <template x-if="!preview">
                             @if ($user->profile_image)
                                 <img src="{{ $user->profile_image }}"
-                                     class="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+                                     class="w-16 h-16 rounded-full object-cover border-2 border-line"
                                      alt="">
                             @else
-                                <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-xl border-2 border-gray-100">
+                                <div class="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-xl border-2 border-line">
                                     {{ strtoupper(substr($user->display_name, 0, 1)) }}
                                 </div>
                             @endif
@@ -39,7 +39,7 @@
 
                     <div>
                         <label for="profile_image_input"
-                               class="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                               class="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-content hover:bg-surface-muted transition-colors">
                             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                             Upload Photo
                         </label>
@@ -47,18 +47,18 @@
                                type="file" name="profile_image"
                                accept="image/*" class="hidden"
                                @change="handlePreview($event)">
-                        <p class="text-[11px] text-gray-400 mt-1">JPG, PNG, GIF up to 5MB</p>
+                        <p class="text-[11px] text-muted mt-1">JPG, PNG, GIF up to 5MB</p>
                     </div>
                 </div>
 
                 {{-- Display Name --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
                         Display Name
                     </label>
                     <input type="text" name="display_name"
                            value="{{ old('display_name', $user->display_name) }}"
-                           class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-green-400 focus:bg-white transition-colors"
+                           class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors"
                            required>
                     @error('display_name')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -67,14 +67,14 @@
 
                 {{-- Username --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
                         Username
                     </label>
-                    <div class="flex items-center rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 focus-within:border-green-400 focus-within:bg-white transition-colors">
-                        <span class="text-sm text-gray-400 mr-1">@</span>
+                    <div class="flex items-center rounded-xl border border-line bg-surface-muted px-4 py-2.5 focus-within:border-accent focus-within:bg-surface transition-colors">
+                        <span class="text-sm text-muted mr-1">@</span>
                         <input type="text" name="username"
                                value="{{ old('username', $user->username) }}"
-                               class="flex-1 bg-transparent text-sm text-gray-900 outline-none"
+                               class="flex-1 bg-transparent text-sm text-content outline-none"
                                required>
                     </div>
                     @error('username')
@@ -84,12 +84,12 @@
 
                 {{-- Bio --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
                         Bio
                     </label>
                     <textarea name="bio" rows="3"
                               placeholder="Tell others about yourself..."
-                              class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 resize-none outline-none focus:border-green-400 focus:bg-white transition-colors">{{ old('bio', $user->bio) }}</textarea>
+                              class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content resize-none outline-none focus:border-accent focus:bg-surface transition-colors">{{ old('bio', $user->bio) }}</textarea>
                     @error('bio')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -97,17 +97,17 @@
 
                 {{-- Email (read-only) --}}
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-                        Email <span class="text-gray-300 font-normal normal-case">(read-only)</span>
+                    <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                        Email <span class="text-muted font-normal normal-case">(read-only)</span>
                     </label>
                     <input type="email" value="{{ $user->email }}"
-                           class="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-2.5 text-sm text-gray-400 cursor-not-allowed"
+                           class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-muted cursor-not-allowed"
                            disabled>
                 </div>
 
                 <div class="pt-1 flex justify-end">
                     <button type="submit"
-                            class="rounded-lg bg-green-600 px-5 py-2.5 text-[13px] font-bold text-white hover:bg-green-700 transition-all active:scale-95">
+                            class="rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95">
                         Save Changes
                     </button>
                 </div>
@@ -115,10 +115,10 @@
         </div>
 
         {{-- Privacy Settings --}}
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-[15px] font-bold text-gray-900">Privacy</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Control what others can see on your profile.</p>
+        <div class="bg-surface rounded-2xl border border-line overflow-hidden">
+            <div class="px-6 py-4 border-b border-line">
+                <h2 class="text-[15px] font-bold text-content">Privacy</h2>
+                <p class="text-xs text-muted mt-0.5">Control what others can see on your profile.</p>
             </div>
 
             <div class="px-6 py-5">
@@ -153,17 +153,17 @@
                        }"
                        @click.prevent="toggle()">
                     <div>
-                        <div class="text-sm font-semibold text-gray-900">Show liked posts</div>
-                        <div class="text-xs text-gray-400 mt-0.5">
+                        <div class="text-sm font-semibold text-content">Show liked posts</div>
+                        <div class="text-xs text-muted mt-0.5">
                             Others can see posts you've liked on your profile.
                         </div>
                     </div>
                     <div class="relative ml-4 shrink-0">
-                        <div :class="on ? 'bg-green-500' : 'bg-gray-200'"
+                        <div :class="on ? 'bg-accent' : 'bg-surface-muted'"
                              class="w-11 h-6 rounded-full transition-colors cursor-pointer"
                              :style="loading ? 'opacity:0.6' : ''">
                             <div :class="on ? 'translate-x-5' : 'translate-x-0.5'"
-                                 class="mt-0.5 ml-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform">
+                                 class="mt-0.5 ml-0.5 w-5 h-5 bg-surface rounded-full shadow transition-transform">
                             </div>
                         </div>
                     </div>
@@ -172,10 +172,10 @@
         </div>
 
         {{-- Delete Account --}}
-        <div class="bg-white rounded-2xl border border-red-100 overflow-hidden">
+        <div class="bg-surface rounded-2xl border border-red-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-red-100">
                 <h2 class="text-[15px] font-bold text-red-600">Delete Account</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Permanently delete your account and all data.</p>
+                <p class="text-xs text-muted mt-0.5">Permanently delete your account and all data.</p>
             </div>
 
             <div class="px-6 py-5" x-data="{ confirm: false }">
@@ -190,13 +190,13 @@
                     @csrf
                     @method('DELETE')
 
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-muted">
                         Enter your password to confirm deletion. This cannot be undone.
                     </p>
 
                     <input type="password" name="password"
                            placeholder="Your password"
-                           class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-red-400 transition-colors">
+                           class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm outline-none focus:border-red-400 transition-colors">
 
                     @if ($errors->userDeletion->has('password'))
                         <p class="text-red-500 text-xs">{{ $errors->userDeletion->first('password') }}</p>
@@ -208,7 +208,7 @@
                             Confirm Delete
                         </button>
                         <button type="button" @click="confirm = false"
-                                class="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                                class="rounded-lg border border-line px-4 py-2 text-[13px] font-semibold text-muted hover:bg-surface-muted transition-colors">
                             Cancel
                         </button>
                     </div>

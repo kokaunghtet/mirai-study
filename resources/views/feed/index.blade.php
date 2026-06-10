@@ -9,7 +9,7 @@
             {{-- Create Post Button --}}
             @auth
                 <a href="{{ route('posts.create') }}"
-                   class="block w-full text-center bg-gradient-to-tr from-mirai-lime to-mirai-dark text-white font-medium py-3 rounded-xl hover:bg-green-700 transition">
+                   class="block w-full text-center bg-gradient-to-tr from-accent-from to-accent-to text-white font-medium py-3 rounded-xl hover:bg-accent-strong transition">
                     + Create Post
                 </a>
             @endauth
@@ -18,10 +18,10 @@
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="flex-1">
                     <input type="text" id="filter-search" name="search" placeholder="Search posts, authors..." value="{{ request('search') }}"
-                           class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                           class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                 </div>
                 <div class="w-full sm:w-40 shrink-0">
-                    <select id="filter-tag" name="tag" class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                    <select id="filter-tag" name="tag" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                         <option value="">All Tags</option>
                         @foreach($tags as $tag)
                             <option value="{{ $tag->id }}" @selected(request('tag') == $tag->id)>{{ $tag->name }}</option>
@@ -29,13 +29,13 @@
                     </select>
                 </div>
                 <div class="w-full sm:w-40 shrink-0">
-                    <select id="filter-sort" name="sort" class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                    <select id="filter-sort" name="sort" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                         <option value="latest" @selected(request('sort') === 'latest')>Latest</option>
                         <option value="popular" @selected(request('sort') === 'popular')>Popular</option>
                     </select>
                 </div>
                 <div class="w-full sm:w-auto shrink-0">
-                    <button type="button" id="clear-filters" class="w-full sm:w-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl border border-gray-200 transition">
+                    <button type="button" id="clear-filters" class="w-full sm:w-auto px-4 py-2 bg-surface-muted hover:bg-surface-muted text-content text-sm font-medium rounded-xl border border-line transition">
                         Clear
                     </button>
                 </div>
@@ -47,8 +47,8 @@
 
                 @if ($posts->isEmpty())
                     <div class="flex flex-col items-center justify-center py-20 text-center">
-                        <p class="text-sm font-semibold text-gray-400">No posts yet</p>
-                        <p class="text-xs text-gray-400 mt-1">Be the first to share something.</p>
+                        <p class="text-sm font-semibold text-muted">No posts yet</p>
+                        <p class="text-xs text-muted mt-1">Be the first to share something.</p>
                     </div>
                 @endif
             </div>
@@ -84,13 +84,13 @@
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-x-0"
                  x-transition:leave-end="opacity-0 translate-x-6"
-                 class="sticky top-4 z-30 flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                 class="sticky top-4 z-30 flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-sm">
 
                 {{-- Header --}}
-                <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
-                    <h3 class="truncate pr-3 font-semibold text-gray-900" x-text="title">Comments</h3>
+                <div class="flex items-center justify-between border-b border-line px-5 py-3.5">
+                    <h3 class="truncate pr-3 font-semibold text-content" x-text="title">Comments</h3>
                     <button type="button" @click="close()"
-                            class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                            class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-muted hover:text-content transition-colors"
                             title="Close">
                         <i data-lucide="x" class="h-4 w-4"></i>
                     </button>
@@ -98,7 +98,7 @@
 
                 {{-- Body --}}
                 <div class="flex-1 overflow-y-auto px-5 py-4">
-                    <div x-show="loading" class="py-10 text-center text-sm text-gray-400">
+                    <div x-show="loading" class="py-10 text-center text-sm text-muted">
                         Loading comments…
                     </div>
                     {{-- Comments markup is injected here --}}
@@ -107,24 +107,24 @@
             </div>
 
             @guest
-                <div class="bg-white border border-gray-200 rounded-xl p-5">
-                    <h3 class="font-semibold text-gray-900 mb-2">Join MiraiStudy</h3>
-                    <p class="text-sm text-gray-500 mb-4">
+                <div class="bg-surface border border-line rounded-xl p-5">
+                    <h3 class="font-semibold text-content mb-2">Join MiraiStudy</h3>
+                    <p class="text-sm text-muted mb-4">
                         Connect with learners, share knowledge, and track your study progress.
                     </p>
                     <a href="{{ route('register') }}"
-                       class="block w-full text-center bg-green-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-green-700">
+                       class="block w-full text-center bg-accent text-white text-sm font-medium py-2.5 rounded-lg hover:bg-accent-strong">
                         Create Account
                     </a>
                 </div>
             @endguest
 
-            <div class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="font-semibold text-gray-900 mb-3">Quick Links</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                    <li><a href="{{ route('exams.index') }}" class="hover:text-green-600">Exam Papers</a></li>
-                    <li><a href="{{ route('quiz.index') }}" class="hover:text-green-600">Take a Quiz</a></li>
-                    <li><a href="{{ route('timer.index') }}" class="hover:text-green-600">Focus Timer</a></li>
+            <div class="bg-surface border border-line rounded-xl p-5">
+                <h3 class="font-semibold text-content mb-3">Quick Links</h3>
+                <ul class="space-y-2 text-sm text-muted">
+                    <li><a href="{{ route('exams.index') }}" class="hover:text-accent">Exam Papers</a></li>
+                    <li><a href="{{ route('quiz.index') }}" class="hover:text-accent">Take a Quiz</a></li>
+                    <li><a href="{{ route('timer.index') }}" class="hover:text-accent">Focus Timer</a></li>
                 </ul>
             </div>
         </aside>
@@ -177,7 +177,7 @@
                     } catch (err) {
                         console.error('Failed to load comments:', err);
                         this.$refs.content.innerHTML =
-                            '<p class="py-10 text-center text-sm text-gray-400">Could not load comments. Please try again.</p>';
+                            '<p class="py-10 text-center text-sm text-muted">Could not load comments. Please try again.</p>';
                     } finally {
                         this.loading = false;
                     }
@@ -314,8 +314,8 @@
                     if (data.html.trim() === '') {
                         container.innerHTML = `
                             <div class="flex flex-col items-center justify-center py-20 text-center">
-                                <p class="text-sm font-semibold text-gray-400">No results found</p>
-                                <p class="text-xs text-gray-400 mt-1">Try adjusting your search or filters.</p>
+                                <p class="text-sm font-semibold text-muted">No results found</p>
+                                <p class="text-xs text-muted mt-1">Try adjusting your search or filters.</p>
                             </div>
                         `;
                     } else {

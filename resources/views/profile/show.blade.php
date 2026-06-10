@@ -4,7 +4,7 @@
     <div class="max-w-[720px] mx-auto">
 
         {{-- Profile Header --}}
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-5">
+        <div class="bg-surface rounded-2xl border border-line p-6 mb-5">
             <div class="flex items-start gap-5">
 
                 {{-- Avatar --}}
@@ -14,7 +14,7 @@
                              alt="{{ $user->display_name }}"
                              loading="lazy"
                              @click="open = true"
-                             class="w-20 h-20 rounded-full object-cover border-2 border-gray-100 cursor-pointer hover:opacity-90 transition-opacity">
+                             class="w-20 h-20 rounded-full object-cover border-2 border-line cursor-pointer hover:opacity-90 transition-opacity">
 
                         {{-- Full-size lightbox --}}
                         <div x-show="open" x-cloak
@@ -34,7 +34,7 @@
                             </button>
                         </div>
                     @else
-                        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-2xl border-2 border-gray-100">
+                        <div class="w-20 h-20 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-2xl border-2 border-line">
                             {{ strtoupper(substr($user->display_name, 0, 1)) }}
                         </div>
                     @endif
@@ -46,15 +46,15 @@
                     {{-- Name + Action button --}}
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <h1 class="text-xl font-bold text-gray-900 leading-tight">
+                            <h1 class="text-xl font-bold text-content leading-tight">
                                 {{ $user->display_name }}
                             </h1>
-                            <p class="text-sm text-gray-400 mt-0.5">{{ '@'.$user->username }}</p>
+                            <p class="text-sm text-muted mt-0.5">{{ '@'.$user->username }}</p>
                         </div>
 
                         @if ($isOwnProfile)
                             <a href="{{ route('profile.edit') }}"
-                               class="shrink-0 flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95">
+                               class="shrink-0 flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] font-bold text-content hover:bg-surface-muted transition-all active:scale-95">
                                 <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
                                 Edit Profile
                             </a>
@@ -85,8 +85,8 @@
                                             @click="toggle()"
                                             :disabled="loading"
                                             :class="following
-                                                ? 'bg-white border-gray-200 text-gray-700 hover:border-red-200 hover:text-red-600 hover:bg-red-50'
-                                                : 'bg-green-600 border-transparent text-white hover:bg-green-700'"
+                                                ? 'bg-surface border-line text-content hover:border-red-200 hover:text-red-600 hover:bg-red-50'
+                                                : 'bg-accent border-transparent text-white hover:bg-accent-strong'"
                                             class="shrink-0 rounded-lg border px-4 py-1.5 text-[13px] font-bold transition-all active:scale-95">
                                         <span x-text="following ? 'Following' : 'Follow'"></span>
                                     </button>
@@ -94,7 +94,7 @@
                             @else
                                 <button type="button"
                                         onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                                        class="shrink-0 rounded-lg border border-transparent bg-green-600 px-4 py-1.5 text-[13px] font-bold text-white hover:bg-green-700 transition-all active:scale-95">
+                                        class="shrink-0 rounded-lg border border-transparent bg-accent px-4 py-1.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95">
                                     Follow
                                 </button>
                             @endauth
@@ -103,7 +103,7 @@
 
                     {{-- Bio --}}
                     @if ($user->bio)
-                        <p class="text-sm text-gray-600 mt-3 leading-relaxed">
+                        <p class="text-sm text-muted mt-3 leading-relaxed">
                             {{ $user->bio }}
                         </p>
                     @endif
@@ -111,24 +111,24 @@
                     {{-- Stats --}}
                     <div class="flex items-center gap-6 mt-4">
                         <div class="text-center">
-                            <div class="text-[15px] font-bold text-gray-900">
+                            <div class="text-[15px] font-bold text-content">
                                 {{ number_format($user->posts_count) }}
                             </div>
-                            <div class="text-[11px] text-gray-400 mt-0.5">Posts</div>
+                            <div class="text-[11px] text-muted mt-0.5">Posts</div>
                         </div>
                         <a href="{{ route('profile.followers', $user->username) }}"
                            class="text-center">
-                            <div class="text-[15px] font-bold text-gray-900 hover:text-green-600 transition-colors">
+                            <div class="text-[15px] font-bold text-content hover:text-accent transition-colors">
                                 {{ number_format($user->followers_count) }}
                             </div>
-                            <div class="text-[11px] text-gray-400 hover:text-green-500 transition-colors mt-0.5">Followers</div>
+                            <div class="text-[11px] text-muted hover:text-accent transition-colors mt-0.5">Followers</div>
                         </a>
                         <a href="{{ route('profile.following', $user->username) }}"
                            class="text-center">
-                            <div class="text-[15px] font-bold text-gray-900 hover:text-green-600 transition-colors">
+                            <div class="text-[15px] font-bold text-content hover:text-accent transition-colors">
                                 {{ number_format($user->following_count) }}
                             </div>
-                            <div class="text-[11px] text-gray-400 hover:text-green-500 transition-colors mt-0.5">Following</div>
+                            <div class="text-[11px] text-muted hover:text-accent transition-colors mt-0.5">Following</div>
                         </a>
                     </div>
                 </div>
@@ -136,23 +136,23 @@
         </div>
 
         {{-- Tabs --}}
-        <div class="flex gap-1 mb-5 bg-white rounded-xl border border-gray-200 p-1">
+        <div class="flex gap-1 mb-5 bg-surface rounded-xl border border-line p-1">
             <a href="{{ route('profile.show', $user->username) }}?tab=posts"
                class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
                       {{ $tab === 'posts'
-                          ? 'bg-green-600 text-white shadow-sm'
-                          : 'text-gray-500 hover:bg-gray-50' }}">
+                          ? 'bg-accent text-white shadow-sm'
+                          : 'text-muted hover:bg-surface-muted' }}">
                 Posts
             </a>
             @if ($showLikedTab)
                 <a href="{{ route('profile.show', $user->username) }}?tab=liked"
                    class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
                           {{ $tab === 'liked'
-                              ? 'bg-green-600 text-white shadow-sm'
-                              : 'text-gray-500 hover:bg-gray-50' }}">
+                              ? 'bg-accent text-white shadow-sm'
+                              : 'text-muted hover:bg-surface-muted' }}">
                     Liked
                     @if ($isOwnProfile && !($user->preferences?->show_liked_posts ?? true))
-                        <span class="ml-1 text-[10px] text-gray-400">(Private)</span>
+                        <span class="ml-1 text-[10px] text-muted">(Private)</span>
                     @endif
                 </a>
             @endif
@@ -164,10 +164,10 @@
 
             @if ($posts->isEmpty())
                 <div class="flex flex-col items-center justify-center py-20 text-center">
-                    <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                        <i data-lucide="message-circle" class="h-7 w-7 text-gray-400"></i>
+                    <div class="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center mb-4">
+                        <i data-lucide="message-circle" class="h-7 w-7 text-muted"></i>
                     </div>
-                    <p class="text-sm font-semibold text-gray-400">
+                    <p class="text-sm font-semibold text-muted">
                         {{ $tab === 'liked' ? 'No liked posts yet' : 'No posts yet' }}
                     </p>
                 </div>
