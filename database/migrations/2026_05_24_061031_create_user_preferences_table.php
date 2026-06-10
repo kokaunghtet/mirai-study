@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('user_preferences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-            $table->enum('theme_mode', ['light', 'dark'])->default('light');
-            $table->enum('accent_color', ['aurora', 'venom', 'inferno', 'twilight', 'sangria'])->default('venom');
+            $table->enum('theme_mode', ['light', 'dark', 'system'])->default('light');
+            $table->enum('accent_color', ['venom', 'aurora', 'sangria', 'twilight', 'inferno'])->default('venom');
             $table->boolean('show_liked_posts')->default(true);
             $table->timestamps();
         });

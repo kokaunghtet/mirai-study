@@ -53,7 +53,7 @@ class PostController extends Controller
             'tags'      => 'nullable|array',
             'tags.*'    => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
-            'files.*'   => 'nullable|file|max:20480',
+            'files.*'   => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
         ]);
         
         $post = $request->user()->posts()->create([

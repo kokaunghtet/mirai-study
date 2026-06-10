@@ -11,6 +11,7 @@ import {
     ArrowLeft, AlignLeft, Image, Trash,
     Moon,
     Sun,
+    Plus
 } from 'lucide';
 
 const icons = {
@@ -18,7 +19,7 @@ const icons = {
     ChevronLeft, ChevronRight, ChevronUp, Menu, X, User,
     SquarePen, Settings, LogOut, LogIn, UserPlus,
     Ellipsis, File, Upload, ThumbsUp, MessageCircle, Send, Check,
-    ArrowLeft, AlignLeft, Image, Trash, Sun, Moon
+    ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus
 };
 
 window.Alpine = Alpine;
