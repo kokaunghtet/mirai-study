@@ -14,6 +14,33 @@
                 </a>
             @endauth
 
+            {{-- Search & Filters --}}
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                    <input type="text" id="filter-search" name="search" placeholder="Search posts, authors..." value="{{ request('search') }}"
+                           class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                </div>
+                <div class="w-full sm:w-40 shrink-0">
+                    <select id="filter-tag" name="tag" class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                        <option value="">All Tags</option>
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" @selected(request('tag') == $tag->id)>{{ $tag->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="w-full sm:w-40 shrink-0">
+                    <select id="filter-sort" name="sort" class="w-full rounded-xl bg-gray-50 border-gray-200 focus:border-green-400 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm">
+                        <option value="latest" @selected(request('sort') === 'latest')>Latest</option>
+                        <option value="popular" @selected(request('sort') === 'popular')>Popular</option>
+                    </select>
+                </div>
+                <div class="w-full sm:w-auto shrink-0">
+                    <button type="button" id="clear-filters" class="w-full sm:w-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl border border-gray-200 transition">
+                        Clear
+                    </button>
+                </div>
+            </div>
+
             {{-- Posts --}}
             <div id="posts-container" class="space-y-4">
                 @include('feed._posts')
@@ -210,15 +237,131 @@
             let isFetching  = false;
             let hasMore     = true;
 
+            const filterSearch = document.getElementById('filter-search');
+            const filterTag = document.getElementById('filter-tag');
+            const filterSort = document.getElementById('filter-sort');
+            const clearFiltersBtn = document.getElementById('clear-filters');
+
+            let currentAbortController = null;
+            // Bumped on every applyFilters() run. An in-flight loadMore() or a
+            // superseded applyFilters() compares against it and bails if it no
+            // longer matches, so stale responses can't touch shared state.
+            let requestId = 0;
+
+            function buildUrl(page) {
+                const params = new URLSearchParams(window.location.search);
+                params.set('page', page);
+                if (filterSearch.value.trim()) {
+                    params.set('search', filterSearch.value.trim());
+                } else {
+                    params.delete('search');
+                }
+                if (filterTag.value) {
+                    params.set('tag', filterTag.value);
+                } else {
+                    params.delete('tag');
+                }
+                if (filterSort.value && filterSort.value !== 'latest') {
+                    params.set('sort', filterSort.value);
+                } else {
+                    params.delete('sort');
+                }
+                return '?' + params.toString();
+            }
+
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
             // ── Shared fetch helper ──────────────────────────────────
-            async function fetchPage(page) {
-                const response = await fetch(`?page=${page}`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            async function fetchPage(page, signal = null) {
+                const response = await fetch(buildUrl(page), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    signal: signal
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 return response.json();
+            }
+
+            // ── Filtering Logic ──────────────────────────────────────
+            async function applyFilters() {
+                if (currentAbortController) {
+                    currentAbortController.abort();
+                }
+                currentAbortController = new AbortController();
+                const signal = currentAbortController.signal;
+                const myRequestId = ++requestId; // invalidates any in-flight loadMore
+
+                currentPage = 1;
+                hasMore = true;
+                isFetching = true;
+                
+                container.innerHTML = '';
+                if (sentinel) {
+                    sentinel.style.display = 'none';
+                    observer.disconnect();
+                }
+                loader.textContent = 'Loading...';
+                loader.style.display = 'block';
+
+                const url = buildUrl(currentPage);
+                history.replaceState(null, '', url);
+
+                try {
+                    const data = await fetchPage(currentPage, signal);
+
+                    // A newer filter run superseded this one while awaiting.
+                    if (myRequestId !== requestId) return;
+
+                    if (data.html.trim() === '') {
+                        container.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-20 text-center">
+                                <p class="text-sm font-semibold text-gray-400">No results found</p>
+                                <p class="text-xs text-gray-400 mt-1">Try adjusting your search or filters.</p>
+                            </div>
+                        `;
+                    } else {
+                        window.appendWithIcons(container, data.html);
+                    }
+
+                    if (!data.next_page_url) {
+                        hasMore = false;
+                    } else {
+                        if (sentinel) {
+                            sentinel.style.display = 'block';
+                            observer.observe(sentinel);
+                        }
+                    }
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                    console.error('Filter fetch failed:', err);
+                    loader.textContent = 'Failed to load results.';
+                } finally {
+                    // Only the latest run owns the shared loader/fetch flag; a
+                    // superseded (aborted) run must not reset them mid-load.
+                    if (myRequestId === requestId) {
+                        isFetching = false;
+                        loader.style.display = 'none';
+                    }
+                }
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            if (filterSearch) filterSearch.addEventListener('input', debounce(applyFilters, 300));
+            if (filterTag) filterTag.addEventListener('change', applyFilters);
+            if (filterSort) filterSort.addEventListener('change', applyFilters);
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    if (filterSearch) filterSearch.value = '';
+                    if (filterTag) filterTag.value = '';
+                    if (filterSort) filterSort.value = 'latest';
+                    applyFilters();
+                });
             }
 
             // ── Infinite scroll ──────────────────────────────────────
@@ -226,6 +369,7 @@
                 if (isFetching || !hasMore) return;
 
                 isFetching  = true;
+                const myRequestId = requestId;
                 let success = false;
                 loader.style.display = 'block';
                 currentPage++;
@@ -236,15 +380,21 @@
                         sleep(1000)
                     ]);
 
+                    // A filter change started a fresh result set while this
+                    // page was loading — it's stale, so drop it instead of
+                    // appending. applyFilters already reset currentPage/state.
+                    if (myRequestId !== requestId) return;
+
                     window.appendWithIcons(container, data.html);
                     success = true;
 
                     if (!data.next_page_url) {
                         hasMore = false;
                         observer.disconnect();
-                        if (sentinel) sentinel.remove();
+                        if (sentinel) sentinel.style.display = 'none';
                     }
                 } catch (err) {
+                    if (myRequestId !== requestId) return; // stale failure — ignore
                     currentPage--;
                     console.error('Failed to load posts:', err);
                     loader.innerHTML = 'Failed to load posts. Scroll down to retry.';
@@ -254,9 +404,13 @@
                         loader.innerHTML = 'Loading...';
                     }, 3000);
                 } finally {
-                    isFetching = false;
-                    if (success) loader.style.display = 'none';
-                    // If not success, catch already manages the loader
+                    // If a newer filter run superseded us, it owns the shared
+                    // state now — leave isFetching/loader for it to manage.
+                    if (myRequestId === requestId) {
+                        isFetching = false;
+                        if (success) loader.style.display = 'none';
+                        // If not success, catch already manages the loader
+                    }
                 }
             }
 
@@ -303,7 +457,7 @@
                         if (!data.next_page_url) {
                             hasMore = false;
                             observer.disconnect();
-                            if (sentinel) sentinel.remove();
+                            if (sentinel) sentinel.style.display = 'none';
                             break;
                         }
                     } catch (err) {

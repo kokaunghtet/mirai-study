@@ -24,10 +24,44 @@ class PostController extends Controller
             $with['likes']     = fn($q) => $q->where('user_id', $userId);
         }
 
-        $posts = Post::with($with)
-            ->withCount(['likes', 'comments'])
-            ->latest()
-            ->paginate(10);
+        $query = Post::with($with)->withCount(['likes', 'comments']);
+
+        // 1. Search filter
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            // Escape LIKE wildcards
+            $escapedSearch = addcslashes($search, '%_\\');
+            
+            $query->where(function ($q) use ($escapedSearch) {
+                $q->where('title', 'like', "%{$escapedSearch}%")
+                  ->orWhere('content', 'like', "%{$escapedSearch}%")
+                  ->orWhereHas('user', function ($uq) use ($escapedSearch) {
+                      $uq->where('display_name', 'like', "%{$escapedSearch}%")
+                         ->orWhere('username', 'like', "%{$escapedSearch}%");
+                  });
+            });
+        }
+
+        // 2. Tag filter
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('tags.id', $request->input('tag'));
+            });
+        }
+
+        // 3. Sort
+        if ($request->input('sort') === 'popular') {
+            // latest() is the final tiebreaker so tied rows (e.g. 0 likes/0
+            // comments) keep a deterministic order across paginated requests,
+            // otherwise infinite scroll duplicates/skips posts.
+            $query->orderByDesc('likes_count')
+                  ->orderByDesc('comments_count')
+                  ->latest();
+        } else {
+            $query->latest();
+        }
+
+        $posts = $query->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
             return response()->json([
@@ -36,7 +70,8 @@ class PostController extends Controller
             ]);
         }
 
-        return view('feed.index', compact('posts'));
+        $tags = \App\Models\Tag::all();
+        return view('feed.index', compact('posts', 'tags'));
     }
 
     public function create()

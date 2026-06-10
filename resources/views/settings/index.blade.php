@@ -55,27 +55,27 @@
                         <h2 class="text-base font-semibold mb-4 text-slate-900">Primary Color</h2>
 
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-[#B5E853] to-[#0A1200]"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-lime to-mirai-dark"
                                     data-theme="venom">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Venom</span>
                             </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-blue-500"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-aurora to-mirai-violet"
                                     data-theme="aurora">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Aurora</span>
                             </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-violet-500"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian"
                                     data-theme="sangria">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Sangria</span>
                             </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-rose-500"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sunset to-mirai-midnight"
                                     data-theme="twilight">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Twilight</span>
                             </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-amber-500"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-apricot to-mirai-slate"
                                     data-theme="inferno">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Inferno</span>
@@ -87,7 +87,7 @@
                     <div class="flex flex-col gap-2">
                         <button id="save-btn"
                                 type="button"
-                                class="w-full rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 active:scale-[0.98]">
+                                class="w-full rounded-xl bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all">
                             Save Changes
                         </button>
                         <p id="save-status" class="text-center text-xs text-green-600 font-semibold hidden">
@@ -148,7 +148,7 @@
                                         </div>
                                         <div class="leading-none text-left">
                                             <div class="text-[9px] font-bold text-slate-700">{{ auth()->user()->display_name }}</div>
-                                            <div class="text-[8px] text-slate-400">@{{ auth()->user()->username }}</div>
+                                            <div class="text-[8px] text-slate-400">{{'@'.auth()->user()->username }}</div>
                                         </div>
                                     </div>
                                     <i data-lucide="chevron-up" class="h-2.5 w-2.5 text-slate-400"></i>
@@ -180,12 +180,15 @@
         let isDirty = false;
 
         // ── Fallback if DB has stale values ─────────────────────────
+        // Each theme maps to its mirai brand colors (see tailwind.config.js).
+        // `gradient` is the exact picker-button gradient; prominent fills in the mockup use it.
+        // Single-shade custom colors, so tints/badges use opacity modifiers (/10, /15…).
         const themeStyles = {
-            venom:   { bg: 'bg-green-500',  text: 'text-green-500',  border: 'border-green-500',  hoverBg: 'hover:bg-green-600',  bgLight: 'bg-green-50',   bgDarkActive: 'bg-green-950/40',  badgeBg: 'bg-green-500/10'  },
-            aurora:  { bg: 'bg-blue-500',   text: 'text-blue-500',   border: 'border-blue-500',   hoverBg: 'hover:bg-blue-600',   bgLight: 'bg-blue-50',    bgDarkActive: 'bg-blue-950/40',   badgeBg: 'bg-blue-500/10'   },
-            sangria: { bg: 'bg-violet-500', text: 'text-violet-500', border: 'border-violet-500', hoverBg: 'hover:bg-violet-600', bgLight: 'bg-violet-50',  bgDarkActive: 'bg-violet-950/40', badgeBg: 'bg-violet-500/10' },
-            twilight:{ bg: 'bg-rose-500',   text: 'text-rose-500',   border: 'border-rose-500',   hoverBg: 'hover:bg-rose-600',   bgLight: 'bg-rose-50',    bgDarkActive: 'bg-rose-950/40',   badgeBg: 'bg-rose-500/10'   },
-            inferno: { bg: 'bg-amber-500',  text: 'text-amber-500',  border: 'border-amber-500',  hoverBg: 'hover:bg-amber-600',  bgLight: 'bg-amber-50',   bgDarkActive: 'bg-amber-950/40',  badgeBg: 'bg-amber-500/10'  }
+            venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       text: 'text-mirai-lime',     border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
+            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    text: 'text-mirai-violet',   border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
+            sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', text: 'text-mirai-sangria',  border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
+            twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  text: 'text-mirai-midnight', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
+            inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    text: 'text-mirai-apricot',  border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
         };
 
         if (!themeStyles[currentTheme]) currentTheme = 'venom';
@@ -334,6 +337,11 @@
 
         const SEG_BASE = "seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all";
 
+        // Save button styling — themed to the selected accent gradient.
+        const SAVE_BASE = 'w-full rounded-xl px-5 py-3 text-sm font-bold text-white shadow-sm transition-all';
+        const saveBtnActiveClass = () => `${SAVE_BASE} ${themeStyles[currentTheme].gradient} hover:opacity-90 active:scale-[0.98]`;
+        const saveBtnSavingClass = () => `${SAVE_BASE} ${themeStyles[currentTheme].gradient} opacity-60 cursor-not-allowed`;
+
         // ── Safe Lucide wrapper ─────────────────────────────────────
         function safeCreateIcons() {
             try {
@@ -350,7 +358,7 @@
             isDirty = true;
             saveBtn.textContent = 'Save Changes';
             saveBtn.disabled = false;
-            saveBtn.className = 'w-full rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 active:scale-[0.98]';
+            saveBtn.className = saveBtnActiveClass();
             saveStatus.classList.add('hidden');
             saveError.classList.add('hidden');
         }
@@ -358,7 +366,7 @@
         function setSaving() {
             saveBtn.textContent = 'Saving...';
             saveBtn.disabled = true;
-            saveBtn.className = 'w-full rounded-xl bg-green-400 px-5 py-3 text-sm font-bold text-white shadow-sm cursor-not-allowed';
+            saveBtn.className = saveBtnSavingClass();
         }
 
         function setSaved() {
@@ -373,14 +381,14 @@
                 saveStatus.classList.add('hidden');
                 saveBtn.textContent = 'Save Changes';
                 saveBtn.disabled = false;
-                saveBtn.className = 'w-full rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 active:scale-[0.98]';
+                saveBtn.className = saveBtnActiveClass();
             }, 2000);
         }
 
         function setError() {
             saveBtn.textContent = 'Save Changes';
             saveBtn.disabled = false;
-            saveBtn.className = 'w-full rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 active:scale-[0.98]';
+            saveBtn.className = saveBtnActiveClass();
             saveError.classList.remove('hidden');
             saveStatus.classList.add('hidden');
         }
@@ -425,10 +433,10 @@
             document.getElementById('mockup-logo-icon').className = `h-4 w-4 transition-colors ${c.text}`;
 
             const createBtn = document.getElementById('mockup-create-btn');
-            if (createBtn) createBtn.className = `w-full text-[10px] py-2 text-white font-medium rounded-lg shadow-sm flex items-center justify-center gap-1 mb-2 ${c.bg} ${c.hoverBg}`;
+            if (createBtn) createBtn.className = `w-full text-[10px] py-2 text-white font-medium rounded-lg shadow-sm flex items-center justify-center gap-1 mb-2 ${c.gradient} hover:opacity-90 transition-opacity`;
 
             document.querySelectorAll('.mockup-avatar-badge').forEach(el => {
-                el.className = `mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white ${c.bg}`;
+                el.className = `mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white ${c.gradient}`;
             });
 
             document.querySelectorAll('.mockup-tag').forEach(el => {
@@ -440,7 +448,7 @@
             });
 
             document.querySelectorAll('.mockup-btn-accent').forEach(el => {
-                el.className = `mockup-btn-accent text-[9px] text-white font-medium px-2.5 py-1 rounded shadow-sm ${c.bg} ${c.hoverBg}`;
+                el.className = `mockup-btn-accent text-[9px] text-white font-medium px-2.5 py-1 rounded shadow-sm ${c.gradient} hover:opacity-90 transition-opacity`;
             });
 
             const borderAccent = document.getElementById('mockup-border-accent');
@@ -462,7 +470,7 @@
             const segs = { light: themeLightBtn, dark: themeDarkBtn, system: themeSystemBtn };
             Object.entries(segs).forEach(([mode, btn]) => {
                 btn.className = mode === themeMode
-                    ? `${SEG_BASE} text-white shadow-sm ${c.bg}`
+                    ? `${SEG_BASE} text-white shadow-sm ${c.gradient}`
                     : `${SEG_BASE} text-slate-500 hover:text-slate-700`;
             });
         }
@@ -535,9 +543,10 @@
         safeCreateIcons();
         setTimeout(safeCreateIcons, 300);
 
-        // Step 4: Save button starts in normal state
+        // Step 4: Save button starts in normal state, themed to the saved accent
         saveBtn.textContent = 'Save Changes';
         saveBtn.disabled = false;
+        saveBtn.className = saveBtnActiveClass();
 </script>
 @endpush
 </x-app-layout>
