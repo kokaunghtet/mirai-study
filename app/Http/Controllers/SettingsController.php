@@ -12,7 +12,7 @@ class SettingsController extends Controller
         $preferences = $request->user()->preferences
             ?? UserPreference::firstOrCreate(
                 ['user_id' => $request->user()->id],
-                ['theme_mode' => 'light', 'accent_color' => 'venom', 'show_liked_posts' => true]
+                ['theme_mode' => 'light', 'accent_color' => 'venom', 'fill_style' => 'gradient', 'show_liked_posts' => true]
             );
 
         return view('settings.index', compact('preferences'));
@@ -23,6 +23,7 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'theme_mode'   => 'required|in:light,dark,system',
             'accent_color' => 'required|in:venom,aurora,sangria,twilight,inferno',
+            'fill_style'   => 'required|in:gradient,solid',
         ]);
 
         $request->user()->preferences()->updateOrCreate(

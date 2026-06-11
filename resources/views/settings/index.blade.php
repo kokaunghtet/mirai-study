@@ -49,35 +49,68 @@
                         </div>
                     </section>
 
-                    {{-- Primary Color --}}
+                    {{-- Gradient Color --}}
                     <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-                        <h2 class="text-base font-semibold mb-4 text-content">Primary Color</h2>
+                        <h2 class="text-base font-semibold mb-4 text-content">Gradient Color</h2>
 
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-lime to-mirai-dark"
-                                    data-theme="venom">
+                                    data-theme="venom" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Venom</span>
                             </button>
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-aurora to-mirai-violet"
-                                    data-theme="aurora">
+                                    data-theme="aurora" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Aurora</span>
                             </button>
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian"
-                                    data-theme="sangria">
+                                    data-theme="sangria" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Sangria</span>
                             </button>
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sunset to-mirai-midnight"
-                                    data-theme="twilight">
+                                    data-theme="twilight" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Twilight</span>
                             </button>
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-apricot to-mirai-slate"
-                                    data-theme="inferno">
+                                    data-theme="inferno" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Inferno</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    {{-- Solid Color --}}
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+                        <h2 class="text-base font-semibold mb-4 text-content">Solid Color</h2>
+
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-lime"
+                                    data-theme="venom" data-fill="solid">
+                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                <span>Green</span>
+                            </button>
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-violet"
+                                    data-theme="aurora" data-fill="solid">
+                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                <span>Blue</span>
+                            </button>
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-sangria"
+                                    data-theme="sangria" data-fill="solid">
+                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                <span>Red</span>
+                            </button>
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-midnight"
+                                    data-theme="twilight" data-fill="solid">
+                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                <span>Purple</span>
+                            </button>
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-apricot"
+                                    data-theme="inferno" data-fill="solid">
+                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                <span>Orange</span>
                             </button>
                         </div>
                     </section>
@@ -115,8 +148,13 @@
                                    class="w-2/5 border-r border-line bg-surface p-2.5 flex flex-col justify-between shrink-0 select-none">
                                 <div class="space-y-3">
                                     <div class="flex items-center gap-1.5 px-1 py-1">
-                                        <i data-lucide="book-open" id="mockup-logo-icon" class="h-4 w-4"></i>
-                                        <span class="text-[11px] font-bold tracking-tight text-content">MiraiStudy</span>
+                                        {{-- Mini MiraiStudy logo: masked silhouette + brandname, both painted with the
+                                             themed accent gradient so they recolor with the selected theme (like the real header logo). --}}
+                                        <div class="h-5 w-5 shrink-0 bg-gradient-to-tr from-accent-from to-accent-to"
+                                             role="img" aria-label="MiraiStudy Logo"
+                                             style="-webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
+                                                             mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;"></div>
+                                        <span class="text-[11px] font-bold tracking-tight bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent">MiraiStudy</span>
                                     </div>
                                     <div id="mockup-nav-list" class="space-y-0.5 pt-1">
                                         <button class="mockup-nav-item w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all" data-target="feed">
@@ -173,24 +211,30 @@
         // ── Initialise from server-side saved preferences ──────────
         let themeMode    = '{{ $preferences->theme_mode }}';
         let currentTheme = '{{ $preferences->accent_color }}';
+        let currentFill  = '{{ $preferences->fill_style }}';
         let currentActiveNav = 'feed';
 
         // Track whether unsaved changes exist
         let isDirty = false;
 
         // ── Fallback if DB has stale values ─────────────────────────
-        // Each theme maps to its mirai brand colors (see tailwind.config.js).
+        // `gradient`/`border`/tints use the fixed mirai brand colors (see tailwind.config.js).
+        // `text` uses the themed `text-accent` utility (= --accent), so accent TEXT tracks the
+        // live [data-theme] + .dark on <html> and stays readable in dark mode (aurora/twilight
+        // get a brightened --accent there — see resources/css/app.css). In light mode each
+        // theme's --accent equals its old mirai text color, so this is identical there.
         // `gradient` is the exact picker-button gradient; prominent fills in the mockup use it.
         // Single-shade custom colors, so tints/badges use opacity modifiers (/10, /15…).
         const themeStyles = {
-            venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       text: 'text-mirai-lime',     border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
-            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    text: 'text-mirai-violet',   border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
-            sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', text: 'text-mirai-sangria',  border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
-            twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  text: 'text-mirai-midnight', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
-            inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    text: 'text-mirai-apricot',  border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
+            venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       text: 'text-accent', border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
+            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    text: 'text-accent', border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
+            sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', text: 'text-accent', border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
+            twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  text: 'text-accent', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
+            inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    text: 'text-accent', border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
         };
 
         if (!themeStyles[currentTheme]) currentTheme = 'venom';
+        if (!['gradient', 'solid'].includes(currentFill)) currentFill = 'gradient';
         if (!['light', 'dark', 'system'].includes(themeMode)) themeMode = 'light';
 
         // ── Mockup page content ─────────────────────────────────────
@@ -336,10 +380,14 @@
 
         const SEG_BASE = "seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all";
 
-        // Save button styling — themed to the selected accent gradient.
+        // Accent fill helper: solid mode paints flat `bg-accent` (= --accent); gradient mode
+        // uses the theme's mirai gradient. Mirrors the CSS [data-fill] collapse the real app uses.
+        const accentFill = () => currentFill === 'solid' ? 'bg-accent' : themeStyles[currentTheme].gradient;
+
+        // Save button styling — themed to the selected accent fill.
         const SAVE_BASE = 'w-full rounded-xl px-5 py-3 text-sm font-bold text-white shadow-sm transition-all';
-        const saveBtnActiveClass = () => `${SAVE_BASE} ${themeStyles[currentTheme].gradient} hover:opacity-90 active:scale-[0.98]`;
-        const saveBtnSavingClass = () => `${SAVE_BASE} ${themeStyles[currentTheme].gradient} opacity-60 cursor-not-allowed`;
+        const saveBtnActiveClass = () => `${SAVE_BASE} ${accentFill()} hover:opacity-90 active:scale-[0.98]`;
+        const saveBtnSavingClass = () => `${SAVE_BASE} ${accentFill()} opacity-60 cursor-not-allowed`;
 
         // ── Safe Lucide wrapper ─────────────────────────────────────
         function safeCreateIcons() {
@@ -396,6 +444,7 @@
         function applyThemeToDocument() {
             const root = document.documentElement;
             root.setAttribute('data-theme', currentTheme);
+            root.setAttribute('data-fill', currentFill);
             const dark = themeMode === 'dark'
                 || (themeMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             root.classList.toggle('dark', dark);
@@ -415,6 +464,7 @@
                     body: JSON.stringify({
                         theme_mode:   themeMode,
                         accent_color: currentTheme,
+                        fill_style:   currentFill,
                     })
                 });
 
@@ -438,14 +488,15 @@
 
         function applyThemeColorsToMockup() {
             const c = themeStyles[currentTheme];
+            const fill = accentFill();
 
-            document.getElementById('mockup-logo-icon').className = `h-4 w-4 transition-colors ${c.text}`;
+            // Mini logo + brandname recolor on their own via the --accent-from/--accent-to CSS vars.
 
             const createBtn = document.getElementById('mockup-create-btn');
-            if (createBtn) createBtn.className = `w-full text-[10px] py-2 text-white font-medium rounded-lg shadow-sm flex items-center justify-center gap-1 mb-2 ${c.gradient} hover:opacity-90 transition-opacity`;
+            if (createBtn) createBtn.className = `w-full text-[10px] py-2 text-white font-medium rounded-lg shadow-sm flex items-center justify-center gap-1 mb-2 ${fill} hover:opacity-90 transition-opacity`;
 
             document.querySelectorAll('.mockup-avatar-badge').forEach(el => {
-                el.className = `mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white ${c.gradient}`;
+                el.className = `mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white ${fill}`;
             });
 
             document.querySelectorAll('.mockup-tag').forEach(el => {
@@ -457,7 +508,7 @@
             });
 
             document.querySelectorAll('.mockup-btn-accent').forEach(el => {
-                el.className = `mockup-btn-accent text-[9px] text-white font-medium px-2.5 py-1 rounded shadow-sm ${c.gradient} hover:opacity-90 transition-opacity`;
+                el.className = `mockup-btn-accent text-[9px] text-white font-medium px-2.5 py-1 rounded shadow-sm ${fill} hover:opacity-90 transition-opacity`;
             });
 
             const borderAccent = document.getElementById('mockup-border-accent');
@@ -475,18 +526,19 @@
         }
 
         function updateSegmentedControl() {
-            const c = themeStyles[currentTheme];
+            const fill = accentFill();
             const segs = { light: themeLightBtn, dark: themeDarkBtn, system: themeSystemBtn };
             Object.entries(segs).forEach(([mode, btn]) => {
                 btn.className = mode === themeMode
-                    ? `${SEG_BASE} text-white shadow-sm ${c.gradient}`
+                    ? `${SEG_BASE} text-white shadow-sm ${fill}`
                     : `${SEG_BASE} text-muted hover:text-content`;
             });
         }
 
         function updateColorButtons() {
             themeButtons.forEach(btn => {
-                const isActive = btn.getAttribute('data-theme') === currentTheme;
+                const isActive = btn.getAttribute('data-theme') === currentTheme
+                    && btn.getAttribute('data-fill') === currentFill;
                 const checkIcon = btn.querySelector('.check-icon');
                 if (isActive) {
                     btn.classList.add('ring-2', 'ring-offset-2', 'ring-content', 'ring-offset-surface');
@@ -520,6 +572,7 @@
         themeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 currentTheme = btn.getAttribute('data-theme');
+                currentFill  = btn.getAttribute('data-fill') || 'gradient';
                 render();
                 markDirty();
             });

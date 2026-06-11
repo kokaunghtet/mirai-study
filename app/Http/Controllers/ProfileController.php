@@ -100,7 +100,7 @@ class ProfileController extends Controller
         $user        = $request->user();
         $preferences = $user->preferences ?? UserPreference::firstOrCreate(
             ['user_id' => $user->id],
-            ['theme_mode' => 'light', 'accent_color' => 'venom', 'show_liked_posts' => true]
+            ['theme_mode' => 'light', 'accent_color' => 'venom', 'fill_style' => 'gradient', 'show_liked_posts' => true]
         );
 
         return view('profile.edit', compact('user', 'preferences'));

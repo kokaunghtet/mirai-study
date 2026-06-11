@@ -47,4 +47,18 @@
     [data-theme="sangria"]  { --accent: 190 18 60;   --accent-strong: 159 18 57;   --accent-from: 190 18 60;   --accent-to: 76 5 25;    }
     [data-theme="twilight"] { --accent: 124 58 237;  --accent-strong: 109 40 217;  --accent-from: 244 114 182; --accent-to: 124 58 237; }
     [data-theme="inferno"]  { --accent: 234 88 12;   --accent-strong: 194 65 12;   --accent-from: 234 88 12;   --accent-to: 127 29 29;  }
+
+    /* ── Dark-mode readability: brighten the purple accents that are too dark on the dark canvas.
+          Light mode keeps the deeper purples above (they read fine on white). ── */
+    .dark[data-theme="aurora"]   { --accent: 167 139 250; --accent-strong: 139 92 246; }
+    .dark[data-theme="twilight"] { --accent: 192 132 252; --accent-strong: 168 85 247; }
+
+    /* ── Fill style: when [data-fill="solid"] is set on <html>, collapse the accent
+          gradient into a flat solid by pointing both stops at --accent. Every
+          `from-accent-from to-accent-to` surface (logo, brandname, buttons…) follows
+          automatically. Default (gradient) needs no override. ── */
+    [data-fill="solid"] {
+        --accent-from: var(--accent);
+        --accent-to:   var(--accent);
+    }
 }

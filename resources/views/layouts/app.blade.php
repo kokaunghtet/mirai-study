@@ -2,10 +2,12 @@
     $pref = auth()->user()?->preferences;
     $accentColor = $pref->accent_color ?? 'venom';
     $themeMode   = $pref->theme_mode ?? 'light';
+    $fillStyle   = $pref->fill_style ?? 'gradient';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       data-theme="{{ $accentColor }}"
+      data-fill="{{ $fillStyle }}"
       class="{{ $themeMode === 'dark' ? 'dark' : '' }}">
 <head>
     <meta charset="utf-8">
