@@ -61,4 +61,10 @@
         --accent-from: var(--accent);
         --accent-to:   var(--accent);
     }
+
+    /* Aurora's accent is a violet (its gradient runs cyan → violet), which reads as
+       purple when flattened to a solid. In SOLID mode swap it for a true blue —
+       a deeper blue on light surfaces, a brighter one on the dark canvas. */
+    [data-fill="solid"][data-theme="aurora"]      { --accent: 37 99 235;  --accent-strong: 29 78 216; }
+    .dark[data-fill="solid"][data-theme="aurora"] { --accent: 96 165 250; --accent-strong: 59 130 246; }
 }

@@ -9,21 +9,21 @@
     <div class="w-full min-h-screen flex items-center p-6 md:p-10 lg:p-12 bg-canvas transition-colors duration-300">
         <div class="max-w-6xl mx-auto w-full">
 
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold tracking-tight text-content">Appearance</h1>
+                <p class="mt-1 text-sm text-muted">
+                    Customize how your application interface looks and feels.
+                </p>
+                {{-- Saved indicator --}}
+                <p id="save-status" class="mt-2 text-xs text-green-600 font-semibold hidden">
+                    ✓ Saved
+                </p>
+            </header>
+
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-start">
 
                 {{-- Left Column — Controls --}}
                 <div class="lg:col-span-3 space-y-4">
-
-                    <header class="mb-8">
-                        <h1 class="text-3xl font-bold tracking-tight text-content">Appearance</h1>
-                        <p class="mt-1 text-sm text-muted">
-                            Customize how your application interface looks and feels.
-                        </p>
-                        {{-- Saved indicator --}}
-                        <p id="save-status" class="mt-2 text-xs text-green-600 font-semibold hidden">
-                            ✓ Saved
-                        </p>
-                    </header>
 
                     {{-- Theme Mode --}}
                     <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
@@ -92,7 +92,7 @@
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Green</span>
                             </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-violet"
+                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-blue-600"
                                     data-theme="aurora" data-fill="solid">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
                                 <span>Blue</span>

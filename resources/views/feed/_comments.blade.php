@@ -11,7 +11,7 @@
             @csrf
             <textarea name="content" rows="2"
                       placeholder="Write a comment..."
-                      class="w-full border border-line rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent/40"
+                      class="w-full bg-surface-muted text-content border border-line rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent/40"
                       required>{{ old('content') }}</textarea>
             @error('content')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -140,7 +140,7 @@
                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                             <input type="text" name="content"
                                    placeholder="Reply..."
-                                   class="flex-1 border border-line rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-accent/40">
+                                   class="flex-1 bg-surface-muted text-content border border-line rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-accent/40">
                             <button type="submit"
                                     class="text-xs bg-surface-muted hover:bg-accent/15 text-content hover:text-accent px-3 py-1.5 rounded-lg transition">
                                 Reply

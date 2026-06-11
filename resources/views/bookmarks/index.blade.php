@@ -1,11 +1,13 @@
 <x-app-layout>
     <x-slot name="title">Bookmarks — MiraiStudy</x-slot>
 
-    <div class="flex justify-center">
-        <div class="w-full max-w-[720px]">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {{-- Main column — bookmarked posts --}}
+        <div class="lg:col-span-2">
 
             {{-- Header --}}
-            <div class="mb-5"> 
+            <div class="mb-5">
                 <h1 class="text-xl font-bold text-content">Bookmarks</h1>
                 <p class="text-sm text-muted mt-0.5">Posts you've saved for later</p>
             </div>
@@ -35,11 +37,31 @@
             <div id="loading-indicator" style="display:none; text-align:center; padding:1rem;">
                 Loading...
             </div>
-
         </div>
+
+        {{-- Sidebar — in-column comment drawer (feed-style, sticky, no backdrop) plus
+             quick links. The drawer box stays hidden until a comment button is clicked;
+             post cards dispatch `open-comments` and this aside listens for it. --}}
+        <aside class="space-y-4"
+               x-data="commentDrawer()"
+               x-on:open-comments.window="open($event.detail)">
+
+            @include('feed._comment-drawer')
+
+            <div class="bg-surface border border-line rounded-xl p-5">
+                <h3 class="font-semibold text-content mb-3">Quick Links</h3>
+                <ul class="space-y-2 text-sm text-muted">
+                    <li><a href="{{ route('exams.index') }}" class="hover:text-accent">Exam Papers</a></li>
+                    <li><a href="{{ route('quiz.index') }}" class="hover:text-accent">Take a Quiz</a></li>
+                    <li><a href="{{ route('timer.index') }}" class="hover:text-accent">Focus Timer</a></li>
+                </ul>
+            </div>
+        </aside>
+
     </div>
 
     @push('scripts')
+    @include('feed._comment-drawer-script')
     <script>
         (function () {
             const container = document.getElementById('posts-container');
