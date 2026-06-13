@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
     // --- Settings ---
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::patch('/settings/theme-mode', [SettingsController::class, 'updateThemeMode'])->name('settings.theme-mode');
+    Route::patch('/settings/two-factor', [SettingsController::class, 'updateTwoFactor'])->name('settings.two-factor');
 
     // --- Posts ---
     // IMPORTANT: static routes (/posts/create) must come before wildcard (/posts/{post})

@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\OtpService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -28,24 +28,41 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, OtpService $otp): RedirectResponse
     {
+        // Normalise the username to lowercase before validating / storing.
+        $request->merge([
+            'username' => strtolower((string) $request->input('username')),
+        ]);
+
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'min:3', 'max:30', 'lowercase', 'regex:/^[a-z0-9]+$/', 'unique:'.User::class],
+            'display_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'username.regex' => 'Username may only contain letters and numbers.',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'username' => $request->username,
+            'display_name' => $request->display_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Don't sign the user in yet — email must be verified first. Issue a code and
+        // hand off to the shared OTP challenge screen (see OtpChallengeController).
+        $otp->issue($user, 'email_verification');
 
-        return redirect(route('dashboard', absolute: false));
+        $request->session()->put('otp_challenge', [
+            'user_id'  => $user->id,
+            'purpose'  => 'email_verification',
+            'remember' => false,
+        ]);
+
+        return redirect()->route('otp.challenge');
     }
 }

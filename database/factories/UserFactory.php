@@ -37,4 +37,14 @@ class UserFactory extends Factory
     {
         return $this->state(['status' => 'suspended']);
     }
+
+    public function unverified(): static
+    {
+        return $this->state(['email_verified_at' => null]);
+    }
+
+    public function twoFactor(): static
+    {
+        return $this->state(['two_factor_enabled' => true]);
+    }
 }

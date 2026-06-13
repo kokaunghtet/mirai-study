@@ -9,7 +9,7 @@
         <div class="bg-surface rounded-xl shadow-xl p-8 w-full max-w-md mx-4">
             <h2 class="text-xl font-bold text-content mb-2">Join MiraiStudy</h2>
             <p class="text-muted text-sm mb-6">
-                Create a free account to like, comment, bookmark posts and more.
+                Create a free account or log in with an existing account to use the site with full potential.
             </p>
 
             <div class="flex flex-col gap-3">

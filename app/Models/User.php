@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,7 +10,10 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    // Use the trait for hasVerifiedEmail()/markEmailAsVerified() helpers, but do NOT
+    // implement the MustVerifyEmail *interface* — that would make the Registered event
+    // auto-send Breeze's link email and double up with our OTP code flow.
+    use HasFactory, MustVerifyEmailTrait, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'username',
@@ -20,6 +24,7 @@ class User extends Authenticatable
         'profile_image',
         'role',
         'status',
+        'two_factor_enabled',
     ];
 
     protected $hidden = [
@@ -32,6 +37,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_enabled' => 'boolean',
         ];
     }
 

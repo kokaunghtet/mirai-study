@@ -115,6 +115,26 @@
                         </div>
                     </section>
 
+                    {{-- Security --}}
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+                        <h2 class="text-base font-semibold mb-1 text-content">Security</h2>
+                        <p class="text-xs text-muted mb-4">Add an extra layer of protection to your account.</p>
+
+                        <div class="flex items-center justify-between gap-4 rounded-xl bg-surface-muted p-4">
+                            <div>
+                                <div class="text-sm font-semibold text-content">Two-factor authentication</div>
+                                <p class="mt-0.5 text-xs text-muted">Email a 6-digit code every time you log in.</p>
+                            </div>
+                            <button id="twofa-toggle" type="button" role="switch"
+                                    aria-checked="{{ auth()->user()->two_factor_enabled ? 'true' : 'false' }}"
+                                    data-enabled="{{ auth()->user()->two_factor_enabled ? '1' : '0' }}"
+                                    class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-line transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface">
+                                <span id="twofa-knob" class="inline-block h-5 w-5 translate-x-1 transform rounded-full bg-white shadow transition-transform"></span>
+                            </button>
+                        </div>
+                        <p id="twofa-status" class="mt-2 text-xs font-semibold hidden"></p>
+                    </section>
+
                     {{-- Save Button --}}
                     <div class="flex flex-col gap-2">
                         <button id="save-btn"
@@ -610,6 +630,61 @@
         saveBtn.textContent = 'Save Changes';
         saveBtn.disabled = false;
         saveBtn.className = saveBtnActiveClass();
+</script>
+@endpush
+
+@push('scripts')
+<script>
+    // ── Two-factor toggle: instant-save (mirrors the theme-mode quick save) ──────
+    (function () {
+        const toggle = document.getElementById('twofa-toggle');
+        const knob   = document.getElementById('twofa-knob');
+        const status = document.getElementById('twofa-status');
+        if (!toggle) return;
+
+        function paint(enabled) {
+            toggle.dataset.enabled = enabled ? '1' : '0';
+            toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+            toggle.classList.toggle('bg-accent', enabled);
+            toggle.classList.toggle('bg-line', !enabled);
+            knob.classList.toggle('translate-x-5', enabled);
+            knob.classList.toggle('translate-x-1', !enabled);
+        }
+
+        function flash(msg, ok) {
+            status.textContent = msg;
+            status.classList.remove('hidden', 'text-green-600', 'text-red-500');
+            status.classList.add(ok ? 'text-green-600' : 'text-red-500');
+            clearTimeout(flash._t);
+            flash._t = setTimeout(() => status.classList.add('hidden'), 2500);
+        }
+
+        paint(toggle.dataset.enabled === '1');
+
+        toggle.addEventListener('click', async () => {
+            const next = toggle.dataset.enabled !== '1';
+            paint(next);                 // optimistic
+            toggle.disabled = true;
+            try {
+                const res = await fetch('{{ route('settings.two-factor') }}', {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ two_factor_enabled: next }),
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                flash(next ? '✓ Two-factor enabled' : 'Two-factor disabled', true);
+            } catch (e) {
+                paint(!next);            // revert on failure
+                flash('Failed to update. Please try again.', false);
+            } finally {
+                toggle.disabled = false;
+            }
+        });
+    })();
 </script>
 @endpush
 </x-app-layout>

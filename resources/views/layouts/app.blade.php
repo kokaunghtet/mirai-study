@@ -14,12 +14,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
-        // Resolve "system" theme mode before first paint to avoid a flash of the wrong theme.
+        // Resolve light/dark before first paint to avoid a flash of the wrong theme.
+        // A local override (from the sidebar toggle) wins; otherwise use the saved preference.
         (function () {
-            if (@json($themeMode) === 'system' &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-            }
+            var stored = localStorage.getItem('themeMode');
+            var mode = stored || @json($themeMode);
+            var dark = mode === 'dark' ||
+                (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.classList.toggle('dark', dark);
         })();
     </script>
     <title>{{ $title ?? 'MiraiStudy' }}</title>
@@ -174,7 +176,19 @@
         </nav>
 
         {{-- User section at bottom --}}
-        <div class="shrink-0 border-t border-line p-3">
+        <div class="shrink-0 border-t border-line p-3 space-y-2">
+            {{-- Light / Dark mode toggle (available to everyone, incl. guests) --}}
+            <button type="button"
+                    x-data="themeToggle({ persistUrl: '{{ auth()->check() ? route('settings.theme-mode') : '' }}' })"
+                    @click="toggle()"
+                    class="w-full flex items-center rounded-lg text-sm font-medium text-muted hover:bg-surface-muted hover:text-content transition-colors"
+                    :class="sidebarCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2.5'"
+                    :title="dark ? 'Switch to light mode' : 'Switch to dark mode'">
+                <i data-lucide="moon" x-show="!dark" class="w-5 h-5 shrink-0"></i>
+                <i data-lucide="sun" x-show="dark" class="w-5 h-5 shrink-0"></i>
+                <span x-show="!sidebarCollapsed" x-text="dark ? 'Light mode' : 'Dark mode'"></span>
+            </button>
+
             @auth
                 <div class="relative" x-data="{ userMenu: false }">
                     <button @click="userMenu = !userMenu"

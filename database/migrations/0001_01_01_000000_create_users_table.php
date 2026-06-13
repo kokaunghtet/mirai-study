@@ -21,8 +21,9 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->enum('role', ['admin', 'moderator', 'user'])->default('user');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            $table->boolean('two_factor_enabled')->default(false);
             $table->timestamps();
-            $table->softDeletes(); // adds deleted_at
+            $table->softDeletes();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
         });
