@@ -13,10 +13,6 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
         @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/auth-scene.js'])
 
         {{-- Auth portal switch choreography: forms cross-slide + blur, the card
@@ -131,13 +127,31 @@
                 transform: translateX(100%);
             }
 
+            /* ── Standalone step screens (OTP / forgot / reset): gentle slide-up on load ── */
+            .portal-step { animation: portal-step-in .5s var(--portal-ease) both; }
+            @keyframes portal-step-in {
+                from { opacity: 0; transform: translateY(12px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+
+            /* ── OTP cells shake briefly when a submitted code is rejected ── */
+            .otp-shake { animation: otp-shake .4s ease both; }
+            @keyframes otp-shake {
+                10%, 90% { transform: translateX(-1px); }
+                20%, 80% { transform: translateX(2px); }
+                30%, 50%, 70% { transform: translateX(-4px); }
+                40%, 60% { transform: translateX(4px); }
+            }
+
             @media (prefers-reduced-motion: reduce) {
                 .auth-portal-card,
                 .auth-portal-card.is-switching,
                 .portal-form,
                 .portal-form.active > *,
                 .portal-form-container.h-anim,
-                .portal-switcher-indicator {
+                .portal-switcher-indicator,
+                .portal-step,
+                .otp-shake {
                     transition: none !important;
                     animation: none !important;
                 }
@@ -172,7 +186,7 @@
                     <span class="h-9 w-9 bg-gradient-to-br from-mirai-lime to-mirai-dark" role="img" aria-label="MiraiStudy"
                           style="-webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
                                          mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;"></span>
-                    <span class="bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-lg font-semibold text-transparent">MiraiStudy</span>
+                    <span class="bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-2xl font-semibold text-transparent">MiraiStudy</span>
                 </a>
 
                 {{ $slot }}

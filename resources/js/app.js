@@ -55,6 +55,69 @@ Alpine.data('themeToggle', (opts = {}) => ({
     },
 }));
 
+// ── Six-box OTP input (login/2FA challenge + password-reset) ──
+// Six separate cells that mirror into one hidden field. Type to auto-advance,
+// Backspace to step back, arrows to move, paste a full code to fill them all,
+// and (when autosubmit) the form submits as soon as every cell is filled.
+Alpine.data('otpInput', (opts = {}) => ({
+    length: opts.length || 6,
+    autosubmit: opts.autosubmit !== false,
+    autofocus: opts.autofocus !== false,
+    digits: Array(opts.length || 6).fill(''),
+
+    get code() { return this.digits.join(''); },
+
+    boxes() { return [...this.$root.querySelectorAll('[data-otp-box]')]; },
+
+    init() {
+        if (this.autofocus) this.$nextTick(() => this.boxes()[0]?.focus());
+    },
+
+    onInput(i, e) {
+        // Keep only the last typed digit (handles fast typing / overtype).
+        const digit = e.target.value.replace(/\D/g, '').slice(-1);
+        this.digits[i] = digit;
+        e.target.value = digit; // resync the cell even when a non-digit was rejected
+        if (digit && i < this.length - 1) this.boxes()[i + 1]?.focus();
+        this.maybeSubmit();
+    },
+
+    onKeydown(i, e) {
+        if (e.key === 'Backspace' && !this.digits[i] && i > 0) {
+            e.preventDefault();
+            this.digits[i - 1] = '';
+            this.boxes()[i - 1]?.focus();
+        } else if (e.key === 'ArrowLeft' && i > 0) {
+            e.preventDefault();
+            this.boxes()[i - 1]?.focus();
+        } else if (e.key === 'ArrowRight' && i < this.length - 1) {
+            e.preventDefault();
+            this.boxes()[i + 1]?.focus();
+        }
+    },
+
+    onPaste(e) {
+        const chars = (e.clipboardData?.getData('text') || '').replace(/\D/g, '').slice(0, this.length).split('');
+        if (!chars.length) return;
+        for (let i = 0; i < this.length; i++) this.digits[i] = chars[i] || '';
+        const next = Math.min(chars.length, this.length - 1);
+        this.boxes()[next]?.focus();
+        this.maybeSubmit();
+    },
+
+    maybeSubmit() {
+        if (this.autosubmit && this.code.length === this.length) {
+            const form = this.$root.closest('form');
+            if (!form) return;
+            // Set the hidden field synchronously — Alpine flushes the :value
+            // binding on a later tick, but requestSubmit() fires immediately.
+            const hidden = this.$root.querySelector('[data-otp-value]');
+            if (hidden) hidden.value = this.code;
+            form.requestSubmit();
+        }
+    },
+}));
+
 // ── Auth portal: pill toggle, live register validation, and the knowledge tree ──
 Alpine.data('portal', (opts = {}) => ({
     mode: opts.mode || 'login',         // the chosen tab — flips first (pill + card tilt)

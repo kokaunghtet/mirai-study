@@ -58,8 +58,8 @@ class RegisteredUserController extends Controller
         $otp->issue($user, 'email_verification');
 
         $request->session()->put('otp_challenge', [
-            'user_id'  => $user->id,
-            'purpose'  => 'email_verification',
+            'user_id' => $user->id,
+            'purpose' => 'email_verification',
             'remember' => false,
         ]);
 

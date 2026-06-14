@@ -54,8 +54,8 @@ class AuthenticatedSessionController extends Controller
         $otp->issue($user, $purpose);
 
         $request->session()->put('otp_challenge', [
-            'user_id'  => $user->id,
-            'purpose'  => $purpose,
+            'user_id' => $user->id,
+            'purpose' => $purpose,
             'remember' => $request->boolean('remember'),
         ]);
 

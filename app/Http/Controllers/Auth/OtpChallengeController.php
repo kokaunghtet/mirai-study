@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Auth\Concerns\MasksEmail;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\OtpService;
@@ -13,9 +14,9 @@ use Illuminate\View\View;
 
 class OtpChallengeController extends Controller
 {
-    public function __construct(protected OtpService $otp)
-    {
-    }
+    use MasksEmail;
+
+    public function __construct(protected OtpService $otp) {}
 
     /**
      * Show the 6-digit code entry screen for the pending challenge.
@@ -29,8 +30,8 @@ class OtpChallengeController extends Controller
         }
 
         return view('auth.otp-challenge', [
-            'purpose'      => $challenge['purpose'],
-            'maskedEmail'  => $this->maskEmail($user->email),
+            'purpose' => $challenge['purpose'],
+            'maskedEmail' => $this->maskEmail($user->email),
         ]);
     }
 
@@ -85,23 +86,5 @@ class OtpChallengeController extends Controller
         $this->otp->issue($user, $challenge['purpose']);
 
         return back()->with('status', 'A new code has been sent to your email.');
-    }
-
-    /**
-     * Turn "kaung@example.com" into "k•••g@example.com" for display.
-     */
-    protected function maskEmail(string $email): string
-    {
-        [$name, $domain] = array_pad(explode('@', $email, 2), 2, '');
-
-        if ($name === '' || $domain === '') {
-            return $email;
-        }
-
-        $visible = mb_strlen($name) <= 2
-            ? mb_substr($name, 0, 1)
-            : mb_substr($name, 0, 1).str_repeat('•', 3).mb_substr($name, -1);
-
-        return $visible.'@'.$domain;
     }
 }
