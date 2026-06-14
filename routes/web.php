@@ -26,9 +26,6 @@ Route::get('/', fn() => redirect()->route('feed.index'));
 // Feed
 Route::get('/feed', [PostController::class, 'index'])->name('feed.index');
 
-// User profiles (public)
-Route::get('/users/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
-
 // Exam section (browse only)
 Route::get('/exams', [ExamCategoryController::class, 'index'])->name('exams.index');
 Route::get('/exams/{category}', [ExamCategoryController::class, 'show'])->name('exams.show');

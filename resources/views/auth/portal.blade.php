@@ -36,7 +36,7 @@
                 @csrf
                 <input type="hidden" name="form_intent" value="login">
 
-                <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-2xl font-semibold tracking-tight text-transparent">Welcome back</h1>
+                <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-lg font-semibold tracking-tight text-transparent">Welcome back</h1>
                 <p class="mb-6 text-xs text-muted">Sign in to continue your focus journey.</p>
 
                 <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -78,6 +78,25 @@
                     Sign in
                 </button>
 
+                {{-- Divider --}}
+                <div class="my-5 flex items-center gap-3">
+                    <span class="h-px flex-1 bg-line"></span>
+                    <span class="text-[10px] font-medium uppercase tracking-widest text-muted">or</span>
+                    <span class="h-px flex-1 bg-line"></span>
+                </div>
+
+                {{-- Continue with Google (Socialite) --}}
+                <a href="{{ route('auth.google') }}"
+                   class="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-surface py-3 text-xs font-semibold uppercase tracking-widest text-content transition hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    <svg class="h-4 w-4" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
+                        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+                        <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.6 16.2 44 24 44z"/>
+                        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C39.9 36.2 44 30.7 44 24c0-1.3-.1-2.3-.4-3.5z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                </a>
+
                 <p class="mt-5 text-center text-[11px] font-medium text-muted">
                     New to MiraiStudy?
                     <button type="button" @click="go('register')" class="font-semibold text-accent hover:underline">Create an account</button>
@@ -91,7 +110,7 @@
                 @csrf
                 <input type="hidden" name="form_intent" value="register">
 
-                <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-2xl font-semibold tracking-tight text-transparent">Create your account</h1>
+                <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-lg font-semibold tracking-tight text-transparent">Create your account</h1>
                 <p class="mb-5 text-xs text-muted">Just a few details and you're in.</p>
 
                 {{-- Display name (entered first; drives the username suggestion) --}}
@@ -115,7 +134,7 @@
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-semibold text-muted">@</span>
                     <input type="text" name="username" x-model="reg.username" @input="onUsername()" required
                            autocomplete="off" autocapitalize="none" spellcheck="false"
-                           placeholder="Username"
+                           placeholder="user123"
                            class="w-full rounded-xl border border-line bg-surface py-2.5 pl-9 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span class="absolute right-3.5 top-1/2 -translate-y-1/2" x-show="usernameStatus === 'checking'" x-cloak>
                         <span class="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-accent"></span>
@@ -200,6 +219,25 @@
                         class="mt-5 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     Create account
                 </button>
+
+                {{-- Divider --}}
+                <div class="my-5 flex items-center gap-3">
+                    <span class="h-px flex-1 bg-line"></span>
+                    <span class="text-[10px] font-medium uppercase tracking-widest text-muted">or</span>
+                    <span class="h-px flex-1 bg-line"></span>
+                </div>
+
+                {{-- Continue with Google (Socialite) --}}
+                <a href="{{ route('auth.google') }}"
+                   class="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-surface py-3 text-xs font-semibold uppercase tracking-widest text-content transition hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    <svg class="h-4 w-4" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
+                        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+                        <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.6 16.2 44 24 44z"/>
+                        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C39.9 36.2 44 30.7 44 24c0-1.3-.1-2.3-.4-3.5z"/>
+                    </svg>
+                    <span>Sign up with Google</span>
+                </a>
 
                 <p class="mt-4 text-center text-[11px] font-medium text-muted">
                     Already have an account?

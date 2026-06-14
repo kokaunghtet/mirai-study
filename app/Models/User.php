@@ -20,6 +20,7 @@ class User extends Authenticatable
         'display_name',
         'email',
         'password',
+        'google_id',
         'bio',
         'profile_image',
         'role',

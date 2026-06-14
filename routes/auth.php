@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\OtpChallengeController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -28,6 +29,13 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    // Google OAuth (Socialite). redirect() sends the user to Google; callback() finds or
+    // creates the local user, then logs them in — Google has already verified the email,
+    // so this skips the OTP challenge entirely. See GoogleController.
+    Route::get('auth/google/redirect', [GoogleController::class, 'redirect'])
+        ->name('auth.google');
+    Route::get('auth/google/callback', [GoogleController::class, 'callback']);
 
     // OTP challenge (email verification at sign-up / unverified login, and 2FA on login).
     // Guest-accessible: the pending user lives in the session until the code is verified.
