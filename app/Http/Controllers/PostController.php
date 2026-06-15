@@ -1,12 +1,11 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -20,25 +19,25 @@ class PostController extends Controller
 
         if (auth()->check()) {
             $userId = auth()->id();
-            $with['bookmarks'] = fn($q) => $q->where('user_id', $userId);
-            $with['likes']     = fn($q) => $q->where('user_id', $userId);
+            $with['bookmarks'] = fn ($q) => $q->where('user_id', $userId);
+            $with['likes'] = fn ($q) => $q->where('user_id', $userId);
         }
 
-        $query = Post::with($with)->withCount(['likes', 'comments']);
+        $query = Post::with($with)->withCount(['likes', 'comments', 'bookmarks']);
 
         // 1. Search filter
         if ($request->filled('search')) {
             $search = $request->input('search');
             // Escape LIKE wildcards
             $escapedSearch = addcslashes($search, '%_\\');
-            
+
             $query->where(function ($q) use ($escapedSearch) {
                 $q->where('title', 'like', "%{$escapedSearch}%")
-                  ->orWhere('content', 'like', "%{$escapedSearch}%")
-                  ->orWhereHas('user', function ($uq) use ($escapedSearch) {
-                      $uq->where('display_name', 'like', "%{$escapedSearch}%")
-                         ->orWhere('username', 'like', "%{$escapedSearch}%");
-                  });
+                    ->orWhere('content', 'like', "%{$escapedSearch}%")
+                    ->orWhereHas('user', function ($uq) use ($escapedSearch) {
+                        $uq->where('display_name', 'like', "%{$escapedSearch}%")
+                            ->orWhere('username', 'like', "%{$escapedSearch}%");
+                    });
             });
         }
 
@@ -49,87 +48,92 @@ class PostController extends Controller
             });
         }
 
-        // 3. Sort
-        if ($request->input('sort') === 'popular') {
-            // latest() is the final tiebreaker so tied rows (e.g. 0 likes/0
-            // comments) keep a deterministic order across paginated requests,
-            // otherwise infinite scroll duplicates/skips posts.
-            $query->orderByDesc('likes_count')
-                  ->orderByDesc('comments_count')
-                  ->latest();
-        } else {
-            $query->latest();
-        }
+        // 3. "For You" ranking — recency + engagement + a boost for authors
+        //    the viewer follows, plus a per-session jitter so the feed feels
+        //    alive on revisit. The order is byte-stable across the separate
+        //    AJAX requests infinite scroll fires (see Post::scopeForYouRanked).
+        $followedIds = auth()->check()
+            ? auth()->user()->following()->wherePivot('status', 'accepted')->pluck('users.id')->all()
+            : [];
+
+        // Seed is derived from the session id + today's date: stable within a
+        // scroll session (so paging never duplicates/skips), but rotates daily
+        // so the order subtly reshuffles between visits.
+        $seed = (int) (sprintf('%u', crc32($request->session()->getId().now()->toDateString())) % 100000);
+
+        $query->forYouRanked($followedIds, $seed);
 
         $posts = $query->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
             return response()->json([
-                'html'          => view('feed._posts', compact('posts'))->render(),
+                'html' => view('feed._posts', compact('posts'))->render(),
                 'next_page_url' => $posts->nextPageUrl(),
             ]);
         }
 
-        $tags = \App\Models\Tag::all();
+        $tags = Tag::all();
+
         return view('feed.index', compact('posts', 'tags'));
     }
 
     public function create()
     {
         $tags = Tag::all();
+
         return view('feed.create', compact('tags'));
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'     => 'nullable|string|max:255',
-            'content'   => 'required|string|max:5000',
-            'tags'      => 'nullable|array',
-            'tags.*'    => 'exists:tags,id',
+            'title' => 'nullable|string|max:255',
+            'content' => 'required|string|max:5000',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
-            'files.*'   => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
         ]);
-        
+
         $post = $request->user()->posts()->create([
-            'title'   => $validated['title'] ?? null,
+            'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
         ]);
-        
-        if (!empty($validated['tags'])) {
+
+        if (! empty($validated['tags'])) {
             $post->tags()->attach($validated['tags']);
         }
-        
+
         // Handle media uploads (images/videos)
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
                 $path = $file->store('posts/media', 'public');
-                
+
                 $post->media()->create([
-                    'url'  => Storage::url($path),
+                    'url' => Storage::url($path),
                     'type' => 'image',
                 ]);
             }
         }
-        
+
         // Handle document/file uploads
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('posts/files', 'public');
-                
+
                 $post->media()->create([
-                    'url'      => Storage::url($path),
-                    'type'     => 'document',
+                    'url' => Storage::url($path),
+                    'type' => 'document',
                     'filename' => $file->getClientOriginalName(),
                     'filesize' => $file->getSize(),
                 ]);
             }
         }
-        
+
         return redirect()->route('posts.show', $post)
-        ->with('success', 'Post created successfully.');
+            ->with('success', 'Post created successfully.');
     }
-    
+
     // Anyone can view a single post
     public function show(Post $post)
     {
@@ -138,7 +142,7 @@ class PostController extends Controller
             'tags',
             'media',
             'likes',
-            'comments' => fn($q) => $q->whereNull('parent_id')
+            'comments' => fn ($q) => $q->whereNull('parent_id')
                 ->with(['user', 'replies.user', 'likes'])
                 ->latest(),
         ]);
@@ -164,25 +168,25 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validate([
-            'title'           => 'nullable|string|max:255',
-            'content'         => 'required|string|max:5000',
-            'tags'            => 'nullable|array',
-            'tags.*'          => 'exists:tags,id',
+            'title' => 'nullable|string|max:255',
+            'content' => 'required|string|max:5000',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
-            'files.*'         => 'nullable|file|max:20480',
-            'remove_media'    => 'nullable|array',
-            'remove_media.*'  => 'exists:post_media,id',
+            'files.*' => 'nullable|file|max:20480',
+            'remove_media' => 'nullable|array',
+            'remove_media.*' => 'exists:post_media,id',
         ]);
 
         $post->update([
-            'title'   => $validated['title'] ?? null,
+            'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
         ]);
 
         $post->tags()->sync($validated['tags'] ?? []);
 
         // Remove media the user deleted
-        if (!empty($validated['remove_media'])) {
+        if (! empty($validated['remove_media'])) {
             $post->media()->whereIn('id', $validated['remove_media'])->delete();
         }
 
@@ -192,7 +196,7 @@ class PostController extends Controller
                 $path = $file->store('posts/media', 'public');
 
                 $post->media()->create([
-                    'url'  => Storage::url($path),
+                    'url' => Storage::url($path),
                     'type' => 'image',
                 ]);
             }
@@ -203,8 +207,8 @@ class PostController extends Controller
                 $path = $file->store('posts/files', 'public');
 
                 $post->media()->create([
-                    'url'      => Storage::url($path),
-                    'type'     => 'document',
+                    'url' => Storage::url($path),
+                    'type' => 'document',
                     'filename' => $file->getClientOriginalName(),
                     'filesize' => $file->getSize(),
                 ]);

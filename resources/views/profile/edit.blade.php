@@ -10,7 +10,7 @@
                 <p class="text-xs text-muted mt-0.5">Update your display name, username, bio, and photo.</p>
             </div>
 
-            <form method="POST" action="{{ route('profile.update') }}"
+            <form method="POST" action="{{ route('profile.update') }}" data-loading
                   enctype="multipart/form-data"
                   class="px-6 py-5 space-y-5"
                   x-data="profileEditor()">
@@ -106,7 +106,7 @@
                 </div>
 
                 <div class="pt-1 flex justify-end">
-                    <button type="submit"
+                    <button type="submit" data-loading-text="Saving…"
                             class="rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95">
                         Save Changes
                     </button>
@@ -185,7 +185,7 @@
                     Delete My Account
                 </button>
 
-                <form method="POST" action="{{ route('profile.destroy') }}"
+                <form method="POST" action="{{ route('profile.destroy') }}" data-loading
                       x-show="confirm" class="space-y-3">
                     @csrf
                     @method('DELETE')
@@ -203,7 +203,7 @@
                     @endif
 
                     <div class="flex items-center gap-2">
-                        <button type="submit"
+                        <button type="submit" data-loading-text="Deleting…"
                                 class="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-bold text-white hover:bg-red-700 transition-colors">
                             Confirm Delete
                         </button>

@@ -7,7 +7,7 @@
 
     {{-- Comment Form --}}
     @auth
-        <form method="POST" action="{{ route('comments.store', $post) }}" class="mb-6">
+        <form method="POST" action="{{ route('comments.store', $post) }}" data-loading class="mb-6">
             @csrf
             <textarea name="content" rows="2"
                       placeholder="Write a comment..."
@@ -16,7 +16,7 @@
             @error('content')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
-            <button type="submit"
+            <button type="submit" data-loading-text="Posting…"
                     class="mt-2 bg-accent text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-accent-strong">
                 Post Comment
             </button>
@@ -64,6 +64,7 @@
                                     <form method="POST"
                                           action="{{ route('comments.destroy', $comment) }}"
                                           onsubmit="return confirm('Delete this comment?')"
+                                          data-loading
                                           class="inline-flex items-center">
                                         @csrf
                                         @method('DELETE')
@@ -112,6 +113,7 @@
                                                     <form method="POST"
                                                           action="{{ route('comments.destroy', $reply) }}"
                                                           onsubmit="return confirm('Delete this reply?')"
+                                                          data-loading
                                                           class="flex items-center">
                                                         @csrf
                                                         @method('DELETE')
@@ -135,6 +137,7 @@
                     @auth
                         <form method="POST"
                               action="{{ route('comments.store', $post) }}"
+                              data-loading
                               class="mt-2 flex gap-2">
                             @csrf
                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">

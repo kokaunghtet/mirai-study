@@ -77,6 +77,7 @@ class ForgotPasswordController extends Controller
 
         return view('auth.password-otp', [
             'maskedEmail' => $this->maskEmail($user->email),
+            'secondsRemaining' => $this->otp->secondsUntilExpiry($user, 'password_reset'),
         ]);
     }
 

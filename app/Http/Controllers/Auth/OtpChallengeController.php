@@ -32,6 +32,7 @@ class OtpChallengeController extends Controller
         return view('auth.otp-challenge', [
             'purpose' => $challenge['purpose'],
             'maskedEmail' => $this->maskEmail($user->email),
+            'secondsRemaining' => $this->otp->secondsUntilExpiry($user, $challenge['purpose']),
         ]);
     }
 

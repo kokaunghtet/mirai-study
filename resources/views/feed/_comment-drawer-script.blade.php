@@ -71,7 +71,7 @@
                     e.preventDefault();
 
                     const submitBtn = form.querySelector('[type=submit]');
-                    if (submitBtn) submitBtn.disabled = true;
+                    window.showButtonLoading(submitBtn);
 
                     try {
                         const res = await fetch(form.action, {
@@ -89,7 +89,7 @@
                         this.syncCount();
                     } catch (err) {
                         console.error('Comment action failed:', err);
-                        if (submitBtn) submitBtn.disabled = false;
+                        window.resetButtonLoading(submitBtn);
                     }
                 });
             },

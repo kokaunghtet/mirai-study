@@ -15,7 +15,7 @@
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <form method="POST" action="{{ route('password.email') }}" class="text-left">
+        <form method="POST" action="{{ route('password.email') }}" data-loading class="text-left">
             @csrf
 
             <label class="mb-1.5 block pl-0.5 text-[11px] font-semibold text-content/80">Email address</label>
@@ -29,7 +29,7 @@
             </div>
             <x-input-error :messages="$errors->get('email')" class="mt-1.5 px-0.5" />
 
-            <button type="submit"
+            <button type="submit" data-loading-text="Sending…"
                     class="mt-5 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                 Send reset code
             </button>

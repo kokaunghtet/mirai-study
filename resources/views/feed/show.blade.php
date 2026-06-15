@@ -157,7 +157,7 @@
                         {{-- Like --}}
                         @auth
                             <?php $liked = $post->likes->contains('user_id', auth()->id()); ?>
-                            <form method="POST" action="{{ route('posts.like', $post) }}">
+                            <form method="POST" action="{{ route('posts.like', $post) }}" data-loading>
                                 @csrf
                                 <button type="submit"
                                         class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 {{ $liked ? 'text-accent' : 'text-muted' }} hover:bg-surface-muted hover:text-accent transition-all">
@@ -189,7 +189,7 @@
                         {{-- Bookmark --}}
                         @auth
                             @php $isBookmarked = $post->bookmarks->isNotEmpty(); @endphp
-                            <form method="POST" action="{{ route('posts.bookmark', $post) }}">
+                            <form method="POST" action="{{ route('posts.bookmark', $post) }}" data-loading>
                                 @csrf
                                 <button type="submit"
                                         title="{{ $isBookmarked ? 'Remove bookmark' : 'Bookmark' }}"

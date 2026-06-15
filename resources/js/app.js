@@ -118,6 +118,40 @@ Alpine.data('otpInput', (opts = {}) => ({
     },
 }));
 
+// ── OTP expiry countdown (challenge screen) ──
+// Counts down the seconds left on the current code, server-computed so it's
+// immune to client-clock skew. At 0 it flips `expired` so the view can show an
+// "expired" message and steer the user to resend. A resend reloads the page,
+// which re-seeds a fresh countdown.
+Alpine.data('otpCountdown', (opts = {}) => ({
+    remaining: Math.max(0, opts.seconds || 0),
+    intervalId: null,
+
+    init() {
+        if (this.remaining > 0) {
+            this.intervalId = setInterval(() => this.tick(), 1000);
+        }
+    },
+
+    tick() {
+        if (this.remaining > 0) this.remaining--;
+        if (this.remaining <= 0) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    },
+
+    get expired() { return this.remaining <= 0; },
+
+    get display() {
+        const m = Math.floor(this.remaining / 60);
+        const s = this.remaining % 60;
+        return `${m}:${String(s).padStart(2, '0')}`;
+    },
+
+    destroy() { clearInterval(this.intervalId); },
+}));
+
 // ── Auth portal: pill toggle, live register validation, and the knowledge tree ──
 Alpine.data('portal', (opts = {}) => ({
     mode: opts.mode || 'login',         // the chosen tab — flips first (pill + card tilt)
@@ -309,3 +343,53 @@ window.appendWithIcons = (container, html) => {
         node = node.nextElementSibling;
     }
 };
+
+// ── Button loading state ──────────────────────────────────────────────
+// Swaps a submit button's contents for a small spinning leaf (.leaf-spin in
+// app.css) and disables it while a request is in flight. Shared by the global
+// submit hook below (native full-page form submits) and the comment drawer's
+// AJAX submit handler.
+const LEAF_SPIN_SVG =
+    '<svg class="leaf-spin h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+    ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>' +
+    '<path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
+
+window.showButtonLoading = (btn, text) => {
+    if (!btn || btn.dataset.loadingActive) return;
+    btn.dataset.loadingActive = '1';
+    btn.dataset.loadingPrev = btn.innerHTML;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    const label = (text ?? btn.dataset.loadingText ?? '').trim();
+    btn.innerHTML =
+        '<span class="inline-flex items-center justify-center gap-2">' +
+        LEAF_SPIN_SVG +
+        (label ? `<span>${label}</span>` : '') +
+        '</span>';
+};
+
+window.resetButtonLoading = (btn) => {
+    if (!btn || !btn.dataset.loadingActive) return;
+    btn.innerHTML = btn.dataset.loadingPrev || '';
+    btn.disabled = false;
+    btn.removeAttribute('aria-busy');
+    delete btn.dataset.loadingActive;
+    delete btn.dataset.loadingPrev;
+    window.renderIcons(btn); // re-render any restored Lucide <i> (e.g. the trash icon)
+};
+
+// Any <form data-loading> shows the spinner on its submit button when it submits.
+// Skips submits already cancelled (confirm()) or handled elsewhere (drawer AJAX
+// preventDefault), since those set defaultPrevented before this bubbles to document.
+document.addEventListener('submit', (e) => {
+    if (e.defaultPrevented) return;
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-loading')) return;
+    window.showButtonLoading(form.querySelector('[type=submit], button:not([type])'));
+});
+
+// bfcache back-nav can restore a page with a button still spinning — un-stick them.
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('[data-loading-active]').forEach((b) => window.resetButtonLoading(b));
+});

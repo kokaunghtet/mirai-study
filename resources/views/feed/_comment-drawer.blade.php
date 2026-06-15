@@ -34,8 +34,8 @@
 
     {{-- Body --}}
     <div class="flex-1 overflow-y-auto px-5 py-4">
-        <div x-show="loading" class="py-10 text-center text-sm text-muted">
-            Loading comments…
+        <div x-show="loading">
+            <x-leaf-loader class="py-6" />
         </div>
         {{-- Comments markup is injected here --}}
         <div x-ref="content" x-show="!loading"></div>

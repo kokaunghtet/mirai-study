@@ -27,8 +27,8 @@ class OtpService
         $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         $otp = $user->otps()->create([
-            'otp_code'   => $code,
-            'purpose'    => $purpose,
+            'otp_code' => $code,
+            'purpose' => $purpose,
             'expires_at' => now()->addMinutes(self::TTL_MINUTES),
         ]);
 
@@ -58,5 +58,20 @@ class OtpService
         $otp->update(['used_at' => now()]);
 
         return true;
+    }
+
+    /**
+     * Seconds until the user's latest still-valid code for this purpose expires (0 if none).
+     */
+    public function secondsUntilExpiry(User $user, string $purpose): int
+    {
+        $otp = $user->otps()
+            ->where('purpose', $purpose)
+            ->whereNull('used_at')
+            ->where('expires_at', '>', Carbon::now())
+            ->latest('id')
+            ->first();
+
+        return $otp ? max(0, $otp->expires_at->timestamp - Carbon::now()->timestamp) : 0;
     }
 }

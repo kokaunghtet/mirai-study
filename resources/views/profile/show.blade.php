@@ -175,9 +175,7 @@
         </div>
 
         <div id="scroll-sentinel"></div>
-        <div id="loading-indicator" style="display:none; text-align:center; padding:1rem;">
-            Loading...
-        </div>
+        <x-leaf-loader id="loading-indicator" style="display:none;" />
     </div>
 
     @push('scripts')
@@ -186,6 +184,15 @@
             const container = document.getElementById('posts-container');
             const sentinel  = document.getElementById('scroll-sentinel');
             const loader    = document.getElementById('loading-indicator');
+
+            // The loader holds an animated leaf SVG + a text span; update only the
+            // span so we never wipe the leaf. Empty msg = leaf-only (normal loading).
+            const loaderText = loader.querySelector('[data-loader-text]');
+            const setLoaderText = (msg = '') => {
+                if (!loaderText) return;
+                loaderText.textContent = msg;
+                loaderText.classList.toggle('hidden', msg === '');
+            };
 
             // Per-user + per-tab keys prevent cross-profile conflicts
             const SCROLL_KEY = 'profile_scroll_{{ $user->username }}_{{ $tab }}';
@@ -231,11 +238,11 @@
                 } catch (err) {
                     currentPage--;
                     console.error('Failed to load:', err);
-                    loader.innerHTML = 'Failed to load. Scroll to retry.';
+                    setLoaderText('Failed to load. Scroll to retry.');
                     loader.style.display = 'block';
                     setTimeout(() => {
                         loader.style.display = 'none';
-                        loader.innerHTML = 'Loading...';
+                        setLoaderText('');
                     }, 3000);
                 } finally {
                     isFetching = false;
@@ -268,7 +275,7 @@
                 sessionStorage.removeItem(PAGE_KEY);
 
                 loader.style.display = 'block';
-                loader.textContent = 'Restoring your place...';
+                setLoaderText('Restoring your place...');
 
                 for (let page = 2; page <= savedPage; page++) {
                     try {
@@ -287,7 +294,7 @@
                 }
 
                 loader.style.display = 'none';
-                loader.textContent = 'Loading...';
+                setLoaderText('');
 
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {

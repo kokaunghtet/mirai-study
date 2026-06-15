@@ -27,17 +27,17 @@
      while the outgoing one slides out and blurs. The container height animates to
      whichever form is active (JS-measured), and the card tilts + shines on switch. --}}
 <div class="portal-form-container" x-ref="formContainer" :class="{ 'h-anim': mounted }"
-     style="min-height: {{ $activeMode === 'register' ? '560px' : '360px' }};">
+     style="min-height: {{ $activeMode === 'register' ? '480px' : '360px' }};">
 
         {{-- ─────────────── LOGIN ─────────────── --}}
-            <form method="POST" action="{{ route('login') }}"
+            <form method="POST" action="{{ route('login') }}" data-loading
                   class="portal-form {{ $activeMode === 'login' ? 'active' : 'enter' }} mx-auto w-full max-w-[360px]"
                   x-ref="loginForm" :inert="activeForm !== 'login'">
                 @csrf
                 <input type="hidden" name="form_intent" value="login">
 
                 <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-lg font-semibold tracking-tight text-transparent">Welcome back</h1>
-                <p class="mb-6 text-xs text-muted">Sign in to continue your focus journey.</p>
+                <p class="mb-6 text-xs text-muted">Growth through Serenity</p>
 
                 <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -49,7 +49,7 @@
                     </span>
                     <input type="text" name="login" value="{{ old('login') }}" required autocomplete="username"
                            placeholder="username or name@example.com"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-4 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-4 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                 </div>
                 <x-input-error :messages="$errors->get('login')" class="mt-1.5 px-0.5" />
 
@@ -65,7 +65,7 @@
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </span>
                     <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-4 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-4 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                 </div>
 
                 <label class="mb-5 mt-4 flex items-center gap-2 pl-0.5">
@@ -73,7 +73,7 @@
                     <span class="text-xs text-muted">Remember me</span>
                 </label>
 
-                <button type="submit"
+                <button type="submit" data-loading-text="Signing in…"
                         class="w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     Sign in
                 </button>
@@ -104,14 +104,14 @@
             </form>
 
         {{-- ─────────────── REGISTER ─────────────── --}}
-            <form method="POST" action="{{ route('register') }}"
+            <form method="POST" action="{{ route('register') }}" data-loading
                   class="portal-form {{ $activeMode === 'register' ? 'active' : 'enter' }} mx-auto w-full max-w-[360px]"
                   x-ref="registerForm" :inert="activeForm !== 'register'">
                 @csrf
                 <input type="hidden" name="form_intent" value="register">
 
                 <h1 class="mb-1 bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-lg font-semibold tracking-tight text-transparent">Create your account</h1>
-                <p class="mb-5 text-xs text-muted">Just a few details and you're in.</p>
+                <p class="mb-4 text-xs text-muted">Nurturing Knowledge. Start your journey.</p>
 
                 {{-- Display name (entered first; drives the username suggestion) --}}
                 <label class="mb-1 block pl-0.5 text-[11px] font-semibold text-content/80">Display name</label>
@@ -121,7 +121,7 @@
                     </span>
                     <input type="text" name="display_name" x-model="reg.displayName" @input="onDisplayName()" required autocomplete="name"
                            placeholder="Your Full Name"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span x-show="steps[0]" x-transition.opacity class="absolute right-3.5 top-1/2 -translate-y-1/2 text-accent">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </span>
@@ -129,13 +129,13 @@
                 <x-input-error :messages="$errors->get('display_name')" class="mt-1 px-0.5" />
 
                 {{-- Username (auto-suggested from the display name) --}}
-                <label class="mb-1 mt-3 block pl-0.5 text-[11px] font-semibold text-content/80">Username</label>
+                <label class="mb-1 mt-2.5 block pl-0.5 text-[11px] font-semibold text-content/80">Username</label>
                 <div class="relative">
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-semibold text-muted">@</span>
                     <input type="text" name="username" x-model="reg.username" @input="onUsername()" required
                            autocomplete="off" autocapitalize="none" spellcheck="false"
                            placeholder="user123"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-9 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-9 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span class="absolute right-3.5 top-1/2 -translate-y-1/2" x-show="usernameStatus === 'checking'" x-cloak>
                         <span class="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-line border-t-accent"></span>
                     </span>
@@ -163,28 +163,32 @@
                 <x-input-error :messages="$errors->get('username')" class="mt-1 px-0.5" />
 
                 {{-- Email --}}
-                <label class="mb-1 mt-3 block pl-0.5 text-[11px] font-semibold text-content/80">Email address</label>
+                <label class="mb-1 mt-2.5 block pl-0.5 text-[11px] font-semibold text-content/80">Email address</label>
                 <div class="relative">
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                     </span>
                     <input type="email" name="email" x-model="reg.email" @input="validate()" required autocomplete="email"
                            placeholder="name@example.com"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span x-show="steps[2]" x-transition.opacity class="absolute right-3.5 top-1/2 -translate-y-1/2 text-accent">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </span>
                 </div>
                 <x-input-error :messages="$errors->get('email')" class="mt-1 px-0.5" />
 
+                {{-- Password + Confirm: paired two-column row --}}
+                <div class="mt-2.5 grid grid-cols-2 gap-3 items-start">
+
                 {{-- Password --}}
-                <label class="mb-1 mt-3 block pl-0.5 text-[11px] font-semibold text-content/80">Password</label>
+                <div>
+                <label class="mb-1 block pl-0.5 text-[11px] font-semibold text-content/80">Password</label>
                 <div class="relative">
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </span>
                     <input :type="showPw ? 'text' : 'password'" name="password" x-model="reg.password" @input="validate()" required autocomplete="new-password" placeholder="••••••••"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <button type="button" @click="showPw = !showPw" tabindex="-1"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-content">
                         <svg x-show="!showPw" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -201,27 +205,31 @@
                     <span class="text-[9px] font-bold uppercase tracking-wide text-muted" x-text="strengthLabel"></span>
                 </div>
                 <x-input-error :messages="$errors->get('password')" class="mt-1 px-0.5" />
+                </div>
 
                 {{-- Confirm password --}}
-                <label class="mb-1 mt-3 block pl-0.5 text-[11px] font-semibold text-content/80">Confirm password</label>
+                <div>
+                <label class="mb-1 block pl-0.5 text-[11px] font-semibold text-content/80">Confirm password</label>
                 <div class="relative">
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </span>
                     <input :type="showPw ? 'text' : 'password'" name="password_confirmation" x-model="reg.confirmation" @input="validate()" required autocomplete="new-password" placeholder="••••••••"
-                           class="w-full rounded-xl border border-line bg-surface py-2.5 pl-11 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span x-show="steps[4]" x-transition.opacity class="absolute right-3.5 top-1/2 -translate-y-1/2 text-accent">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </span>
                 </div>
+                </div>
+                </div>
 
-                <button type="submit"
-                        class="mt-5 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                <button type="submit" data-loading-text="Creating account…"
+                        class="mt-4 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     Create account
                 </button>
 
                 {{-- Divider --}}
-                <div class="my-5 flex items-center gap-3">
+                <div class="my-4 flex items-center gap-3">
                     <span class="h-px flex-1 bg-line"></span>
                     <span class="text-[10px] font-medium uppercase tracking-widest text-muted">or</span>
                     <span class="h-px flex-1 bg-line"></span>

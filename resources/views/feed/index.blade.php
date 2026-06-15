@@ -28,12 +28,6 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="w-full sm:w-40 shrink-0">
-                    <select id="filter-sort" name="sort" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
-                        <option value="latest" @selected(request('sort') === 'latest')>Latest</option>
-                        <option value="popular" @selected(request('sort') === 'popular')>Popular</option>
-                    </select>
-                </div>
                 <div class="w-full sm:w-auto shrink-0">
                     <button type="button" id="clear-filters" class="w-full sm:w-auto px-4 py-2 bg-surface-muted hover:bg-surface-muted text-content text-sm font-medium rounded-xl border border-line transition">
                         Clear
@@ -56,9 +50,7 @@
             {{-- Intersection Observer watches this sentinel div --}}
             <div id="scroll-sentinel"></div>
 
-            <div id="loading-indicator" style="display:none; text-align:center; padding:1rem;">
-                Loading...
-            </div>
+            <x-leaf-loader id="loading-indicator" style="display:none;" />
         </div>
 
         {{-- Sidebar --}}
@@ -111,6 +103,15 @@
             const sentinel  = document.getElementById('scroll-sentinel');
             const loader    = document.getElementById('loading-indicator');
 
+            // The loader holds an animated leaf SVG + a text span; update only the
+            // span so we never wipe the leaf. Empty msg = leaf-only (normal loading).
+            const loaderText = loader.querySelector('[data-loader-text]');
+            const setLoaderText = (msg = '') => {
+                if (!loaderText) return;
+                loaderText.textContent = msg;
+                loaderText.classList.toggle('hidden', msg === '');
+            };
+
             const SCROLL_KEY = 'feed_scroll_y';
             const PAGE_KEY   = 'feed_last_page';
 
@@ -120,7 +121,6 @@
 
             const filterSearch = document.getElementById('filter-search');
             const filterTag = document.getElementById('filter-tag');
-            const filterSort = document.getElementById('filter-sort');
             const clearFiltersBtn = document.getElementById('clear-filters');
 
             let currentAbortController = null;
@@ -141,11 +141,6 @@
                     params.set('tag', filterTag.value);
                 } else {
                     params.delete('tag');
-                }
-                if (filterSort.value && filterSort.value !== 'latest') {
-                    params.set('sort', filterSort.value);
-                } else {
-                    params.delete('sort');
                 }
                 return '?' + params.toString();
             }
@@ -180,7 +175,7 @@
                     sentinel.style.display = 'none';
                     observer.disconnect();
                 }
-                loader.textContent = 'Loading...';
+                setLoaderText('');
                 loader.style.display = 'block';
 
                 const url = buildUrl(currentPage);
@@ -214,7 +209,7 @@
                 } catch (err) {
                     if (err.name === 'AbortError') return;
                     console.error('Filter fetch failed:', err);
-                    loader.textContent = 'Failed to load results.';
+                    setLoaderText('Failed to load results.');
                 } finally {
                     // Only the latest run owns the shared loader/fetch flag; a
                     // superseded (aborted) run must not reset them mid-load.
@@ -235,12 +230,10 @@
 
             if (filterSearch) filterSearch.addEventListener('input', debounce(applyFilters, 300));
             if (filterTag) filterTag.addEventListener('change', applyFilters);
-            if (filterSort) filterSort.addEventListener('change', applyFilters);
             if (clearFiltersBtn) {
                 clearFiltersBtn.addEventListener('click', () => {
                     if (filterSearch) filterSearch.value = '';
                     if (filterTag) filterTag.value = '';
-                    if (filterSort) filterSort.value = 'latest';
                     applyFilters();
                 });
             }
@@ -278,11 +271,11 @@
                     if (myRequestId !== requestId) return; // stale failure — ignore
                     currentPage--;
                     console.error('Failed to load posts:', err);
-                    loader.innerHTML = 'Failed to load posts. Scroll down to retry.';
+                    setLoaderText('Failed to load posts. Scroll down to retry.');
                     loader.style.display = 'block';
                     setTimeout(() => {
                         loader.style.display = 'none';
-                        loader.innerHTML = 'Loading...';
+                        setLoaderText('');
                     }, 3000);
                 } finally {
                     // If a newer filter run superseded us, it owns the shared
@@ -326,7 +319,7 @@
 
                 // Show restore indicator
                 loader.style.display = 'block';
-                loader.textContent = 'Restoring your place...';
+                setLoaderText('Restoring your place...');
 
                 // Reload pages 2 → savedPage without the artificial delay
                 for (let page = 2; page <= savedPage; page++) {
@@ -348,7 +341,7 @@
                 }
 
                 loader.style.display = 'none';
-                loader.textContent = 'Loading...';
+                setLoaderText('');
 
                 // Double rAF ensures browser has painted new content
                 // before we jump to the saved position

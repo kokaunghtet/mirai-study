@@ -32,7 +32,7 @@
                     </div>
                 </section>
 
-                <form method="POST" action="{{ route('posts.store') }}"
+                <form method="POST" action="{{ route('posts.store') }}" data-loading
                       enctype="multipart/form-data"
                       x-data="postComposer()">
                     @csrf
@@ -203,7 +203,7 @@
 
                     {{-- Submit --}}
                     <footer class="flex items-center justify-end px-[18px] py-4 border-t border-line">
-                        <button type="submit"
+                        <button type="submit" data-loading-text="Publishing…"
                                 class="flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-accent-strong active:scale-95 shadow-sm">
                             <i data-lucide="send" class="h-4 w-4"></i>
                             Publish

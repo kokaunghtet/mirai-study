@@ -34,9 +34,7 @@
             {{-- Intersection Observer watches this sentinel div --}}
             <div id="scroll-sentinel"></div>
 
-            <div id="loading-indicator" style="display:none; text-align:center; padding:1rem;">
-                Loading...
-            </div>
+            <x-leaf-loader id="loading-indicator" style="display:none;" />
         </div>
 
         {{-- Sidebar — in-column comment drawer (feed-style, sticky, no backdrop) plus
@@ -67,6 +65,15 @@
             const container = document.getElementById('posts-container');
             const sentinel  = document.getElementById('scroll-sentinel');
             const loader    = document.getElementById('loading-indicator');
+
+            // The loader holds an animated leaf SVG + a text span; update only the
+            // span so we never wipe the leaf. Empty msg = leaf-only (normal loading).
+            const loaderText = loader.querySelector('[data-loader-text]');
+            const setLoaderText = (msg = '') => {
+                if (!loaderText) return;
+                loaderText.textContent = msg;
+                loaderText.classList.toggle('hidden', msg === '');
+            };
 
             const SCROLL_KEY = 'bookmarks_scroll_y';
             const PAGE_KEY   = 'bookmarks_last_page';
@@ -112,11 +119,11 @@
                 } catch (err) {
                     currentPage--;
                     console.error('Failed to load posts:', err);
-                    loader.innerHTML = 'Failed to load posts. Scroll down to retry.';
+                    setLoaderText('Failed to load posts. Scroll down to retry.');
                     loader.style.display = 'block';
                     setTimeout(() => {
                         loader.style.display = 'none';
-                        loader.innerHTML = 'Loading...';
+                        setLoaderText('');
                     }, 3000);
                 } finally {
                     isFetching = false;
@@ -156,7 +163,7 @@
 
                 // Show restore indicator
                 loader.style.display = 'block';
-                loader.textContent = 'Restoring your place...';
+                setLoaderText('Restoring your place...');
 
                 // Reload pages 2 → savedPage without the artificial delay
                 for (let page = 2; page <= savedPage; page++) {
@@ -178,7 +185,7 @@
                 }
 
                 loader.style.display = 'none';
-                loader.textContent = 'Loading...';
+                setLoaderText('');
 
                 // Double rAF ensures browser has painted new content
                 // before we jump to the saved position
