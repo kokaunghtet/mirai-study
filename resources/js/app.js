@@ -13,7 +13,7 @@ import {
     Sun,
     Plus,
     // Focus timer
-    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines,
+    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera
 } from 'lucide';
 
 const icons = {
@@ -22,7 +22,7 @@ const icons = {
     SquarePen, Settings, LogOut, LogIn, UserPlus,
     Ellipsis, File, Upload, ThumbsUp, MessageCircle, Send, Check,
     ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus,
-    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines
+    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera
 };
 
 window.Alpine = Alpine;
@@ -35,11 +35,30 @@ Alpine.data('themeToggle', (opts = {}) => ({
     dark: document.documentElement.classList.contains('dark'),
     persistUrl: opts.persistUrl || '',
 
+    init() {
+        // Reflect mode changes made elsewhere on the page (e.g. the settings
+        // page's segmented control) so the icon + label stay in sync live.
+        // Kept as a named handler so destroy() can detach it — prevents listener
+        // build-up if the component is ever re-initialised (SPA-style nav).
+        this._onThemeModeChanged = (e) => {
+            const mode = e.detail?.mode;
+            this.dark = mode === 'dark'
+                || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        };
+        window.addEventListener('theme-mode-changed', this._onThemeModeChanged);
+    },
+
+    destroy() {
+        window.removeEventListener('theme-mode-changed', this._onThemeModeChanged);
+    },
+
     toggle() {
         this.dark = !this.dark;
         document.documentElement.classList.toggle('dark', this.dark);
         const mode = this.dark ? 'dark' : 'light';
         localStorage.setItem('themeMode', mode);
+        // Tell other on-page controls (the settings segmented buttons) to update.
+        window.dispatchEvent(new CustomEvent('theme-mode-changed', { detail: { mode } }));
 
         if (this.persistUrl) {
             fetch(this.persistUrl, {
@@ -54,6 +73,27 @@ Alpine.data('themeToggle', (opts = {}) => ({
         }
     },
 }));
+
+// ── Live "System" mode: follow the OS light/dark setting in real time ──
+// Track the *current effective* mode in-page, not the persisted one. It's seeded
+// from the first-paint value and updated on every `theme-mode-changed`, which the
+// settings page fires the moment "System" is clicked — so live-following works
+// during an unsaved preview too, not only after Save.
+let effectiveThemeMode = localStorage.getItem('themeMode') || 'light';
+window.addEventListener('theme-mode-changed', (e) => {
+    const mode = e.detail?.mode;
+    if (['light', 'dark', 'system'].includes(mode)) effectiveThemeMode = mode;
+});
+
+// When the OS appearance flips (e.g. macOS auto dark mode at sunset) and we're in
+// system mode, re-resolve `.dark` — the first-paint script only reads it once on
+// load. Re-emit on the shared channel so the sidebar icon + settings segmented
+// control stay in sync. (Fires only on a real OS change, so no loop with above.)
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (effectiveThemeMode !== 'system') return;
+    document.documentElement.classList.toggle('dark', e.matches);
+    window.dispatchEvent(new CustomEvent('theme-mode-changed', { detail: { mode: 'system' } }));
+});
 
 // ── Six-box OTP input (login/2FA challenge + password-reset) ──
 // Six separate cells that mirror into one hidden field. Type to auto-advance,
@@ -298,7 +338,7 @@ Alpine.data('portal', (opts = {}) => ({
         if (to === this.mode || this.switching) return;
 
         const fromEl = this.mode === 'login' ? this.$refs.loginForm : this.$refs.registerForm;
-        const toEl   = to === 'login' ? this.$refs.loginForm : this.$refs.registerForm;
+        const toEl = to === 'login' ? this.$refs.loginForm : this.$refs.registerForm;
 
         this.switching = true;
         this.mode = to;

@@ -17,41 +17,89 @@
 @layer base {
     :root {
         /* Surfaces — light (default) */
-        --canvas:        249 250 251; /* gray-50  : page background */
-        --surface:       255 255 255; /* white    : cards, sidebar  */
-        --surface-muted: 243 244 246; /* gray-100 : insets, hovers  */
-        --content:        17  24  39; /* gray-900 : primary text    */
-        --muted:         107 114 128; /* gray-500 : secondary text  */
-        --line:          229 231 235; /* gray-200 : borders         */
+        --canvas: 249 250 251;
+        /* gray-50  : page background */
+        --surface: 255 255 255;
+        /* white    : cards, sidebar  */
+        --surface-muted: 243 244 246;
+        /* gray-100 : insets, hovers  */
+        --content: 17 24 39;
+        /* gray-900 : primary text    */
+        --muted: 107 114 128;
+        /* gray-500 : secondary text  */
+        --line: 229 231 235;
+        /* gray-200 : borders         */
 
         /* Accent — default (venom); overridden per [data-theme] below */
-        --accent:         22 163  74;
-        --accent-strong:  22 101  52;
-        --accent-from:    22 163  74;
-        --accent-to:      22 101  52;
+        --accent: 22 163 74;
+        --accent-strong: 22 101 52;
+        --accent-from: 22 163 74;
+        --accent-to: 22 101 52;
     }
 
     /* Surfaces — dark (neutral gray) */
     .dark {
-        --canvas:         28  28  28; /* page background  */
-        --surface:        44  44  44; /* cards, sidebar   */
-        --surface-muted:  58  58  58; /* insets, hovers   */
-        --content:       235 235 235; /* primary text     */
-        --muted:         160 160 160; /* secondary text   */
-        --line:           64  64  64; /* borders          */
+        --canvas: 28 28 28;
+        /* page background  */
+        --surface: 44 44 44;
+        /* cards, sidebar   */
+        --surface-muted: 58 58 58;
+        /* insets, hovers   */
+        --content: 235 235 235;
+        /* primary text     */
+        --muted: 160 160 160;
+        /* secondary text   */
+        --line: 64 64 64;
+        /* borders          */
     }
 
     /* ── Accent palettes (match the picker gradients in Settings) ── */
-    [data-theme="venom"]    { --accent: 22 163 74;   --accent-strong: 22 101 52;   --accent-from: 22 163 74;   --accent-to: 22 101 52;  }
-    [data-theme="aurora"]   { --accent: 91 15 190;   --accent-strong: 74 12 153;   --accent-from: 0 212 255;   --accent-to: 91 15 190;  }
-    [data-theme="sangria"]  { --accent: 190 18 60;   --accent-strong: 159 18 57;   --accent-from: 190 18 60;   --accent-to: 76 5 25;    }
-    [data-theme="twilight"] { --accent: 124 58 237;  --accent-strong: 109 40 217;  --accent-from: 244 114 182; --accent-to: 124 58 237; }
-    [data-theme="inferno"]  { --accent: 234 88 12;   --accent-strong: 194 65 12;   --accent-from: 234 88 12;   --accent-to: 127 29 29;  }
+    [data-theme="venom"] {
+        --accent: 22 163 74;
+        --accent-strong: 22 101 52;
+        --accent-from: 22 163 74;
+        --accent-to: 22 101 52;
+    }
+
+    [data-theme="aurora"] {
+        --accent: 91 15 190;
+        --accent-strong: 74 12 153;
+        --accent-from: 0 212 255;
+        --accent-to: 91 15 190;
+    }
+
+    [data-theme="sangria"] {
+        --accent: 190 18 60;
+        --accent-strong: 159 18 57;
+        --accent-from: 190 18 60;
+        --accent-to: 76 5 25;
+    }
+
+    [data-theme="twilight"] {
+        --accent: 124 58 237;
+        --accent-strong: 109 40 217;
+        --accent-from: 244 114 182;
+        --accent-to: 124 58 237;
+    }
+
+    [data-theme="inferno"] {
+        --accent: 234 88 12;
+        --accent-strong: 194 65 12;
+        --accent-from: 234 88 12;
+        --accent-to: 127 29 29;
+    }
 
     /* ── Dark-mode readability: brighten the purple accents that are too dark on the dark canvas.
           Light mode keeps the deeper purples above (they read fine on white). ── */
-    .dark[data-theme="aurora"]   { --accent: 167 139 250; --accent-strong: 139 92 246; }
-    .dark[data-theme="twilight"] { --accent: 192 132 252; --accent-strong: 168 85 247; }
+    .dark[data-theme="aurora"] {
+        --accent: 167 139 250;
+        --accent-strong: 139 92 246;
+    }
+
+    .dark[data-theme="twilight"] {
+        --accent: 192 132 252;
+        --accent-strong: 168 85 247;
+    }
 
     /* ── Fill style: when [data-fill="solid"] is set on <html>, collapse the accent
           gradient into a flat solid by pointing both stops at --accent. Every
@@ -59,20 +107,28 @@
           automatically. Default (gradient) needs no override. ── */
     [data-fill="solid"] {
         --accent-from: var(--accent);
-        --accent-to:   var(--accent);
+        --accent-to: var(--accent);
     }
 
     /* Aurora's accent is a violet (its gradient runs cyan → violet), which reads as
        purple when flattened to a solid. In SOLID mode swap it for a true blue —
        a deeper blue on light surfaces, a brighter one on the dark canvas. */
-    [data-fill="solid"][data-theme="aurora"]      { --accent: 37 99 235;  --accent-strong: 29 78 216; }
-    .dark[data-fill="solid"][data-theme="aurora"] { --accent: 96 165 250; --accent-strong: 59 130 246; }
+    [data-fill="solid"][data-theme="aurora"] {
+        --accent: 37 99 235;
+        --accent-strong: 29 78 216;
+    }
+
+    .dark[data-fill="solid"][data-theme="aurora"] {
+        --accent: 96 165 250;
+        --accent-strong: 59 130 246;
+    }
 }
 
 /* Checkboxes/radios: @tailwindcss/forms hard-codes a white unchecked background,
    which glares on the dark canvas. Make only the *unchecked* fill transparent so it
    reads on any surface/theme; the checked state keeps the plugin's accent fill. */
 @layer base {
+
     [type='checkbox']:not(:checked),
     [type='radio']:not(:checked) {
         background-color: transparent;
@@ -80,32 +136,66 @@
 }
 
 /* Hide Alpine-managed elements until Alpine initialises (avoids a flash). */
-[x-cloak] { display: none !important; }
+[x-cloak] {
+    display: none !important;
+}
 
 /* Leaf loader — glides in from the lower-left, does a loop-the-loop in mid-air, then
-   glides out to the right (the user's drawn path, refined to a rounder, self-crossing
-   loop). Site-wide loading indicator used by the <x-leaf-loader> component; colored via
-   text-accent so it follows the theme. Path-following motion via CSS Motion Path; the
-   component renders it inside a 144×80 track (the path's coord space). The path is OPEN
-   (start ≠ end), so a short opacity fade at each end hides the reset jump. */
+   glides out to the right (the user's drawn, self-crossing loop). Site-wide loading
+   indicator used by the <x-leaf-loader> component; colored via text-accent so it
+   follows the theme. Path-following motion via CSS Motion Path; the component renders
+   it inside a 144×80 track (the path's coord space). No fade — the leaf stays at full
+   opacity; depth comes from a scale pulse (small at the ends, full mid-flight). */
 .leaf-loader {
     offset-path: path("M 8 58 C 26 57, 38 56, 50 54 C 100 14, 22 14, 74 54 C 96 56, 114 57, 136 58");
-    offset-rotate: auto;          /* leaf banks/tumbles along the path tangent */
+    offset-rotate: auto;
+    /* leaf banks/tumbles along the path tangent */
     transform-origin: center;
-    animation: leaf-travel 1s ease-in-out infinite;
+    animation: leaf-travel 1s linear infinite, leaf-sway 1.8s ease-in-out infinite alternate;
 }
-/* Depth + soft fade: the leaf scales up as it nears (mid-flight) and shrinks + fades into
-   the distance on exit, with a gentle fade-in, so the restart reads as "flew away & a fresh
-   one drifts in" rather than a blink. (transform: scale composes with the motion-path offset.) */
+
+/* Depth: the leaf scales up as it nears mid-flight and shrinks toward the ends, so it
+   reads as flying nearer then away. Being small at both ends also masks the loop's
+   reset jump (the path is open). transform: scale composes with the motion-path offset. */
 @keyframes leaf-travel {
-    0%   { offset-distance: 0%;   opacity: 0; transform: scale(0.5); }   /* far, faint */
-    20%  { opacity: 1; }
-    50%  { transform: scale(1); }                                        /* near, solid */
-    80%  { opacity: 1; }
-    100% { offset-distance: 100%; opacity: 0; transform: scale(0.5); }   /* recedes + fades */
+    0% {
+        offset-distance: 0%;
+        transform: scale(0.75);
+    }
+
+    /* far */
+    50% {
+        offset-distance: 50%;
+        transform: scale(1);
+    }
+
+    /* near */
+    100% {
+        offset-distance: 100%;
+        transform: scale(0.75);
+    }
+
+    /* far */
 }
+
+@keyframes leaf-sway {
+    from {
+        rotate: -8deg;
+    }
+
+    to {
+        rotate: 8deg;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .leaf-loader { animation: none; offset-distance: 50%; opacity: 1; transform: none; }  /* park static */
+    .leaf-loader {
+        animation: none;
+        offset-distance: 50%;
+        transform: none;
+    }
+
+    /* park static */
 }
 
 /* Inline button spinner — a small spinning leaf swapped into a submit button while a
@@ -117,9 +207,17 @@
     transform-origin: center;
     animation: leaf-spin 0.9s linear infinite;
 }
+
 @keyframes leaf-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
+
 @media (prefers-reduced-motion: reduce) {
-    .leaf-spin { animation-duration: 2.2s; }  /* slow, don't stop — still signals activity */
+    .leaf-spin {
+        animation-duration: 2.2s;
+    }
+
+    /* slow, don't stop — still signals activity */
 }

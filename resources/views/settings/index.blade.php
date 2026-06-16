@@ -229,7 +229,10 @@
     @push('scripts')
     <script>
         // ── Initialise from server-side saved preferences ──────────
-        let themeMode    = '{{ $preferences->theme_mode }}';
+        // Prefer localStorage — it's what the sidebar toggle and the first-paint
+        // <head> script trust — so the segmented control reflects the latest mode.
+        // The DB value is the fallback when nothing's stored yet.
+        let themeMode    = localStorage.getItem('themeMode') || '{{ $preferences->theme_mode }}';
         let currentTheme = '{{ $preferences->accent_color }}';
         let currentFill  = '{{ $preferences->fill_style }}';
         let currentActiveNav = 'feed';
@@ -468,6 +471,8 @@
             const dark = themeMode === 'dark'
                 || (themeMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             root.classList.toggle('dark', dark);
+            // Notify the sidebar toggle (Alpine) so its icon + label flip live.
+            window.dispatchEvent(new CustomEvent('theme-mode-changed', { detail: { mode: themeMode } }));
         }
 
         // ── Save to database ────────────────────────────────────────
@@ -490,6 +495,9 @@
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 applyThemeToDocument();
+                // Keep the first-paint <head> script and the sidebar toggle in sync —
+                // they read this first, so a Save that skipped it would revert on reload.
+                localStorage.setItem('themeMode', themeMode);
                 setSaved();
 
             } catch (err) {
@@ -605,6 +613,16 @@
         });
 
         saveBtn.addEventListener('click', savePreferences);
+
+        // Sidebar toggle changed the mode → mirror it on the segmented control.
+        // The sidebar already persisted it to the DB, so don't mark the page dirty,
+        // and don't re-apply/re-dispatch (the equality guard breaks any loop).
+        window.addEventListener('theme-mode-changed', (e) => {
+            const mode = e.detail?.mode;
+            if (!['light', 'dark', 'system'].includes(mode) || mode === themeMode) return;
+            themeMode = mode;
+            updateSegmentedControl();
+        });
 
         window.addEventListener('beforeunload', (e) => {
             if (isDirty) {

@@ -17,8 +17,22 @@
         // Resolve light/dark before first paint to avoid a flash of the wrong theme.
         // A local override (from the sidebar toggle) wins; otherwise use the saved preference.
         (function () {
-            var stored = localStorage.getItem('themeMode');
+            var stored = null;
+            // Storage can throw when disabled (Safari Lockdown, blocked cookies,
+            // zero quota). Guard it so theme resolution below always runs.
+            try {
+                stored = localStorage.getItem('themeMode');
+            } catch (e) { /* storage unavailable — fall back to the server value */ }
+
             var mode = stored || @json($themeMode);
+
+            // Seed localStorage from the saved server preference on a fresh device
+            // so the live "System" listener and the settings page have a value to
+            // read. Only when empty — an existing local choice still wins.
+            if (!stored) {
+                try { localStorage.setItem('themeMode', mode); } catch (e) { /* ignore */ }
+            }
+
             var dark = mode === 'dark' ||
                 (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             document.documentElement.classList.toggle('dark', dark);
