@@ -22,6 +22,8 @@
 /storage/pail
 /vendor
 _ide_helper.php
+__pycache__/
+*.pyc
 Homestead.json
 Homestead.yaml
 Thumbs.db
