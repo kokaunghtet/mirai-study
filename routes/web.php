@@ -1,27 +1,27 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\PostLikeController;
-use App\Http\Controllers\CommentLikeController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookmarkController;
-use App\Http\Controllers\FollowController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentLikeController;
 use App\Http\Controllers\ExamCategoryController;
 use App\Http\Controllers\ExamPaperController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostLikeController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
-use App\Http\Controllers\TimerController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TimerController;
 use Illuminate\Support\Facades\Route;
 
 // -------------------------------------------------------
 // Public routes — guests and auth users
 // -------------------------------------------------------
 
-Route::get('/', fn() => redirect()->route('feed.index'));
+Route::get('/', fn () => redirect()->route('feed.index'));
 
 // Feed
 Route::get('/feed', [PostController::class, 'index'])->name('feed.index');
@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
 
     // --- Profile ---
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/username-available', [ProfileController::class, 'checkUsername'])->name('profile.username-available');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -127,4 +128,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Breeze auth routes
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
