@@ -12,6 +12,7 @@ class Question extends Model
     protected $fillable = [
         'category_id',
         'level_id',
+        'section',
         'text',
         'option_a',
         'option_b',
@@ -20,6 +21,17 @@ class Question extends Model
         'answer',
         'explanation',
     ];
+
+    /**
+     * Scope to a question pool: a category + level, optionally narrowed to a
+     * section (kanji/technology/…). A null/empty $section means "level only".
+     */
+    public function scopePool($query, int $categoryId, int $levelId, ?string $section)
+    {
+        return $query->where('category_id', $categoryId)
+            ->where('level_id', $levelId)
+            ->when($section, fn ($q) => $q->where('section', $section));
+    }
 
     public function category()
     {

@@ -13,7 +13,9 @@ import {
     Sun,
     Plus,
     // Focus timer
-    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera
+    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
+    // Quiz
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award
 } from 'lucide';
 
 const icons = {
@@ -22,7 +24,8 @@ const icons = {
     SquarePen, Settings, LogOut, LogIn, UserPlus,
     Ellipsis, File, Upload, ThumbsUp, MessageCircle, Send, Check,
     ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus,
-    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera
+    RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award
 };
 
 window.Alpine = Alpine;
@@ -362,6 +365,81 @@ Alpine.data('portal', (opts = {}) => ({
             fromEl.classList.remove('exit');
             fromEl.classList.add('enter');
         }, 700);
+    },
+}));
+
+// ── Quiz setup wizard (category → level → section → count) ──
+// Drives the quiz index selection from the config catalog passed in from Blade.
+// Resets downstream choices when an upstream one changes so you can't submit a
+// stale level/section. The hidden form inputs mirror this state for the POST.
+Alpine.data('quizSetup', (catalog = {}, counts = []) => ({
+    catalog,
+    counts,
+    category: '',
+    level: '',
+    section: '',
+    count: null,
+
+    get levels() {
+        return this.category ? (this.catalog[this.category]?.levels || {}) : {};
+    },
+    get sections() {
+        if (!this.category || !this.level) return {};
+        return this.catalog[this.category]?.levels?.[this.level]?.sections || {};
+    },
+    get needsSection() {
+        return Object.keys(this.sections).length > 0;
+    },
+    get canStart() {
+        return !!this.category && !!this.level
+            && (!this.needsSection || !!this.section)
+            && !!this.count;
+    },
+
+    selectCategory(key) {
+        if (this.category === key) return;
+        this.category = key;
+        this.level = '';
+        this.section = '';
+        this.count = null;
+    },
+    selectLevel(key) {
+        if (this.level === key) return;
+        this.level = key;
+        this.section = '';
+    },
+    selectSection(key) {
+        this.section = key;
+    },
+}));
+
+// ── Quiz player (one question at a time) ──
+// Holds the answer map (questionId → A/B/C/D) for the whole quiz; every question
+// stays in the DOM (x-show) so a single form submit posts them all. Correct
+// answers are never sent here — grading is server-side.
+Alpine.data('quizPlayer', (questions = []) => ({
+    questions,
+    current: 0,
+    answers: {},
+
+    get total() { return this.questions.length; },
+    get answeredCount() { return Object.keys(this.answers).length; },
+    get allAnswered() { return this.answeredCount === this.total; },
+    get progress() {
+        return this.total ? Math.round((this.current + 1) / this.total * 100) : 0;
+    },
+
+    select(qid, letter) { this.answers[qid] = letter; },
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { this.current = i; },
+
+    onSubmit(e) {
+        if (this.allAnswered) return;
+        const left = this.total - this.answeredCount;
+        if (!confirm(`You have ${left} unanswered question${left === 1 ? '' : 's'}. Submit anyway?`)) {
+            e.preventDefault();
+        }
     },
 }));
 

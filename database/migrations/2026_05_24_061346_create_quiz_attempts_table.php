@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('exam_categories')->cascadeOnDelete();
             $table->foreignId('level_id')->nullable()->constrained('exam_levels')->nullOnDelete();
+            // Which section was taken (kanji/technology/…), or null for level-only quizzes (IP).
+            $table->string('section')->nullable();
             $table->integer('total_questions');
             $table->integer('score')->nullable();
             $table->timestamp('started_at')->nullable();

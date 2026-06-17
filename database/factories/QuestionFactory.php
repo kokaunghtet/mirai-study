@@ -13,6 +13,7 @@ class QuestionFactory extends Factory
         return [
             'category_id' => null,
             'level_id'    => null,
+            'section'     => null,
             'text'        => fake()->sentence() . '?',
             'option_a'    => fake()->word(),
             'option_b'    => fake()->word(),

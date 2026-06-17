@@ -12,6 +12,7 @@ class QuizAttempt extends Model
         'user_id',
         'category_id',
         'level_id',
+        'section',
         'total_questions',
         'score',
         'started_at',
@@ -19,9 +20,9 @@ class QuizAttempt extends Model
     ];
 
     protected $casts = [
-        'started_at'   => 'datetime',
+        'started_at' => 'datetime',
         'completed_at' => 'datetime',
-        'created_at'   => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function user()
@@ -47,5 +48,20 @@ class QuizAttempt extends Model
     public function isCompleted(): bool
     {
         return $this->completed_at !== null;
+    }
+
+    /**
+     * Score as a whole-number percentage of total questions (0 when empty).
+     */
+    public function percentage(): int
+    {
+        return $this->total_questions
+            ? (int) round($this->score / $this->total_questions * 100)
+            : 0;
+    }
+
+    public function passed(): bool
+    {
+        return $this->percentage() >= (int) config('quiz.pass_mark', 60);
     }
 }
