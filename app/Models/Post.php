@@ -26,6 +26,8 @@ class Post extends Model
 
     const JITTER_MULT = 2654435761;     // Knuth multiplicative hash constant
 
+    const FRESH_PIN_MINUTES = 15;       // a viewer's own post pins to the top this long after creation
+
     protected $fillable = [
         'user_id',
         'title',
@@ -83,8 +85,10 @@ class Post extends Model
      *
      * @param  int[]  $followedIds  user ids the viewer follows (accepted)
      * @param  int  $seed  per-session jitter seed
+     * @param  int|null  $viewerId  the logged-in viewer's id (null for guests); their own
+     *                              freshly-created posts pin to the top for FRESH_PIN_MINUTES
      */
-    public function scopeForYouRanked(Builder $query, array $followedIds = [], int $seed = 0): Builder
+    public function scopeForYouRanked(Builder $query, array $followedIds = [], int $seed = 0, ?int $viewerId = null): Builder
     {
         $sqlite = $query->getConnection()->getDriverName() === 'sqlite';
 
@@ -118,7 +122,33 @@ class Post extends Model
 
         $score = "{$engagement} + {$recency} + {$boost} + {$jitter}";
 
+        // Tier 1: the viewer's own freshly-created posts pin to the very top for a short
+        // window, then fall back into normal ranking. created_at is a fixed per-row value,
+        // so this boolean only shifts at the FRESH_PIN_MINUTES boundary. Applied before the
+        // score so it takes ordering priority; its bindings are appended ahead of the score's.
+        if ($viewerId) {
+            $cutoff = now()->subMinutes(self::FRESH_PIN_MINUTES)->toDateTimeString();
+            $query->orderByRaw(
+                '(CASE WHEN posts.user_id = ? AND posts.created_at > ? THEN 1 ELSE 0 END) DESC',
+                [$viewerId, $cutoff]
+            );
+        }
+
         return $query->orderByRaw("{$score} DESC", $bindings)
             ->orderByDesc('posts.id');
+    }
+
+    /**
+     * Whether this post is still inside its "freshly created" pin window for the
+     * given viewer (defaults to the authenticated user) — i.e. the viewer is the
+     * author and the post is younger than FRESH_PIN_MINUTES. Drives the "New" badge.
+     */
+    public function isFreshForViewer(?User $viewer = null): bool
+    {
+        $viewer ??= auth()->user();
+
+        return $viewer
+            && $this->user_id === $viewer->id
+            && $this->created_at->gt(now()->subMinutes(self::FRESH_PIN_MINUTES));
     }
 }

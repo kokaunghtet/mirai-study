@@ -61,7 +61,9 @@ class PostController extends Controller
         // so the order subtly reshuffles between visits.
         $seed = (int) (sprintf('%u', crc32($request->session()->getId().now()->toDateString())) % 100000);
 
-        $query->forYouRanked($followedIds, $seed);
+        // Pass the viewer id so their own freshly-created posts pin to the top of
+        // their feed for a short window (see Post::scopeForYouRanked). Null for guests.
+        $query->forYouRanked($followedIds, $seed, auth()->id());
 
         $posts = $query->paginate(10)->withQueryString();
 

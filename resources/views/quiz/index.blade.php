@@ -12,6 +12,37 @@
                 </p>
             </header>
 
+            {{-- ── Resume in-progress quiz ─────────────────────────────── --}}
+            @if ($activeAttempt)
+                <div x-data="resumeBanner({{ $activeAttempt->id }}, {{ $activeAttempt->total_questions }})"
+                     class="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent/10 p-4">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 text-sm font-semibold text-content">
+                            <i data-lucide="clock" class="h-4 w-4 shrink-0 text-accent"></i>
+                            <span class="truncate">Quiz in progress — {{ $activeAttempt->heading() }}</span>
+                        </div>
+                        <div class="mt-0.5 pl-6 text-xs text-muted" x-show="answered > 0"
+                             x-text="`${answered} of ${total} answered`"></div>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-2">
+                        <form method="POST" action="{{ route('quiz.abort', $activeAttempt) }}"
+                              @submit="abort($event)" data-loading>
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Discard quiz"
+                                    class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
+                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                <span class="hidden sm:inline">Discard</span>
+                            </button>
+                        </form>
+                        <a href="{{ route('quiz.show', $activeAttempt) }}"
+                           class="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                            Resume <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('quiz.start') }}" data-loading class="space-y-6">
                 @csrf
                 <input type="hidden" name="category" :value="category">
@@ -121,6 +152,25 @@
                     <i data-lucide="arrow-right" class="h-4 w-4" x-show="canStart"></i>
                 </button>
             </form>
+
+            {{-- ── Recent results ─────────────────────────────────────── --}}
+            @if ($recent->isNotEmpty())
+                <section class="mt-8">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h2 class="text-base font-semibold text-content">Recent results</h2>
+                        @if ($completedCount > 3)
+                            <a href="{{ route('quiz.history') }}" class="text-xs font-semibold text-accent hover:underline">
+                                View all ({{ $completedCount }})
+                            </a>
+                        @endif
+                    </div>
+                    <div class="space-y-2">
+                        @foreach ($recent as $attempt)
+                            @include('quiz._attempt-card', ['attempt' => $attempt])
+                        @endforeach
+                    </div>
+                </section>
+            @endif
 
         </div>
     </div>

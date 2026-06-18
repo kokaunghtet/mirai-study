@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Quiz in progress — MiraiStudy</x-slot>
 
-    <div class="px-4" x-data="quizPlayer(@js($questions))" x-cloak>
+    <div class="px-4" x-data="quizPlayer(@js($questions), {{ $attempt->id }})" x-cloak>
         <div class="max-w-3xl mx-auto">
 
             <form method="POST" action="{{ route('quiz.submit', $attempt) }}" @submit="onSubmit($event)" data-loading>

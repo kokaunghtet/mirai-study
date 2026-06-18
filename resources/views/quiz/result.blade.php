@@ -114,6 +114,10 @@
                             <p class="mt-3 ml-8 rounded-lg bg-surface-muted px-3 py-2 text-xs leading-relaxed text-muted">
                                 <span class="font-semibold text-content">Explanation:</span> {{ $q->explanation }}
                             </p>
+                        @else 
+                            <p class="mt-3 ml-8 rounded-lg bg-surface-muted px-3 py-2 text-xs leading-relaxed text-muted">
+                                <span class="font-semibold text-content">Explanation:</span> explanantion not available at the moment
+                            </p>
                         @endif
                     </div>
                 @endforeach

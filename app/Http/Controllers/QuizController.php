@@ -17,12 +17,29 @@ class QuizController extends Controller
      * Step 1–4 selection wizard (category → level → section → count).
      * The whole tree lives in config/quiz.php and is driven client-side.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $userId = $request->user()->id;
+
         return view('quiz.index', [
             'catalog' => config('quiz.catalog'),
             'counts' => config('quiz.counts'),
+            'recent' => QuizAttempt::completedFor($userId)->with(['category', 'level'])->take(3)->get(),
+            'completedCount' => QuizAttempt::completedFor($userId)->count(),
+            'activeAttempt' => QuizAttempt::inProgressFor($userId)->with(['category', 'level'])->first(),
         ]);
+    }
+
+    /**
+     * Full, paginated list of the user's past (completed) quizzes.
+     */
+    public function history(Request $request)
+    {
+        $attempts = QuizAttempt::completedFor($request->user()->id)
+            ->with(['category', 'level'])
+            ->paginate(15);
+
+        return view('quiz.history', compact('attempts'));
     }
 
     /**
@@ -134,7 +151,7 @@ class QuizController extends Controller
         return view('quiz.show', [
             'attempt' => $attempt,
             'questions' => $questions,
-            'heading' => $this->heading($attempt),
+            'heading' => $attempt->heading(),
         ]);
     }
 
@@ -210,8 +227,24 @@ class QuizController extends Controller
 
         return view('quiz.result', [
             'attempt' => $attempt,
-            'heading' => $this->heading($attempt),
+            'heading' => $attempt->heading(),
         ]);
+    }
+
+    /**
+     * Abort (discard) an in-progress attempt and return to the index.
+     */
+    public function abort(Request $request, QuizAttempt $attempt)
+    {
+        $this->authorizeOwner($request, $attempt);
+
+        // Only an unfinished attempt can be aborted; a completed one is history — leave it.
+        if (! $attempt->isCompleted()) {
+            $request->session()->forget($this->sessionKey($attempt));
+            $attempt->delete();
+        }
+
+        return redirect()->route('quiz.index')->with('success', 'Quiz discarded.');
     }
 
     /**
@@ -225,30 +258,5 @@ class QuizController extends Controller
     private function sessionKey(QuizAttempt $attempt): string
     {
         return "quiz.attempt.{$attempt->id}.questions";
-    }
-
-    /**
-     * Human label like "JLPT N3 · Kanji" or "ITPEC IP" (no section).
-     */
-    private function heading(QuizAttempt $attempt): string
-    {
-        $attempt->loadMissing(['category', 'level']);
-
-        $parts = array_filter([
-            $attempt->category?->name,
-            $attempt->level?->code,
-        ]);
-
-        $label = implode(' ', $parts);
-
-        if ($attempt->section) {
-            $sectionLabel = config(
-                "quiz.catalog.{$attempt->category?->name}.levels.{$attempt->level?->code}.sections.{$attempt->section}",
-                ucfirst($attempt->section)
-            );
-            $label .= ' · '.$sectionLabel;
-        }
-
-        return $label;
     }
 }

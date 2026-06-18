@@ -58,23 +58,36 @@
                                     {{ $comment->created_at->diffForHumans() }}
                                 </span>
                             </div>
-                            {{-- Delete own comment --}}
+                            {{-- More menu: Delete own / Report others' --}}
                             @auth
-                                @if (auth()->id() === $comment->user_id)
-                                    <form method="POST"
-                                          action="{{ route('comments.destroy', $comment) }}"
-                                          onsubmit="return confirm('Delete this comment?')"
-                                          data-loading
-                                          class="inline-flex items-center">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="text-muted hover:text-red-500 transition-colors"
-                                                title="Delete comment">
-                                            <i data-lucide="trash" class="h-4 w-4"></i>
-                                        </button>
-                                    </form>
-                                @endif
+                                <div class="relative shrink-0" x-data="{ open: false }">
+                                    <button @click="open = !open" @click.outside="open = false"
+                                            type="button"
+                                            class="grid h-7 w-7 place-items-center rounded-lg text-muted hover:bg-surface hover:text-content transition-colors">
+                                        <i data-lucide="ellipsis" class="h-4 w-4"></i>
+                                    </button>
+                                    <div x-show="open"
+                                         class="absolute right-0 top-8 z-50 w-32 overflow-hidden rounded-xl bg-surface py-1 text-[13px] font-semibold shadow-lg border border-line">
+                                        @if (auth()->id() === $comment->user_id)
+                                            <form method="POST"
+                                                  action="{{ route('comments.destroy', $comment) }}"
+                                                  onsubmit="return confirm('Delete this comment?')"
+                                                  data-loading>
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button"
+                                                    class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                Report
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
                             @endauth
                         </div>
                         <p class="text-sm text-content">{{ $comment->content }}</p>
@@ -107,23 +120,36 @@
                                                     {{ $reply->created_at->diffForHumans() }}
                                                 </span>
                                             </div>
-                                            {{-- Delete own reply --}}
+                                            {{-- More menu: Delete own / Report others' --}}
                                             @auth
-                                                @if (auth()->id() === $reply->user_id)
-                                                    <form method="POST"
-                                                          action="{{ route('comments.destroy', $reply) }}"
-                                                          onsubmit="return confirm('Delete this reply?')"
-                                                          data-loading
-                                                          class="flex items-center">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                                class="text-muted hover:text-red-500 transition-colors"
-                                                                title="Delete reply">
-                                                            <i data-lucide="trash" class="h-3.5 w-3.5"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                <div class="relative shrink-0" x-data="{ open: false }">
+                                                    <button @click="open = !open" @click.outside="open = false"
+                                                            type="button"
+                                                            class="grid h-6 w-6 place-items-center rounded-lg text-muted hover:bg-surface hover:text-content transition-colors">
+                                                        <i data-lucide="ellipsis" class="h-3.5 w-3.5"></i>
+                                                    </button>
+                                                    <div x-show="open"
+                                                         class="absolute right-0 top-7 z-50 w-32 overflow-hidden rounded-xl bg-surface py-1 text-[13px] font-semibold shadow-lg border border-line">
+                                                        @if (auth()->id() === $reply->user_id)
+                                                            <form method="POST"
+                                                                  action="{{ route('comments.destroy', $reply) }}"
+                                                                  onsubmit="return confirm('Delete this reply?')"
+                                                                  data-loading>
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                        class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                                    Delete
+                                                                </button>
+                                                            </form>
+                                                        @else
+                                                            <button type="button"
+                                                                    class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                                Report
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @endauth
                                         </div>
                                         <p class="text-xs text-content">{{ $reply->content }}</p>

@@ -15,7 +15,7 @@ import {
     // Focus timer
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
     // Quiz
-    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2
 } from 'lucide';
 
 const icons = {
@@ -25,7 +25,7 @@ const icons = {
     Ellipsis, File, Upload, ThumbsUp, MessageCircle, Send, Check,
     ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus,
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
-    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2
 };
 
 window.Alpine = Alpine;
@@ -417,11 +417,14 @@ Alpine.data('quizSetup', (catalog = {}, counts = []) => ({
 // Holds the answer map (questionId → A/B/C/D) for the whole quiz; every question
 // stays in the DOM (x-show) so a single form submit posts them all. Correct
 // answers are never sent here — grading is server-side.
-Alpine.data('quizPlayer', (questions = []) => ({
+Alpine.data('quizPlayer', (questions = [], attemptId = null) => ({
     questions,
+    attemptId,
     current: 0,
     answers: {},
+    submitting: false,
 
+    get storageKey() { return `quiz-progress-${this.attemptId}`; },
     get total() { return this.questions.length; },
     get answeredCount() { return Object.keys(this.answers).length; },
     get allAnswered() { return this.answeredCount === this.total; },
@@ -429,17 +432,81 @@ Alpine.data('quizPlayer', (questions = []) => ({
         return this.total ? Math.round((this.current + 1) / this.total * 100) : 0;
     },
 
-    select(qid, letter) { this.answers[qid] = letter; },
-    next() { if (this.current < this.total - 1) this.current++; },
-    prev() { if (this.current > 0) this.current--; },
-    goTo(i) { this.current = i; },
+    init() {
+        // Restore answers + position saved on this device so navigating away and
+        // back (or an accidental tab click) doesn't lose progress.
+        try {
+            const saved = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+            if (saved.answers) this.answers = saved.answers;
+            if (Number.isInteger(saved.current) && saved.current < this.total) {
+                this.current = saved.current;
+            }
+        } catch (e) { /* no/!corrupt saved progress — start fresh */ }
+
+        // Warn before leaving mid-quiz (full-page nav from a sidebar tab, refresh,
+        // tab close). Skipped once we're intentionally submitting. Named so destroy()
+        // can detach it.
+        this._onBeforeUnload = (e) => {
+            if (this.submitting || this.answeredCount === 0) return;
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', this._onBeforeUnload);
+    },
+
+    destroy() {
+        window.removeEventListener('beforeunload', this._onBeforeUnload);
+    },
+
+    persist() {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify({
+                answers: this.answers,
+                current: this.current,
+            }));
+        } catch (e) { /* storage unavailable — answers still live in memory */ }
+    },
+
+    select(qid, letter) { this.answers[qid] = letter; this.persist(); },
+    next() { if (this.current < this.total - 1) { this.current++; this.persist(); } },
+    prev() { if (this.current > 0) { this.current--; this.persist(); } },
+    goTo(i) { this.current = i; this.persist(); },
 
     onSubmit(e) {
-        if (this.allAnswered) return;
-        const left = this.total - this.answeredCount;
-        if (!confirm(`You have ${left} unanswered question${left === 1 ? '' : 's'}. Submit anyway?`)) {
-            e.preventDefault();
+        if (!this.allAnswered) {
+            const left = this.total - this.answeredCount;
+            if (!confirm(`You have ${left} unanswered question${left === 1 ? '' : 's'}. Submit anyway?`)) {
+                e.preventDefault();
+                return;
+            }
         }
+        // Submitting for real — don't warn, and drop the saved progress so a finished
+        // quiz doesn't resurface as "in progress".
+        this.submitting = true;
+        try { localStorage.removeItem(this.storageKey); } catch (e) { /* ignore */ }
+    },
+}));
+
+// ── Resume banner (quiz index) ──
+// Reads the per-attempt progress saved by quizPlayer so the index can show how many
+// questions were answered before the user navigated away.
+Alpine.data('resumeBanner', (attemptId, total) => ({
+    attemptId,
+    total,
+    answered: 0,
+    init() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(`quiz-progress-${attemptId}`) || '{}');
+            this.answered = Object.keys(saved.answers || {}).length;
+        } catch (e) { /* no saved progress on this device */ }
+    },
+    abort(e) {
+        if (!confirm('Discard this quiz? Your progress will be lost.')) {
+            e.preventDefault();
+            return;
+        }
+        // Drop the saved progress so a discarded quiz leaves nothing behind.
+        try { localStorage.removeItem(`quiz-progress-${this.attemptId}`); } catch (e) { /* ignore */ }
     },
 }));
 

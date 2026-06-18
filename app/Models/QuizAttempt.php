@@ -64,4 +64,47 @@ class QuizAttempt extends Model
     {
         return $this->percentage() >= (int) config('quiz.pass_mark', 60);
     }
+
+    /**
+     * A user's completed attempts, newest first.
+     */
+    public function scopeCompletedFor($query, int $userId)
+    {
+        return $query->where('user_id', $userId)
+            ->whereNotNull('completed_at')
+            ->latest('completed_at');
+    }
+
+    /**
+     * A user's unfinished attempts, newest first.
+     */
+    public function scopeInProgressFor($query, int $userId)
+    {
+        return $query->where('user_id', $userId)
+            ->whereNull('completed_at')
+            ->latest('id');
+    }
+
+    /**
+     * Human label like "JLPT N3 · Kanji" or "ITPEC IP" (no section).
+     */
+    public function heading(): string
+    {
+        $this->loadMissing(['category', 'level']);
+
+        $label = implode(' ', array_filter([
+            $this->category?->name,
+            $this->level?->code,
+        ]));
+
+        if ($this->section) {
+            $sectionLabel = config(
+                "quiz.catalog.{$this->category?->name}.levels.{$this->level?->code}.sections.{$this->section}",
+                ucfirst($this->section)
+            );
+            $label .= ' · '.$sectionLabel;
+        }
+
+        return $label;
+    }
 }

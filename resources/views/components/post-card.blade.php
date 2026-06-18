@@ -28,8 +28,11 @@
                    class="text-[13px] font-bold text-content hover:text-accent transition-colors">
                     {{ $post->user->display_name }}
                 </a>
-                <div class="mt-0.5 text-[11px] text-muted">
+                <div class="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">
                     {{ $post->created_at->diffForHumans() }}
+                    @if ($post->isFreshForViewer())
+                        <span class="rounded-full bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">New</span>
+                    @endif
                 </div>
             </div>
         </div>

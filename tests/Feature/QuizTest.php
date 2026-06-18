@@ -37,6 +37,27 @@ class QuizTest extends TestCase
         return [$category, $level];
     }
 
+    /**
+     * Start and fully (correctly) submit a quiz for $user; returns the completed attempt.
+     */
+    private function completeQuiz(User $user): QuizAttempt
+    {
+        $this->actingAs($user)->post(route('quiz.start'), [
+            'category' => 'JLPT',
+            'level' => 'N3',
+            'section' => 'kanji',
+            'count' => 20,
+        ]);
+
+        $attempt = QuizAttempt::where('user_id', $user->id)->latest('id')->first();
+
+        $this->actingAs($user)->post(route('quiz.submit', $attempt), [
+            'answers' => Question::pluck('answer', 'id')->all(),
+        ]);
+
+        return $attempt->refresh();
+    }
+
     public function test_start_creates_an_attempt_and_redirects_to_the_player(): void
     {
         $this->seedKanjiPool(25);
@@ -150,6 +171,147 @@ class QuizTest extends TestCase
         $this->actingAs($user)->get(route('quiz.result', $attempt))
             ->assertOk()
             ->assertSee('100%');
+    }
+
+    public function test_index_shows_recent_completed_results_but_not_in_progress(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        $completed = $this->completeQuiz($user);
+
+        // A second attempt that's started but never submitted.
+        $this->actingAs($user)->post(route('quiz.start'), [
+            'category' => 'JLPT',
+            'level' => 'N3',
+            'section' => 'kanji',
+            'count' => 20,
+        ]);
+        $inProgress = QuizAttempt::whereNull('completed_at')->first();
+
+        $this->actingAs($user)->get(route('quiz.index'))
+            ->assertOk()
+            ->assertSee('Recent results')
+            ->assertSee(route('quiz.result', $completed))      // completed one is listed
+            ->assertDontSee(route('quiz.result', $inProgress)); // in-progress one is not
+    }
+
+    public function test_history_lists_the_users_completed_attempts(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        $attempt = $this->completeQuiz($user);
+
+        $this->actingAs($user)->get(route('quiz.history'))
+            ->assertOk()
+            ->assertSee('JLPT N3 · Kanji')
+            ->assertSee(route('quiz.result', $attempt));
+    }
+
+    public function test_history_is_owner_scoped(): void
+    {
+        $this->seedKanjiPool(20);
+        $userA = User::factory()->create();
+        $userB = User::factory()->create();
+
+        $mine = $this->completeQuiz($userA);
+        $theirs = $this->completeQuiz($userB);
+
+        $this->actingAs($userA)->get(route('quiz.history'))
+            ->assertOk()
+            ->assertSee(route('quiz.result', $mine))
+            ->assertDontSee(route('quiz.result', $theirs));
+    }
+
+    public function test_history_shows_an_empty_state_with_no_attempts(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('quiz.history'))
+            ->assertOk()
+            ->assertSee('No quizzes yet');
+    }
+
+    public function test_index_shows_a_resume_banner_for_an_in_progress_attempt(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        // Start but don't submit — leaves an in-progress attempt.
+        $this->actingAs($user)->post(route('quiz.start'), [
+            'category' => 'JLPT',
+            'level' => 'N3',
+            'section' => 'kanji',
+            'count' => 20,
+        ]);
+        $attempt = QuizAttempt::first();
+
+        $this->actingAs($user)->get(route('quiz.index'))
+            ->assertOk()
+            ->assertSee('Quiz in progress')
+            ->assertSee(route('quiz.show', $attempt));
+    }
+
+    public function test_index_has_no_resume_banner_once_quizzes_are_completed(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        $this->completeQuiz($user);
+
+        $this->actingAs($user)->get(route('quiz.index'))
+            ->assertOk()
+            ->assertDontSee('Quiz in progress');
+    }
+
+    public function test_abort_deletes_the_in_progress_attempt(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('quiz.start'), [
+            'category' => 'JLPT',
+            'level' => 'N3',
+            'section' => 'kanji',
+            'count' => 20,
+        ]);
+        $attempt = QuizAttempt::first();
+
+        $this->actingAs($user)->delete(route('quiz.abort', $attempt))
+            ->assertRedirect(route('quiz.index'));
+
+        $this->assertDatabaseMissing('quiz_attempts', ['id' => $attempt->id]);
+    }
+
+    public function test_a_user_cannot_abort_someone_elses_attempt(): void
+    {
+        $this->seedKanjiPool(20);
+        $owner = User::factory()->create();
+        $intruder = User::factory()->create();
+
+        $this->actingAs($owner)->post(route('quiz.start'), [
+            'category' => 'JLPT',
+            'level' => 'N3',
+            'section' => 'kanji',
+            'count' => 20,
+        ]);
+        $attempt = QuizAttempt::first();
+
+        $this->actingAs($intruder)->delete(route('quiz.abort', $attempt))->assertForbidden();
+        $this->assertDatabaseHas('quiz_attempts', ['id' => $attempt->id]);
+    }
+
+    public function test_abort_does_not_delete_a_completed_attempt(): void
+    {
+        $this->seedKanjiPool(20);
+        $user = User::factory()->create();
+
+        $attempt = $this->completeQuiz($user);
+
+        $this->actingAs($user)->delete(route('quiz.abort', $attempt));
+
+        $this->assertDatabaseHas('quiz_attempts', ['id' => $attempt->id]);
     }
 
     public function test_section_is_required_when_the_level_has_sections(): void

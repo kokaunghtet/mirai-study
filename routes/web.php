@@ -90,11 +90,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/exams/papers/{paper}/download', [ExamPaperController::class, 'download'])->name('exams.download');
 
     // --- Quiz ---
+    // IMPORTANT: static routes (/quiz/start, /quiz/history) must come before the /quiz/{attempt} wildcards
     Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
     Route::post('/quiz/start', [QuizController::class, 'start'])->name('quiz.start');
+    Route::get('/quiz/history', [QuizController::class, 'history'])->name('quiz.history');
     Route::get('/quiz/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
     Route::get('/quiz/{attempt}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('/quiz/{attempt}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    Route::delete('/quiz/{attempt}', [QuizController::class, 'abort'])->name('quiz.abort');
 
     // --- Timer (auth: stores sessions + settings) ---
     Route::post('/timer/sessions', [TimerController::class, 'store'])->name('timer.store');
