@@ -531,6 +531,7 @@ Alpine.data('examBrowser', (payload = {}) => ({
     papers: [],
     loading: false,
     filterPart: 'all',      // 'all' | 'AM' | 'PM'
+    filterSession: 'all',   // 'all' | category-specific month (April/October | July/December)
     sortDir: 'desc',        // 'desc' (newest first) | 'asc'
 
     // Per-category artwork (gradient header + motif + tagline), keyed by name.
@@ -552,6 +553,7 @@ Alpine.data('examBrowser', (payload = {}) => ({
         this.curLevel = lvl;
         this.openId = cat.id;            // remembered for the breadcrumb
         this.filterPart = 'all';
+        this.filterSession = 'all';
         this.sortDir = 'desc';
         this.view = 'detail';
         this.loadPapers();
@@ -562,6 +564,7 @@ Alpine.data('examBrowser', (payload = {}) => ({
         if (this.curLevel && this.curLevel.id === lvl.id) return;
         this.curLevel = lvl;
         this.filterPart = 'all';
+        this.filterSession = 'all';
         this.sortDir = 'desc';
         this.loadPapers();
     },
@@ -590,12 +593,19 @@ Alpine.data('examBrowser', (payload = {}) => ({
 
     // ── Filter + sort + group ──
     get hasParts() { return this.papers.some((p) => p.part); },
+    // Category-aware session months: ITPEC runs April/October, JLPT runs July/December.
+    get sessionOptions() {
+        const map = { ITPEC: ['April', 'October'], JLPT: ['July', 'December'] };
+        return (this.curCat && map[this.curCat.name]) || [];
+    },
+    get hasSessions() { return this.sessionOptions.length > 0 && this.papers.some((p) => p.session); },
     get hasAnswers() { return this.papers.some((p) => p.doc_type === 'answer'); },
     get hasCombined() { return this.papers.some((p) => p.doc_type === 'combined'); },
     // Once any group beyond plain questions exists, render the grouped layout.
     get isGrouped() { return this.hasAnswers || this.hasCombined; },
     shaped(list) {
-        const r = this.filterPart === 'all' ? list : list.filter((p) => p.part === this.filterPart);
+        let r = this.filterPart === 'all' ? list : list.filter((p) => p.part === this.filterPart);
+        if (this.filterSession !== 'all') r = r.filter((p) => p.session === this.filterSession);
         return r.slice().sort((a, b) => (this.sortDir === 'asc' ? a.year - b.year : b.year - a.year));
     },
     // Plain question papers (and legacy null doc_type); combined/answer split off.

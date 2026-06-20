@@ -148,8 +148,14 @@
                         </div>
                         <div>
                             <x-input-label for="session" value="Session (optional)" />
-                            <x-text-input id="session" name="session" type="text" class="mt-1 block w-full"
-                                          x-model="session" placeholder="e.g. April, October, December, July" />
+                            <select name="session" id="session" x-model="session"
+                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent">
+                                <option value="">—</option>
+                                <option value="April">April</option>
+                                <option value="October">October</option>
+                                <option value="December">December</option>
+                                <option value="July">July</option>
+                            </select>
                             <x-input-error :messages="$errors->get('session')" class="mt-2" />
                         </div>
                     </div>

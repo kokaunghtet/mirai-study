@@ -153,14 +153,26 @@
                             </template>
                         </div>
 
-                        {{-- toolbar: AM/PM filter (when parts exist) + year sort --}}
+                        {{-- toolbar: AM/PM filter (when parts exist) + session filter
+                             (ITPEC: April/October · JLPT: July/December) + year sort --}}
                         <div class="papers-toolbar" x-show="!loading && papers.length">
-                            <div class="filter-chips" x-show="hasParts">
-                                <button class="chip" :class="filterPart === 'all' && 'active'" @click="filterPart = 'all'">All</button>
-                                <button class="chip" :class="filterPart === 'AM' && 'active'" @click="filterPart = 'AM'">AM</button>
-                                <button class="chip" :class="filterPart === 'PM' && 'active'" @click="filterPart = 'PM'">PM</button>
+                            <div class="filter-chips" style="flex-wrap:wrap">
+                                <template x-if="hasParts">
+                                    <span class="filter-chips">
+                                        <button class="chip" :class="filterPart === 'all' && 'active'" @click="filterPart = 'all'">All</button>
+                                        <button class="chip" :class="filterPart === 'AM' && 'active'" @click="filterPart = 'AM'">AM</button>
+                                        <button class="chip" :class="filterPart === 'PM' && 'active'" @click="filterPart = 'PM'">PM</button>
+                                    </span>
+                                </template>
+                                <template x-if="hasSessions">
+                                    <span class="filter-chips">
+                                        <template x-for="s in sessionOptions" :key="s">
+                                            <button class="chip" :class="filterSession === s && 'active'"
+                                                    @click="filterSession = filterSession === s ? 'all' : s" x-text="s"></button>
+                                        </template>
+                                    </span>
+                                </template>
                             </div>
-                            <span x-show="!hasParts"></span>
                             <button class="sort-btn" @click="toggleSort()" title="Toggle year order">
                                 Year <span class="sort-arrow" x-text="sortDir === 'asc' ? '▲' : '▼'"></span>
                             </button>

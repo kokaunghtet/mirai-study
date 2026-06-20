@@ -1,58 +1,125 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MiraiStudy
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack educational social platform for students preparing for JLPT (N1–N5) and ITPEC (FE, IP) exams. Combines a social study feed, Pomodoro focus timer, quiz/mock-test engine, and exam paper browser — all in one Laravel app.
 
-## About Laravel
+**Stack:** PHP 8.3 · Laravel 13 · Blade · Alpine.js 3 · Tailwind CSS 3 · Lucide icons · Vite 8 · SQLite/MySQL
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### ✅ Implemented
 
-## Learning Laravel
+| Feature | Description |
+|---|---|
+| **Custom OTP/2FA Auth** | Login via username or email; email-verification and optional 2FA via 6-digit OTP codes (10-min TTL, no replay). Live username availability/suggestions on registration. Google login via Socialite. |
+| **Social Feed** | CRUD posts with images + file attachments. Like, bookmark, threaded comments. Soft deletes. Infinite scroll with scroll-position restore on back navigation. Engagement-weighted ranking. |
+| **Follow System** | Follow/unfollow users, remove followers, follower/following lists on profiles. |
+| **User Profiles** | Public profile by username with posts/liked tabs. Privacy toggle for liked posts. Avatar upload. Account deletion. |
+| **Settings / Theming** | Light/dark/system mode + 5 accent colors (venom, aurora, sangria, twilight, inferno) + gradient/solid fill. CSS-variable tokens with Tailwind opacity support. Live preview mockup. Instant-save 2FA toggle. |
+| **Focus Timer** | Pomodoro timer with configurable focus/break durations, SVG ring progress, daily goal tracking. Ambient sounds via Web Audio API (rain, brown noise, binaural beats). Synthesized completion chime. Guest-accessible with lock overlay. |
+| **Quiz Engine** | 4-step wizard: category → level → section → question count. Random draws from 60 questions/pool. Server-side grading (answers never sent to client). Per-question review on results. Resume/discard in-progress quizzes. History with pagination. Config-driven catalog (`config/quiz.php`). |
+| **Exam Paper Browser** | Category/level/year/session filtering. Folder-style browser. Admin upload with PDF storage, auto-title from filename. |
+| **Notifications** | Controller logic complete; view pending. |
+| **Admin Area** | Routes and middleware gated by `admin` middleware; dashboard/users/reports views pending. |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🔧 Pending
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `notifications/index.blade.php` view
+- Admin dashboard / user management / reports views
+- `QuestionController` (exam questions list view)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick Start
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install && npm run build
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Or use the project setup command:
 
-## Contributing
+```bash
+composer setup
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Dev server
 
-## Code of Conduct
+```bash
+composer dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Runs `php artisan serve`, queue listener, log tailer, and `npm run dev` concurrently.
 
-## Security Vulnerabilities
+### Testing
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+composer test
+```
 
-## License
+Tests use in-memory SQLite and `MAIL_MAILER=array`. Key test files:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `Auth/OtpFlowTest.php` — OTP/2FA auth flow
+- `QuizTest.php` — full quiz lifecycle
+- `FeedRankingTest.php` — engagement-weighted feed sorting
+- `ThemeModeTest.php` — theme persistence
+
+---
+
+## Architecture Highlights
+
+### Auth flow
+
+Login is multi-step: credentials validated without starting a session → unverified email or 2FA enabled → OTP challenge → only then `Auth::login()`. The `User` model uses `MustVerifyEmail` trait but deliberately does **not** implement the interface — avoids double email from Breeze's `Registered` event.
+
+### Theming
+
+Colors stored as space-separated RGB channels in `resources/css/app.css` for Tailwind opacity modifiers. Three axes on `<html>`:
+
+- `.dark` class → surface palette (`--canvas`, `--surface`, `--content`, …)
+- `data-theme` → accent palette (5 options)
+- `data-fill` → gradient vs solid
+
+Dark mode resolved from `localStorage` before first paint to prevent flash.
+
+### AJAX partial pattern
+
+List controllers detect `$request->ajax()` and return `response()->json(['html' => ..., 'next_page_url' => ...])` for infinite scroll / drawers. Partials prefixed `_` (`feed/_posts.blade.php`, `feed/_comment-drawer.blade.php`).
+
+### Quiz security
+
+Question order stored in session (not DB). Correct answers never sent to client — grading is server-side only. Quiz config is the single source of truth in `config/quiz.php`.
+
+### Guest vs Auth
+
+Guests can view feed, exam papers, and timer. Interactive actions (like, comment, bookmark, follow, download) trigger an Alpine auth modal via `open-auth-modal` event.
+
+---
+
+## Project Structure
+
+```
+app/
+├── Http/Controllers/     — 18 controllers (feed, auth, quiz, timer, exams, settings, admin)
+├── Models/               — 24 models (User, Post, Comment, QuizAttempt, ExamPaper, …)
+├── Policies/             — PostPolicy, CommentPolicy
+├── Services/             — OtpService
+└── Notifications/        — OtpNotification
+
+resources/views/
+├── feed/                 — Social feed (index, show, create, edit + partials)
+├── profile/              — Public profile, edit, followers, following
+├── bookmarks/            — Bookmarked posts with infinite scroll
+├── timer/                — Pomodoro timer view
+├── quiz/                 — Quiz wizard, attempt, result, history
+├── exams/                — Exam paper browser
+├── settings/             — Appearance settings with live preview
+├── layouts/              — Sidebar layout (app.blade.php), guest layout
+└── components/           — post-card, auth-modal, Breeze UI components
+```
+
+---
