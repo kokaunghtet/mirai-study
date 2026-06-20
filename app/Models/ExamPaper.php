@@ -13,6 +13,8 @@ class ExamPaper extends Model
         'title',
         'year',
         'session',
+        'part',
+        'doc_type',
         'description',
         'file_url',
         'file_type',

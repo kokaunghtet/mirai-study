@@ -1,0 +1,421 @@
+Q1. Which of the following is an appropriate explanation of normal distribution? 
+(a) A continuous, bathtub-shaped distribution that is used to express the failure rate 
+(b) A continuous, bell-shaped distribution that is symmetric about its mean 
+(c) A discrete distribution that expresses the probability of an event occurring a given number of times in a fixed interval 
+(d) A discrete distribution where all events have the same probability to occur
+Ans: (b)
+--------------------------------------------------------------------------------
+Q2. Which of the following is an explanation of accountability at the executive managerial level? 
+(a) A company has a responsibility to explain the content and performance of business activities to shareholders and other interested parties. 
+(b) A company quantifies the cost of environmental maintenance and its effects and announces them periodically as financial information. 
+(c) Investors and analysts must be provided with accurate information that is necessary for investment decisions in a timely manner and on an ongoing basis. 
+(d) Rules, manuals, and verification systems are established on the basis of corporate ethics, and corporate management is performed in accordance with the relevant laws.
+Ans: (a)
+--------------------------------------------------------------------------------
+Q3. Which of the following can secure employment and create employment opportunities across an entire society by shortening work hours per employee? 
+(a) Cafeteria plan 
+(b) Free agent system
+(c) Work sharing 
+(d) Work-life balance
+Ans: (c)
+--------------------------------------------------------------------------------
+Q4. In financial statements, which of the following shows the company’s assets, liabilities, and net assets at a certain point in time and indicates the company’s financial situation? 
+(a) Balance sheet 
+(b) Statement of cash flows 
+(c) Statement of changes in equity 
+(d) Statement of profit or loss
+Ans: (a)
+--------------------------------------------------------------------------------
+Q5. Which of the following is an explanation of enterprise architecture (EA)? 
+(a) It is a technique to abstract and express business processes with the four (4) basic elements of data flow, process, file, and data sources and absorption. 
+(b) It is a technique to analyze each business operation and information system through the four (4) systems of business, data, application, and technology, and reexamine it from the viewpoint of total optimization. 
+(c) It is a technique to analyze or design a system by using schematic diagrams such as a class diagram, and it is developed by integrating and standardizing various methods that support an object-oriented design. 
+(d) It is a technique to clarify the data structure and the relationship between data items by expressing the conceptual data model with entities and relationships.
+Ans: (b)
+--------------------------------------------------------------------------------
+Q6. When a workflow system is used for business improvement, which of the following is an appropriate effect that can be expected? 
+(a)  Improved processing speed for office procedures, from                       document submission to approval 
+(b) The provision of a standard protocol used for data exchange between a company and its customers 
+(c) The provision of services such as a discount according to the amount of the customer’s purchase 
+(d) Warehouse automation of shipping and receipt of stocked products
+Ans: (a)
+--------------------------------------------------------------------------------
+Q7. Which of the following is an action that is taken in order to improve the cash flow? 
+(a) Pay the notes payable on a shorter timeline. 
+(b) Receive payment on the notes receivable on a longer timeline. 
+(c) Shorten the time period for collecting accounts receivable. 
+(d) Shorten the time period for making payments on accounts payable.
+Ans: (c)
+--------------------------------------------------------------------------------
+Q8. Which of the following is a description that corresponds to CSR procurement? 
+(a) Choosing the product with the lowest price to minimize costs 
+(b) Having multiple suppliers to avoid situations in which procurement is impossible, such as after a disaster 
+(c) Indicating procurement standards that consider the environment, human rights, etc., and requesting that suppliers comply with these 
+(d) Using EDI to purchase goods in order to perform prompt and accurate procurement
+Ans: (c)
+--------------------------------------------------------------------------------
+Q9. Which of the following is the purpose of CRM? 
+(a) Acquisition of customer loyalty and maximization of customer lifetime value 
+(b) Ascertainment of the sales information for each product at the time of sales 
+(c) Determination of the order quantity and order timing of material required for manufacturing 
+(d) Reduction in loss of sales opportunities due to inventory shortage
+Ans: (a)
+--------------------------------------------------------------------------------
+Q10.Which of the following is an activity that is performed                        when non-functional requirements are defined? 
+(a)Clarifying the flows of information (i.e., data) between the functions that constitute business operations 
+(b) Creating technical requirements of development standard according to the programming language used in system development 
+(c) Defining the scope to be implemented as system functions 
+(d) Specifying the interface for exchanging information with                  other systems
+Ans: (b)
+--------------------------------------------------------------------------------
+Q11. Which of the following is a description of BPO?
+ (a) It refers to a company not having its own server and operating a system by renting a part of the processing capability or the storage capacity of a server that is owned by a communication service provider. 
+(b) It refers to a company not having its own software and using functions of software that an external specialized vendor provides via a network. 
+(c) It refers to the outsourcing of a whole business process of a specific department of the company, such as the administration department or the call center, together with the operation of a business system to an external specialized vendor. 
+(d) It refers to utilizing employees from a staffing company with lower personnel expenditures than those of the company to reduce the cost of software development.
+Ans: (c)
+--------------------------------------------------------------------------------
+Q12. Which of the following is a management organization that creates a cross-functional team between project and functional organizations to flexibly respond to changes in the business environment? 
+(a) Divisional organization 
+(b) Line and staff organization
+(c) Matrix organization 
+(d) Project organization
+Ans: (c)
+--------------------------------------------------------------------------------
+Q13. Which of the following is an example of Green IT? 
+(a) Development of a powerful in-house data center 
+(b) Development of efficient in-house software 
+(c) Using a desktop PC instead of a thin client laptop 
+(d) Using web conferencing instead of travelling to meetings
+Ans: (d)
+--------------------------------------------------------------------------------
+Q14. Which of the following is an organizational structure of a                  corporation that is temporarily structured by specialists from each department to reach a specific goal over a limited period and operates independently from all other standing organizations? 
+(a) Company system organization 
+(b) Divisional system organization 
+(c) Functional organization
+(d) Project organization
+Ans: (d)
+--------------------------------------------------------------------------------
+Q15. In a sampling inspection, which of the following can be used to ascertain the probability of acceptance of a lot with a certain defective ratio? 
+(a) Bathtub curve 
+(b) Gompertz curve 
+(c) Logistic curve
+(d) OC curve
+Ans: (d)
+--------------------------------------------------------------------------------
+Q16. There are several quality control tools that have been used primarily for manufacturing and inspection departments. Which of the following is a combined graph containing a bar graph that shows the numeric values of individual items in descending order, and a line graph that shows the cumulative total of the composition ratios of these numeric values? 
+(a) Control chart 
+(b) Histogram
+(c) Pareto chart 
+(d) Scatter diagram
+Ans: (c)
+--------------------------------------------------------------------------------
+Q17. In a sampling inspection, which of the following can be used to ascertain the probability of acceptance of a lot with a certain defective ratio? 
+(a) Bathtub curve 
+(b) Gompertz curve
+(c) Logistic curve 
+(d) OC curve
+Ans: (d)  
+--------------------------------------------------------------------------------
+         Q18. Which of the following is the intellectual property right that does not require registration for protection in the World Trade Organization (WTO) member states?
+(a) Copyright  
+(b) Industrial design 
+(c) Patent 
+(d) Trademark
+Ans: (a)
+--------------------------------------------------------------------------------
+Q19. In a company, which of the following is the main role of the manufacturing department? 
+(a) Attracting, developing, and sustaining the labor force and maintaining employee records 
+(b) Managing financial assets and maintaining financial records (c) Producing products and services 
+(d) Selling products and services
+Ans: (c)
+--------------------------------------------------------------------------------
+Q20. Which of the following is an officer whose primary           responsibility is the security of a company’s information and data? 
+(a) CCO 
+(b) CIO 
+c) CISO 
+d) COO
+Ans: (c)
+--------------------------------------------------------------------------------
+Q21. Which of the following is a method of education and training in which trainees engage in simulated business activities, interact with other people to develop experiences, and try out different strategies? 
+(a) Case study 
+(b) Debate 
+(c) In-basket 
+(d) Roll-playing
+Ans: (d)
+--------------------------------------------------------------------------------
+Q22. Which of the following is a method of inventory asset valuation to calculate the inventory unit price by the expression as shown below each time that a new inventory asset is received?
+ (The costs of goods received + The costs of goods in stock) / (The quantity of goods received + The quantity of goods in stock) 
+(a) Final acquisition cost method (Final purchase cost method) 
+(b) First-in first-out method 
+(c) Moving average method 
+(d) Periodic average method
+Ans: (c)
+--------------------------------------------------------------------------------
+Q23. Which of the following is an organization that manages the standardization of technologies used on the Internet, and develops the technical specifications as an RFC? 
+(a) ANSI 
+(b) IEEE 
+(c) IETF 
+(d) NIST
+Ans: (c)
+--------------------------------------------------------------------------------
+Q24. Which of the following is an explanation of work sharing? (a) A concept that aims for diverse and flexible working styles, for the purpose of realizing harmony between work and life 
+(b) A method that allows employees to select welfare services within a certain range 
+(c) A system that allows employees to choose their workplace or duty 
+(d) An initiative for securing employment through shortening of work hours per employee and review of work assignments
+Ans: (d)
+--------------------------------------------------------------------------------
+Q25. Which of the following is an appropriate tool that implements a deliverable-oriented decomposition of a project into smaller components? 
+(a) Critical path method (CPM) 
+(b) Gantt chart (Gantt) 
+(c) Program evaluation and review technique (PERT) 
+(d) Work breakdown structure (WBS)
+Ans: (d)
+--------------------------------------------------------------------------------
+Q26. Which of the following is one of the major responsibilities of a project manager? 
+(a) Coding programs and debugging errors 
+(b) Evaluating the quality of project deliverables 
+(c) Organizing project members to achieve a planned result within a budget and schedule 
+(d) Providing the user requirements at the beginning of the project
+Ans: (c)
+--------------------------------------------------------------------------------
+Q27. In project time management, which of the following is the amount of time that the start of a successor activity requires to be delayed after the finish of a predecessor activity? 
+(a) Free float 
+(b) Lag 
+(c) Lead 
+(d) Total float
+Ans: (b)
+--------------------------------------------------------------------------------
+Q28. Which of the following is an appropriate feasibility evaluation when checking whether the lifetime benefits of the proposed information system is greater than its lifetime costs? 
+(a) Economic feasibility 
+(b) Operational feasibility 
+(c) Scheduling feasibility 
+(d) Technical feasibility
+Ans: (a)
+--------------------------------------------------------------------------------
+Q29. Based on the definition of project management process groups in ISO 21500, which of the following is an activity that is to be implemented in the planning process group among the project management processes? 
+(a) To define scope 
+(b) To develop a project charter
+(c) To identify stakeholders 
+(d) To perform quality assurance
+Ans: (a)  
+--------------------------------------------------------------------------------
+Q30. Which of the following is an appropriate description of an extreme programming (XP) practice? 
+(a) After the code is created, and it is confirmed that it can be integrated, test cases are created. 
+(b) Integration of the code and testing are continuously repeated. 
+(c) The code that passed the tests is not refactored until the next iteration. 
+(d) The customer is responsible for the specification of unit tests.
+Ans: (b)
+--------------------------------------------------------------------------------
+Q31. Which of the following is the technique for estimating activity durations where past information is statistically analyzed and various coefficients are determined? 
+(a) Analogous estimate 
+(b) Bottom-up estimate 
+(c) Parametric estimate 
+(d) Three-point estimate
+Ans: (c)
+--------------------------------------------------------------------------------
+Q32. Which of the following is an appropriate cost estimation technique that estimates the cost of an activity or project using the historical data from a similar project? 
+(a) Analogous estimating 
+(b) Bottom-up estimating 
+(c) Function point method 
+(d) Parametric estimating
+Ans: (a)
+--------------------------------------------------------------------------------
+Q33. Among the “four categories” of enterprise architecture, which of the following is the remaining one after business architecture, technology architecture, and application architecture? 
+(a) Bus architecture 
+(b) Data architecture 
+(c) Software architecture 
+(d) System architecture
+Ans: (b)
+--------------------------------------------------------------------------------
+Q34. Which of the following inventory valuation methods calculates the inventory unit price by dividing the total purchase amount by the total quantity of items purchased at the end of the accounting period? 
+(a) First-in- first-out method 
+(b) Last-in- first-out method 
+(c) Moving average method 
+(d) Periodic average method
+Ans: (d)
+--------------------------------------------------------------------------------
+Q35. Which of the following is a scheme where the user establishes a connection to the system of a service provider via the Internet and makes online use of only the necessary functions of the applications provided by the service provider at the necessary time? 
+(a) ERP 
+(b) SaaS 
+(c) SCM 
+(d) XBRL
+Ans: (b)
+--------------------------------------------------------------------------------
+Q36. A company chooses products and services that are acknowledged as actively addressing environmental concerns. What is this initiative called? 
+(a) CSR 
+(b) Environmental assessment 
+(c) Green procurement
+(d) Macro environment analysis
+Ans: (c)
+--------------------------------------------------------------------------------
+Q37. Which of the following is a method for making decisions on the basis of the sum of the future cashflows discounted by a discount rate? 
+(a) Internal Rate of Return Method (IRR) 
+(b) Net Present Value Method (NPV) 
+(c) PayBack Period Method (PBP) 
+(d) Return on Investment Method (ROI)
+Ans: (b)
+--------------------------------------------------------------------------------
+Q38. Which of the following is a technique that is used to perform the optimum resource allocation for a computerization investment in each category classified on the basis of the similarities of risks and the investment value? 
+(a) 3C analysis 
+(b) Benchmarking 
+(c) Enterprise architecture 
+(d) IT portfolio
+Ans: (d)
+--------------------------------------------------------------------------------
+Q39. Which of the following represents a part of the total cost of ownership (TCO) for SaaS (Software as a service)? 
+(a) Cost of upgraded installation 
+(b) Data migration cost 
+(c) New software development cost 
+(d) Server hardware investment to host the software
+Ans: (b)
+--------------------------------------------------------------------------------
+Q40. Which of the following is a purpose of Business Process Management (BPM) in corporate activities? 
+(a) Analysis and effective use of information resources 
+(b) Conservation and analysis of customer information 
+(c) Continuous improvement of business processes 
+(d) Effective use of management resources
+Ans: (c)
+--------------------------------------------------------------------------------
+Q41. Which of the following is an appropriate feasibility evaluation when checking whether the lifetime benefits of the proposed information system is greater than its lifetime costs? (a) Economic feasibility 
+(b) Operational feasibility 
+(c) Scheduling feasibility 
+(d) Technical feasibility
+Ans: (a)
+--------------------------------------------------------------------------------
+Q42. Among the “four categories” of the enterprise architecture, which of the following completes the list after business architecture, technology architecture, and application architecture? 
+(a) Bus architecture 
+(b) Data architecture 
+(c) Software architecture 
+(d) System architecture
+Ans: (b)
+--------------------------------------------------------------------------------
+ Q43. Which of the following is software whose copyright is abandoned and that can be used free of charge? 
+(a) Freeware 
+(b) Open-Source Software 
+(c) Public Domain Software 
+(d) Shareware
+Ans: (c)
+--------------------------------------------------------------------------------
+Q44. Which of the following is an appropriate method to forecast the amount of revenue during an upcoming promotion at a store, based on historical data? 
+(a) Cluster analysis 
+(b) Delphi method 
+(c) Pareto analysis 
+(d) Regression analysis
+Ans: (d)
+--------------------------------------------------------------------------------
+Q45. There are several quality control tools that have been used primarily for manufacturing and inspection departments. Which of the following sets two corresponding types of data on the vertical and horizontal axes, after which the measured values are plotted? 
+(a) Control chart 
+(b) Histogram 
+(c) Pareto chart 
+(d) Scatter diagram
+Ans: (d)
+--------------------------------------------------------------------------------
+Q46. Which of the following is a management organization that creates a cross-functional team between project and functional organizations in order to flexibly respond to changes in the business environment? 
+(a) Divisional organization 
+(b) Line and staff organization 
+(c) Matrix organization 
+(d) Project organization
+Ans: (c)
+--------------------------------------------------------------------------------
+Q47. Which of the following is an example of Green by IT? 
+(a) Development of efficient in-house software 
+(b) Development of a powerful in-house Data Centre 
+(c) Using a desktop PC instead of a laptop thin client 
+(d) Using web conferencing instead of travelling to meetings
+Ans: (d)
+--------------------------------------------------------------------------------
+Q48. Which of the following items should be put under “Liabilities and Stockholder’s Equity” in a balance sheet? 
+(a) Cash 
+(b) Common stock 
+(c) Fixed assets 
+(d) Inventories
+Ans: (b)
+--------------------------------------------------------------------------------
+Q49. Which of the following type of financial statements shows the financial position of an enterprise at a particular point of time? 
+(a) Balance sheet 
+(b) Cash flow statement 
+(c) Income statement 
+(d) Statements of shareholders’ equity
+Ans: (a)
+--------------------------------------------------------------------------------
+Q50. Which of the following is not protected by “copyright” that is based on the World Trade Organization’s Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS)? 
+(a) Database 
+(b) Free software publicly available on the Internet 
+(c) Programming language and its conventions 
+(d) Software operation manual
+Ans: (c)
+--------------------------------------------------------------------------------
+Q51. Which of the following can secure employment and create employment opportunities in an entire society by shortening the work hours per employee? 
+a) Cafeteria plan 
+b) Free agent system 
+c) Work sharing 
+d) Work-life balance
+Ans: (c)
+--------------------------------------------------------------------------------
+Q52. Which of the following is a technique that discovers useful information and relationships from large amounts of customer and market data retained by a company? 
+(a) Data dictionary 
+(b) Data flow diagram 
+(c) Data mining
+(d) Data warehouse
+Ans: (c)
+--------------------------------------------------------------------------------
+Q53. What is the distribution of arrival rate in an M/M/1 queuing model? 
+(a) Exponential distribution 
+(b) Geometric distribution 
+(c) Normal distribution
+(d) Poisson distribution
+Ans: (d)
+--------------------------------------------------------------------------------
+Q54. Which of the following is a chart or a diagram that is used to analyze possible relationships between two variables and is composed of a horizontal axis containing the measured values of one variable and a vertical axis representing the measurements of the other variable? 
+(a) Cause-and-effect diagram 
+(b) Control chart
+(c) Pareto chart 
+(d) Scatter diagram
+Ans: (d)  
+--------------------------------------------------------------------------------
+Q55. Which of the following is not protected by “copyright” that is based on the WTO’s Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS)? 
+(a) Database 
+(b) Free software publicly available on the Internet 
+(c) Programming language and its conventions 
+(d) Software operation manual
+Ans: (c)
+--------------------------------------------------------------------------------
+Q56. Which of the following is protected by “copyright” that is based on the WTO’s Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS)? 
+a) Algorithm 
+b) Compiler program 
+c) Programming language
+d) Protocol
+Ans: (b)
+--------------------------------------------------------------------------------
+Q57. Which of the following is a specialization-oriented organization that is divided into groups, such as research and development, manufacturing, sales, human resources, general affairs, and accounting, according to the type of work performed? 
+(a) Divisional organization 
+(b) Functional organization
+(c) Matrix organization 
+(d) Project organization
+Ans: (b)
+--------------------------------------------------------------------------------
+Q58. Which of the following is an appropriate cost estimation technique that uses parametric models to create an objective estimate based on each element size and the complexity of the system (e.g., number of input files, screens, etc.) to be built? 
+(a) Analogous estimating 
+(b) Bottom-up estimating
+(c) Function point method 
+(d) Three-point estimating
+Ans: (c)
+--------------------------------------------------------------------------------
+Q59. Which of the following is an appropriate description of the Responsibility Assignment Matrix that is used for project human resource management? 
+(a) Allocating the current engagement level of the stakeholders. 
+(b) Allocating work packages to those who are responsible for project work. 
+(c) Defining the limits of the project sponsor’s responsibilities. 
+(d) Defining the terms of reference of the project manager.
+Ans: (b)
+--------------------------------------------------------------------------------
+Q60. Which of the following is the structure that illustrates the relationship between project activity and the units of project that will perform those activities? 
+(a) Organizational Breakdown Structure 
+(b) Product Breakdown Structure 
+(c) Responsibility Assignment Matrix 
+(d) Work Breakdown Structure
+Ans: (a)
+--------------------------------------------------------------------------------
+
+
+

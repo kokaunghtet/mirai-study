@@ -149,7 +149,7 @@
                title="Quiz"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('quiz.*') ? 'active' : 'text-muted' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                <i data-lucide="circle-help" class="w-5 h-5 shrink-0 {{ request()->routeIs('quiz.*') ? '' : 'text-muted' }}"></i>
+                <i data-lucide="brain" class="w-5 h-5 shrink-0 {{ request()->routeIs('quiz.*') ? '' : 'text-muted' }}"></i>
                 <span x-show="!sidebarCollapsed">Quiz</span>
             </a>
 
@@ -186,6 +186,18 @@
                     <i data-lucide="bookmark" class="w-5 h-5 shrink-0 {{ request()->routeIs('bookmarks.*') ? '' : 'text-muted' }}"></i>
                     <span x-show="!sidebarCollapsed">Bookmarks</span>
                 </a>
+
+                @if (auth()->user()->isAdmin())
+                    {{-- Manage Papers (admin) --}}
+                    <a href="{{ route('admin.papers') }}"
+                       @click="sidebarOpen = false"
+                       title="Manage Papers"
+                       class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.papers*') ? 'active' : 'text-muted' }}"
+                       :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                        <i data-lucide="upload" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.papers*') ? '' : 'text-muted' }}"></i>
+                        <span x-show="!sidebarCollapsed">Manage Papers</span>
+                    </a>
+                @endif
             @endauth
         </nav>
 

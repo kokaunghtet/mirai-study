@@ -151,11 +151,16 @@
         </form>
 
         {{-- ───────────────────── Security / Password ───────────────────── --}}
-        <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-            <div class="mb-4">
+        <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
+            <button type="button" @click="open = !open"
+                    class="w-full flex items-center justify-between text-left">
                 <h2 class="text-base font-semibold text-content">Password</h2>
-                <p class="mt-0.5 text-xs text-muted">Use a long, random password to keep your account secure.</p>
-            </div>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
+                   :class="open ? 'rotate-180' : ''"></i>
+            </button>
+
+            <div x-show="open" x-collapse.duration.700ms x-cloak class="mt-4">
+                <p class="text-xs text-muted mb-4">Use a long, random password to keep your account secure.</p>
 
             @if ($user->password)
                 <form method="POST" action="{{ route('password.update') }}" data-loading class="space-y-4">
@@ -205,6 +210,7 @@
                     </p>
                 </div>
             @endif
+            </div>
         </div>
 
         {{-- ───────────────────── Privacy ───────────────────── --}}

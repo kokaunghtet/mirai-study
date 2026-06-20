@@ -26,34 +26,47 @@
                 <div class="lg:col-span-3 space-y-4">
 
                     {{-- Theme Mode --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-                        <h2 class="text-base font-semibold mb-4 text-content">Theme</h2>
-                        <p class="text-xs text-muted mb-4">Choose a light or dark interface, or match your system.</p>
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: true }">
+                        <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between text-left">
+                            <h2 class="text-base font-semibold text-content">Theme</h2>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
+                               :class="open ? 'rotate-180' : ''"></i>
+                        </button>
 
-                        <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-muted p-1">
-                            <button id="theme-light"
-                                    class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                <i data-lucide="sun" class="h-5 w-5"></i>
-                                <span>Light</span>
-                            </button>
-                            <button id="theme-dark"
-                                    class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                <i data-lucide="moon" class="h-5 w-5"></i>
-                                <span>Dark</span>
-                            </button>
-                            <button id="theme-system"
-                                    class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                <i data-lucide="settings" class="h-5 w-5"></i>
-                                <span class="text-center leading-tight">System</span>
-                            </button>
+                        <div x-show="open" x-collapse.duration.700ms x-cloak class="mt-4">
+                            <p class="text-xs text-muted mb-4">Choose a light or dark interface, or match your system.</p>
+
+                            <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-muted p-1">
+                                <button id="theme-light"
+                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
+                                    <i data-lucide="sun" class="h-5 w-5"></i>
+                                    <span>Light</span>
+                                </button>
+                                <button id="theme-dark"
+                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
+                                    <i data-lucide="moon" class="h-5 w-5"></i>
+                                    <span>Dark</span>
+                                </button>
+                                <button id="theme-system"
+                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
+                                    <i data-lucide="settings" class="h-5 w-5"></i>
+                                    <span class="text-center leading-tight">System</span>
+                                </button>
+                            </div>
                         </div>
                     </section>
 
                     {{-- Gradient Color --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-                        <h2 class="text-base font-semibold mb-4 text-content">Gradient Color</h2>
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
+                        <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between text-left">
+                            <h2 class="text-base font-semibold text-content">Gradient Color</h2>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
+                               :class="open ? 'rotate-180' : ''"></i>
+                        </button>
 
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        <div x-show="open" x-collapse.duration.700ms x-cloak class="grid grid-cols-2 gap-3 sm:grid-cols-3 mt-4">
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-lime to-mirai-dark"
                                     data-theme="venom" data-fill="gradient">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
@@ -83,10 +96,15 @@
                     </section>
 
                     {{-- Solid Color --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-                        <h2 class="text-base font-semibold mb-4 text-content">Solid Color</h2>
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
+                        <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between text-left">
+                            <h2 class="text-base font-semibold text-content">Solid Color</h2>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
+                               :class="open ? 'rotate-180' : ''"></i>
+                        </button>
 
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        <div x-show="open" x-collapse.duration.700ms x-cloak class="grid grid-cols-2 gap-3 sm:grid-cols-3 mt-4">
                             <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-lime"
                                     data-theme="venom" data-fill="solid">
                                 <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
@@ -116,8 +134,15 @@
                     </section>
 
                     {{-- Security --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-                        <h2 class="text-base font-semibold mb-1 text-content">Security</h2>
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
+                        <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between text-left">
+                            <h2 class="text-base font-semibold text-content">Security</h2>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
+                               :class="open ? 'rotate-180' : ''"></i>
+                        </button>
+
+                        <div x-show="open" x-collapse.duration.700ms x-cloak class="mt-2">
                         <p class="text-xs text-muted mb-4">Add an extra layer of protection to your account.</p>
 
                         <div class="flex items-center justify-between gap-4 rounded-xl bg-surface-muted p-4">
@@ -133,6 +158,7 @@
                             </button>
                         </div>
                         <p id="twofa-status" class="mt-2 text-xs font-semibold hidden"></p>
+                        </div>
                     </section>
 
                     {{-- Save Button --}}

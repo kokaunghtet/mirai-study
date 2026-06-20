@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/{user}/remove-follower', [FollowController::class, 'removeFollower'])->name('users.remove-follower');
 
     // --- Exam downloads ---
+    Route::get('/exams/papers/{paper}/view', [ExamPaperController::class, 'view'])->name('exams.view');
     Route::get('/exams/papers/{paper}/download', [ExamPaperController::class, 'download'])->name('exams.download');
 
     // --- Quiz ---
@@ -128,6 +129,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('users.status');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
+
+    // Exam paper management
+    Route::get('/papers', [ExamPaperController::class, 'manage'])->name('papers');
+    Route::get('/papers/create', [ExamPaperController::class, 'create'])->name('papers.create');
+    Route::post('/papers', [ExamPaperController::class, 'store'])->name('papers.store');
+    Route::delete('/papers/{paper}', [ExamPaperController::class, 'destroy'])->name('papers.destroy');
 });
 
 // Breeze auth routes

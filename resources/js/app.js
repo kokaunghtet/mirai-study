@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse';
 import {
     createIcons,
     // Layout
@@ -15,7 +16,11 @@ import {
     // Focus timer
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
     // Quiz
-    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
+    // Exams
+    Folder, FolderOpen, Download, LoaderCircle, Eye,
+    // Admin upload
+    Sparkles, TriangleAlert
 } from 'lucide';
 
 const icons = {
@@ -25,9 +30,12 @@ const icons = {
     Ellipsis, File, Upload, ThumbsUp, MessageCircle, Send, Check,
     ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus,
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
-    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2
+    ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
+    Folder, FolderOpen, Download, LoaderCircle, Eye,
+    Sparkles, TriangleAlert
 };
 
+Alpine.plugin(collapse);
 window.Alpine = Alpine;
 
 // ── Light/Dark mode toggle (sidebar + guest auth portal) ──
@@ -507,6 +515,206 @@ Alpine.data('resumeBanner', (attemptId, total) => ({
         }
         // Drop the saved progress so a discarded quiz leaves nothing behind.
         try { localStorage.removeItem(`quiz-progress-${this.attemptId}`); } catch (e) { /* ignore */ }
+    },
+}));
+
+// Exam browser — folder cards → level pop-out → paper detail. The full
+// category→level tree (with paper counts) is passed in from the server; the
+// paper list for a level is fetched as JSON on demand, then filtered/sorted/
+// grouped entirely client-side.
+Alpine.data('examBrowser', (payload = {}) => ({
+    categories: payload.categories ?? [],
+    view: 'folders',        // 'folders' | 'detail'
+    openId: null,           // id of the expanded folder (level pop-out)
+    curCat: null,
+    curLevel: null,
+    papers: [],
+    loading: false,
+    filterPart: 'all',      // 'all' | 'AM' | 'PM'
+    sortDir: 'desc',        // 'desc' (newest first) | 'asc'
+
+    // Per-category artwork (gradient header + motif + tagline), keyed by name.
+    art(cat) {
+        const map = {
+            JLPT: { grad: 'linear-gradient(135deg,#1e3a8a,#60a5fa)', motif: '⛩️', tag: 'Japanese proficiency' },
+            ITPEC: { grad: 'linear-gradient(135deg,#065f46,#34d399)', motif: '🖥️', tag: 'Industry certified' },
+        };
+        return map[cat.name] || { grad: 'linear-gradient(135deg,#334155,#64748b)', motif: '📁', tag: 'Past papers' };
+    },
+
+    // ── Folders ──
+    toggleFolder(id) { this.openId = this.openId === id ? null : id; },
+    get openCat() { return this.categories.find((c) => c.id === this.openId) || null; },
+
+    // ── Open a level → detail view ──
+    openLevel(cat, lvl) {
+        this.curCat = cat;
+        this.curLevel = lvl;
+        this.openId = cat.id;            // remembered for the breadcrumb
+        this.filterPart = 'all';
+        this.sortDir = 'desc';
+        this.view = 'detail';
+        this.loadPapers();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    selectLevel(lvl) {                   // tab switch inside detail
+        if (this.curLevel && this.curLevel.id === lvl.id) return;
+        this.curLevel = lvl;
+        this.filterPart = 'all';
+        this.sortDir = 'desc';
+        this.loadPapers();
+    },
+
+    backToFolders() {
+        this.view = 'folders';
+        if (this.curCat) this.openId = this.curCat.id;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    async loadPapers() {
+        this.loading = true;
+        this.papers = [];
+        try {
+            const res = await fetch(`/exams/${this.curCat.id}/${this.curLevel.id}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+            });
+            const data = await res.json();
+            this.papers = data.papers ?? [];
+        } catch (e) {
+            this.papers = [];
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    // ── Filter + sort + group ──
+    get hasParts() { return this.papers.some((p) => p.part); },
+    get hasAnswers() { return this.papers.some((p) => p.doc_type === 'answer'); },
+    get hasCombined() { return this.papers.some((p) => p.doc_type === 'combined'); },
+    // Once any group beyond plain questions exists, render the grouped layout.
+    get isGrouped() { return this.hasAnswers || this.hasCombined; },
+    shaped(list) {
+        const r = this.filterPart === 'all' ? list : list.filter((p) => p.part === this.filterPart);
+        return r.slice().sort((a, b) => (this.sortDir === 'asc' ? a.year - b.year : b.year - a.year));
+    },
+    // Plain question papers (and legacy null doc_type); combined/answer split off.
+    get questions() { return this.shaped(this.papers.filter((p) => p.doc_type !== 'answer' && p.doc_type !== 'combined')); },
+    get combined() { return this.shaped(this.papers.filter((p) => p.doc_type === 'combined')); },
+    get answers() { return this.shaped(this.papers.filter((p) => p.doc_type === 'answer')); },
+    toggleSort() { this.sortDir = this.sortDir === 'desc' ? 'asc' : 'desc'; },
+}));
+
+// Admin paper upload — picks/drops a PDF, decodes its filename
+// ({YEAR}{S|A}_{LEVELCODE}_{AM|PM}_{Question|Answer}.pdf) and auto-fills every
+// field. The category→level tree (with level `code`s) is passed in from the
+// server so we can resolve a code like "FE" to its category + level ids.
+Alpine.data('paperUploader', (cats = []) => ({
+    cats,
+    categoryId: '',
+    levelId: '',
+    year: '',
+    session: '',
+    part: '',
+    docType: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    isDragging: false,
+    parsed: false,
+    parseOk: false,
+
+    init() {
+        // Honour any old() values repopulated by the server after a failed submit.
+        const d = this.$root.dataset;
+        this.categoryId = d.oldCategory || '';
+        this.levelId = d.oldLevel || '';
+        this.year = d.oldYear || String(new Date().getFullYear());
+        this.session = d.oldSession || '';
+        this.part = d.oldPart || '';
+        this.docType = d.oldDoctype || '';
+        this.title = d.oldTitle || '';
+    },
+
+    get levels() {
+        const c = this.cats.find((c) => c.id == this.categoryId);
+        return c ? c.levels : [];
+    },
+
+    pickFile(e) {
+        const file = e.target.files[0];
+        if (file) this.accept(file);
+    },
+
+    dropFile(e) {
+        this.isDragging = false;
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        // Mirror the dropped file into the real <input> so it submits with the form.
+        const input = document.getElementById('file');
+        if (input) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            input.files = dt.files;
+        }
+        this.accept(file);
+    },
+
+    clearFile() {
+        const input = document.getElementById('file');
+        if (input) input.value = '';
+        this.fileName = '';
+        this.fileSize = 0;
+        this.parsed = false;
+        this.parseOk = false;
+    },
+
+    accept(file) {
+        this.fileName = file.name;
+        this.fileSize = file.size;
+        this.parse(file.name);
+    },
+
+    parse(name) {
+        const base = name.replace(/\.pdf$/i, '');
+        const m = base.match(/^(\d{4})([SA])_([A-Za-z0-9]+)_(AM|PM)_(Question|Answer)s?$/i);
+        this.parsed = true;
+        if (!m) {
+            this.parseOk = false;
+            return;
+        }
+        const [, year, sess, code, part, doc] = m;
+        this.year = year;
+        this.session = sess.toUpperCase() === 'S' ? 'April' : 'October';
+        this.part = part.toUpperCase();
+        this.docType = doc.toLowerCase();
+        for (const c of this.cats) {
+            const lvl = (c.levels || []).find((l) => l.code.toUpperCase() === code.toUpperCase());
+            if (lvl) {
+                this.categoryId = String(c.id);
+                this.levelId = String(lvl.id);
+                break;
+            }
+        }
+        const label = this.docType === 'answer' ? 'Answers' : 'Questions';
+        this.title = `${code.toUpperCase()} — ${this.session} ${year} · ${this.part} · ${label}`;
+        this.parseOk = true;
+    },
+
+    get levelLabel() {
+        const lvl = this.levels.find((l) => l.id == this.levelId);
+        return lvl ? lvl.name : '';
+    },
+
+    get docLabel() {
+        if (this.docType === 'answer') return 'Answer key';
+        if (this.docType === 'question') return 'Question paper';
+        return '';
+    },
+
+    formatSize(bytes) {
+        if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+        return Math.max(1, Math.round(bytes / 1024)) + ' KB';
     },
 }));
 

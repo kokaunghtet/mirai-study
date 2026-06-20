@@ -156,7 +156,7 @@
 
                 {{-- ── Settings ── --}}
                 <div class="rounded-xl border border-line bg-surface overflow-hidden"
-                     x-data="{ open: false }">
+                     x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
                     <button type="button" @click="open = !open"
                             class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                         <span>Settings</span>
@@ -164,7 +164,7 @@
                            :class="open ? 'rotate-180' : ''"></i>
                     </button>
 
-                    <div x-show="open" class="lg:!block">
+                    <div x-show="open" x-collapse.duration.300ms>
                         @auth
                             <div class="p-2.5 space-y-0.5">
                                 <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">

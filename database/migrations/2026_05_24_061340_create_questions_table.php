@@ -19,10 +19,11 @@ return new class extends Migration
             // Null when the level has no sections (e.g. ITPEC IP). See config/quiz.php.
             $table->string('section')->nullable();
             $table->text('text');
-            $table->string('option_a');
-            $table->string('option_b');
-            $table->string('option_c');
-            $table->string('option_d');
+            // Real exam choices can be full sentences (>255 chars), so use text.
+            $table->text('option_a');
+            $table->text('option_b');
+            $table->text('option_c');
+            $table->text('option_d');
             $table->enum('answer', ['A', 'B', 'C', 'D']);
             $table->text('explanation')->nullable();
             $table->timestamps();

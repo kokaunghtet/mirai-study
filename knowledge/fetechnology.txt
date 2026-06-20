@@ -1,0 +1,416 @@
+Q1. Which of the following is an appropriate reason for using a real-time OS in an embedded system? 
+(a) A graphical user interface is provided from an ease-of-use perspective with a real-time OS. 
+(b) A real-time OS guarantees the highest levels of system security and reliability. 
+(c) No data is lost even if an application program hangs up with a real-time OS. 
+(d) With a real-time OS, there is a mechanism available to respond within a limited time.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q2. Which of the following is software that can be used without charge but has restrictions on modification and redistribution? 
+(a) Freeware 
+(b) Package software 
+(c) Public domain software 
+(d) Shareware
+Ans: (a) 
+-------------------------------------------------------------------------------------------
+Q3. Which of the following is an appropriate explanation of the function of an actuator? 
+(a) It changes an analog electrical signal into a digital electrical signal, which a computer can process. 
+(b) It changes an electrical control signal that a computer supplies into a mechanical motion. 
+(c) It identifies a physical quantity and changes it into an electrical signal. 
+(d) It is used in devices such as keyboards or touch panels to enter data into a computer.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q4. Which of the following is an appropriate description of XML? 
+(a) An exclusive editor is required to produce XML documents. 
+(b) It is an integration of the logical structure and document style. 
+(c) It is based on HTML and offers more extended functions. 
+(d) The attributes and logical structure of a document can be defined with user-defined tags.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q5. Which of the following is an appropriate description of the dispatcher in an operating system? 
+(a) A function in which multiple tasks appear to be running simultaneously on a single processor 
+(b) The allocation of the right to use a processor for a ready process 
+(c) The context that is the information required for process execution 
+(d) The determination of the order of execution for each process.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q6. Among the processes that are performed by a compiler for a procedural language, which of the following is the process that is performed first? 
+(a) Lexical analysis 
+(b) Optimization 
+(c) Semantic analysis 
+(d) Syntactic analysis (parsing)
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q7. Which of the following represents appropriate handling for open- source software according to OSI’s definition? 
+(a) For open- source software that is created for a specific industry, the scope of publishing of the source code can be limited to that industry. 
+(b) If open- source software is to be modified for uses such as internal use by a company without being redistributed, the modified part of the source code does not have to be published. 
+(c) When open- source software is modified and redistributed, the same license as the original software must be used for distribution so that the distribution conditions are remain the same as the original software. 
+(d) When open- source software is redistributed by a third party as a product, the developer of the open- source software can charge a license fee to the third party.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q8. When the number of concurrently running programs is increased in a virtual storage system with a small and insufficient main memory capacity, which of the following is the state in which the overhead of the system increases and the processor utilization of the applications decreases? 
+(a) Bottleneck
+(b) Fragmentation
+(c) Paging 
+(d) Thrashing   
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q9. When the least recently used (LRU) method is used for swapping a block between cache memory and main memory, which of the following is a block in cache memory to be replaced? 
+(a) A block for which the longest period of time has elapsed since it was added 
+(b) A block for which the longest period of time has elapsed since it was last referenced 
+(c) A block that has been referenced the least frequently 
+(d) A block that has not been referenced for a certain period of time
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q10. Which of the following is an appropriate explanation of a memory leak? 
+(a) An increase in the number of applications executed concurrently causes most processing time to be spent for paging because of a lack of main memory, and results in an extreme reduction of throughput. 
+(b) It is a method to insert required modules into main memory when there is a restriction on the size of the program area during execution. 
+(c) Part of main memory reserved during operation is not released because of a bug in the OS or an application, and as a result, the usable area of main memory decreases. 
+(d) The total amount of free space available for use in main memory is sufficient, but no space can be reserved for loading a large program because of fragmentation.
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q11. Which of the following is an explanation of an absolute path name in a file system? 
+(a) The path name from the current directory to the target file 
+(b) The path name from the home directory to the target file 
+(c) The path name from the root directory to the target file 
+(d) The shortest path name among path names from a certain directory to the target file
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q12. Which of the following is the main purpose of optimization by a compiler? 
+(a) To improve the maintainability of a program 
+(b) To make debugging of a program easier 
+(c) To reduce the execution time of a program 
+(d) To reduce the time needed to generate object codes
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q13. Which of the following is the OSS that is provided as an integrated development environment for software? 
+(a) Apache Tomcat 
+(b) Eclipse 
+(c) GCC
+(d) Linux
+Ans: (b)
+Q16. Which of the following is an appropriate explanation of paging?
+ (a) A method of memory management in which multiple records are read and written as a block on an auxiliary storage 
+(b) A method of memory management in which the main memory is divided into multiple areas so that reading and writing can be performed simultaneously 
+(c) A method of memory management in which the programs are relocated for execution in a different area of the main memory 
+(d) A method of memory management in which the virtual memory space and real memory space are divided into fixed-length blocks for management
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q17. A real-time OS performs preemptive scheduling on a priority basis and schedules two (2) tasks A and B. When A has a higher priority than B, which of the following is an appropriate task management by the real-time OS? 
+(a) When A is launched during the execution of B, B is assigned a “ready” status and A is executed. 
+(b) When A is launched during the execution of B, B is assigned a “waiting” status and A is executed. 
+(c) When B is launched during the execution of A, A is assigned a “ready” status and B is executed. 
+(d) When B is launched during the execution of A, A is assigned a “waiting” status and B is executed.
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q18. A regular expression [A-Z]+[0-9]* represents a set of character strings. Which of the following character strings belongs to this set? Here, the regular expression follows the rules below. [A-Z] represents a single uppercase English character. [0-9] represents a single decimal digit. *indicates zero or more occurrences of the preceding element. + indicates one or more occurrences of the preceding element. 
+(a) 456789 
+(b) ABC+99 
+(c) ABC99* 
+(d) ABCDEF
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q19. Which of the following is an explanation of a recursive call? 
+(a) To allow a function to use itself from within its body 
+(b) To execute processes in an event-driven way rather than in a predetermined order 
+(c) To keep a function in memory after its execution in order to reuse 
+(d) To undo an execution of process when it fails\
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q20. Which of the following is an appropriate usage method of the priority-based preemptive scheduling that is used in an embedded real-time operating system? 
+(a) It is used when evenly assigning the execution time for each task. 
+(b) It is used when tasks are processed according to their importance and urgency. 
+(c) It is used when tasks are processed sequentially from the earlier arriving times. 
+(d) It is used when tasks are processed sequentially from the shorter processing times.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q21. In the virtual memory of a paging system, which of the following is a cause that increases the number of page fault occurrences? 
+(a) An access to a page that has not been accessed for a long time in main memory 
+(b) An increase in access to a page that does not exist in main memory 
+(c) An increase in access to a page that exists in main memory 
+(d) An increase in the ratio of pages that are updated among the pages in main memory
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q22. Which of the following is a page fault in a virtual memory system? 
+(a) An access to a page that is mapped in the virtual memory, but not loaded in the physical memory 
+(b) A hardware error in the physical memory 
+(c) A program attempting to insert more data than it can hold in the physical memory 
+(d) A reference to a page that another program is currently using in the virtual memory
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q23. Which of the following is classified as a function of a static test tool? 
+(a) Calculating the coverage from the paths executed by the test 
+(b) Detecting an error in a program by analyzing the source code 
+(c) Generating a driver or stub necessary for the module to be tested 
+(d) Generating the data to test a specific path of the program
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q24. Which of the following is the appropriate function of a linker? 
+(a) Creating a load module from multiple object modules, etc. by performing operations such as cross-reference resolution 
+(b) Loading a load module into main memory before execution 
+(c) Monitoring program execution and logging the execution result for each step 
+(d) Registering a created program to a library
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q25. In input/output management, which of the following is an appropriate function of a buffer? 
+(a) Enabling an input/output device to be handled in the same way as a file 
+(b) Enabling the use of an input/output device without the need to consider its unique specifications by creating a data exchange layer between an input/output device and a processing device 
+(c) Notifying a processing device when an input/output device becomes available for use 
+(d) Reducing the difference in processing speed by establishing a special area of memory between an input/output device and a processing device
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q26. Which of the following is the backup method that requires the longest time to backup but the shortest time to restore? 
+a) Differential backup 
+b) Full backup 
+c) Incremental backup
+d) Synthetic full backup
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q27. In UNIX, which of the following is a function that links the standard output of a command directly to the standard input of another command? 
+(a) Background job 
+(b) Brace expansion 
+(c) Pipe
+(d) Redirect
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q28. Which of the following is an appropriate explanation of optimization in a compiler? 
+(a) Analyzing the source code and generating an object code with an improved run-time processing efficiency 
+(b) Generating an intermediate code for an interpreter rather than generating an object code 
+(c) Generating an object code that displays the called subprogram name or the content of a variable at a particular point in time during the execution of the program 
+(d) Generating an object code that operates in a computer with a different architecture from the computer in which the compiler is implemented
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q29. Which of the following is used to control the visual styles of HTML documents, such as text sizes, text colors, or page layout? 
+(a) CMS 
+(b) CSS 
+(c) RSS 
+(d) Wiki
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q28. When a storage location is to be calculated from a key value, which of the following methods enables the same calculation result to be obtained from different key values? 
+a) B+ tree index 
+b) Bitmap index 
+c) Hash index
+d) Inverted index
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q29. In virtual memory management, which of the following page replacement methods replaces the page for which the most time has passed since it was last used? 
+(a) FIFO 
+(b) LFU 
+(c) LIFO 
+(d) LRU
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q30. The methods for representing the results of syntactic analysis in a compiler include quadruplet format. (Operator, Operand 1, Operand 2, Result) This format indicates that the application of the operator to operand 1 and operand 2 outputs the result. For which of the following expressions does the series of quadruplets below represent the syntactic analysis? Here, T1, T2, and T3 indicate temporary variables. (*,B,C,T1 ) ,(/,T1 ,D,T2 ), (+,A,T2 ,T3 ) .
+(a) A+B*C/D 
+(b) A+B*C/T2 
+(c) B*C+A/D 
+(d) B*C+T1/D
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q31. Which of the following is a method that performs integration of the modules that configure a program during execution of the program? (a) Dynamic linking 
+(b) Interpreter 
+(c) Overlay 
+(d) Static linking
+Ans: (a) 
+-------------------------------------------------------------------------------------------
+Q32. In Java technologies, which of the following is the specification of creating reusable software components that have frequently used functionalities? 
+(a) Java applet 
+(b) Java application 
+(c) JavaBeans 
+(d) JavaScript
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q33. Which of the following best describes the characteristics of XML? 
+(a) The style languages such as XSL and CSS used in HTML can also be used in XML. 
+(b) XML allows a tag to be defined in order for an easier data exchange between information systems over the network. 
+(c) XML is developed on its own specification, whereas HTML is on the SGML basis. 
+(d) XML is HTML based and has some features added primarily for a performance improvement of displaying a web page.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q34. Which of the following occurs when a program attempts to access a page that is mapped in the virtual address space, but is not located in the main memory? Here, the OS supports paging. 
+(a) Fatal error 
+(b) Page fault 
+(c) Scheduling error
+(d) Segmentation fault
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q35. Which of the following is an appropriate explanation of spooling? 
+(a) It determines the execution order for jobs that are loaded into a system according to characteristics and priority. 
+(b) It sends communication data to a pre-registered agent instead of sending it directly to a counterpart. 
+(c) It temporarily saves input data from a keyboard to the queue in the main memory. 
+(d) It temporarily saves output data for a low-speed device, such as a printer, to a high- speed hard disk, and then sends it to the intended device.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q36. Which of the following is an open-source integrated development environment that includes software and support tools for application development? 
+(a) Eclipse 
+(b) Perl 
+(c) PHP 
+(d) Ruby
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q37. When the multiplicity of processing is increased in the virtual memory of a computer system, page-in and page-out operations occur very frequently, and the response speed of the system decreases suddenly. What is this phenomenon called? 
+(a) Memory compaction 
+(b) Overlay 
+(c) Roll-out
+(d) Thrashing
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q38. Which of the following is an appropriate explanation for a non-preemptive scheduling method? 
+(a) A task cannot move to a running state until another task in the running state either moves to the waiting state by itself or finishes. 
+(b) Each time a new task becomes the ready state, a comparison is made for all tasks in the ready state from the standpoint of the remaining execution time, and the tasks are executed in an order starting from the shortest execution time. 
+(c) When a task becomes the ready state, a comparison is made between the priority of the task and that of the one in the running state at that time, and the task with the higher priority moves to the running state. 
+(d) When a task in the running state does not move to the waiting state within a predetermined time period, the task is interrupted, and the next task in the waiting queue moves to the running state.
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q39. According to the Open-Source Definition by OSI (Open-Source Initiative), which of the following is the appropriate description concerning open-source licensing? 
+(a) The license allows any party to freely use, modify, and distribute a program. A royalty fee is required only if the program is redistributed commercially. 
+(b) The license allows authors to put usage restrictions on a program to prevent such program from being used in business activities. 
+(c) The license requires that all derivative works must be kept secret if the derivative works are based on an original program. 
+(d) The license requires that the source code of a program must be made available either for free or at a reasonable reproduction cost.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q40. Which of the following is a language processor that produces executable code for other platforms than the one on which the language processor itself is running? 
+(a) Cross compiler 
+(b) Emulator 
+(c) Generator 
+(d) Simulator
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q41. A real-time OS, which performs preemptive scheduling based on priority, schedules the tasks A and B. When A has a higher priority than B, which of the following is an appropriate action that is performed by the real-time OS? 
+(a) When A is launched during the execution of B, B is put into a “ready” state and A is executed. 
+(b) When A is launched during the execution of B, B is put into a “waiting” state and A is executed. 
+(c) When B is launched during the execution of A, A is put into a “ready” state and B is executed. 
+(d) When B is launched during the execution of A, A is put into a “waiting” state and B is executed.
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q42. Which of the following is an appropriate explanation of the spooling function? 
+(a) Execution of the programs is temporarily suspended, and control is transferred to the control program. 
+(b) If a CPU becomes idle because of the execution of input/output instructions while executing a certain task, the CPU is assigned to another task. 
+(c) The access time to auxiliary storage devices is reduced by providing a buffer pool consisting of multiple buffers and by increasing the probability of accessing buffers located in the main storage. 
+(d) The overall processing power of a system is enhanced by performing data transfer between the main storage and low-speed input/output devices via auxiliary storage devices.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q43. Which of the following is an explanation of an absolute path name of a file system? 
+(a) It is the path name from the current directory up to the target file. 
+(b) It is the path name from the home directory up to the target file. 
+(c) It is the path name from the root directory up to the target file. 
+(d) It is the shortest path name from among the several path names from a directory up to the target file.
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q44. Which of the following is the standard used to describe the look and formatting of markup language documents such as HTML and XHTML? (a) CMS 
+(b) CSS 
+(c) RSS 
+(d) Wiki
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q45. Among the descriptions concerning process scheduling, which of the following is an appropriate explanation of the round robin method? 
+(a) CPU resources are allocated to each process in order of priority specified in advance when a particular event occurs. 
+(b) CPU resources are allocated to each process in order of processing time from shortest to longest. 
+(c) CPU resources are allocated to the first executable process in the queue when an interval-timer interrupt is generated. 
+(d) CPU resources are allocated to the process that needs to start immediately when some kind of interrupt is generated.
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q46. Which of the following is an appropriate explanation of optimization in a compiler? 
+(a) Generating an intermediate code used for an interpreter rather than generating an object code 
+(b) Generating an object code that displays the called subprogram name or the contents of a variable at a particular point of time during the execution of the program 
+(c) Generating an object code that operates in a computer with a different architecture from the computer in which the source code is complied 
+(d) Generating an object code with improved run-time processing efficiency by analyzing the source code
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q47. Which of the following is an appropriate explanation concerning a memory leak? 
+(a) An increase in the number of applications executed concurrently causes excessive paging, and results in an extreme reduction of throughput. 
+(b) In the system with a restriction on the size of memory allocated to the running programs, each program module is loaded into main memory only when needed. 
+(c) Part of main memory occupied during application execution is not released because of a bug of the application or OS, and the usable space of main memory decreases. 
+(d) The total amount of free space available in main memory is sufficient, but no space can be used for loading a large program because of noncontiguous memory blocks.
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q48. In a white box test, which of the following is used to evaluate the proportion of lines of code that are executed? 
+(a) Assertion checker 
+(b) Simulator 
+(c) Static code analysis
+(d) Test coverage analysis
+Ans: (d) 
+-------------------------------------------------------------------------------------------
+Q49. When the source code based on OSS licensed under GPL is not released to the public, which of the following is regarded as a violation of the license? 
+(a) A company develops and sells an interface kit between OSS and other application software. 
+(b) A company obtains, modifies, and sells OSS through the company’s own operations or activities. 
+(c) A company outsources the modification of OSS to another company for the purpose of internal use. 
+(d) A company sells its own software whose performance test has been performed by using OSS.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q50. Among the explanations of task scheduling methods, which of the following has the highest possibility that a specific task continues to wait for the allocation of CPU time? 
+(a) Each task is added to the end of the Ready queue in order of arrival into the system, and the CPU time is always allocated to the first task in the Ready queue. 
+(b) Each task is executed in the order listed in the Ready queue. Once a fixed period of time has elapsed, the execution of the task is suspended and it is added to the end of the Ready queue. 
+(c) The priority of each task is determined, and each task is executed in high to low priority order. The priority is increased gradually according to the length of the waiting time until the CPU time is allocated. 
+(d) The processing is executed from the task with the estimated shortest processing time. The subsequent task is started when the processing being executed is either completed or has been suspended for some reason.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q51. Which of the following is an appropriate explanation of the LRU method that is used as a page replacement algorithm? 
+(a) The page that has existed for the longest time is replaced. 
+(b) The page that has not been used for the longest time is replaced. 
+(c) The page that was last referenced is replaced. 
+(d) The page that was referenced the least number of times is replaced.
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q52. Which of the following is the case where outline fonts rather than bitmap fonts are effective and suitable for use on an output device such as a display or a printer? 
+(a) Both single-byte and double-byte characters are displayed. 
+(b) Characters are displayed on the screen as quickly as possible. 
+(c) Characters are displayed with uniform width. 
+(d) Characters are enlarged using a given scale factor.
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q53. Which of the following is a mechanism that is used for defining the style of a Web page? 
+(a) CMS 
+(b) CSS 
+(c) PNG 
+(d) SVG
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q54. There are cases where the unused storage space is divided into lots of small and isolated areas because of repeated allocation and release of storage area by an OS. Which of the following is the terminology applicable to such cases? 
+(a) Fragmentation 
+(b) Partitioning 
+(c) Segmentation
+(d) Swapping
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q55. Which of the following is a technique that binds the modules constituting a program at the time of executing the program? 
+(a) Dynamic linking 
+(b) Interpreter 
+(c) Overlay 
+(d) Static linking
+Ans: (a)
+-------------------------------------------------------------------------------------------
+Q56. Which of the following is an OSS tool that is provided as the IDE (Integrated Development Environment) of software? 
+(a) Apache 
+(b) Eclipse 
+(c) Linux 
+(d) Mozilla
+Ans: (b)
+-------------------------------------------------------------------------------------------
+Q57. In memory pool management of a real time system using various sizes of memory resources, which of the following is an appropriate characteristic of the fixed-length method in comparison with the variable-length method? 
+(a) The memory efficiency is good, and the processing speed for allocation and deallocation is slow and constant. 
+(b) The memory efficiency is good, and the processing speed for allocation and deallocation is slow and variable. 
+(c) The memory efficiency is poor, and the processing speed for allocation and deallocation is fast and constant. 
+(d) The memory efficiency is poor, and the processing speed for allocation and deallocation is fast and variable.
+Ans: (c)
+-------------------------------------------------------------------------------------------
+Q58. Which of the following is the language processor that translates and executes a source program written in high-level language, on a line-by-line basis? 
+(a) Assembler 
+(b) Compiler 
+(c) Generator
+(d) Interpreter
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q59. Which of the following is a program attribute of software that can be repeatedly called and executed without reloading after completion of the execution but cannot be called and executed by multiple programs at the same time? 
+(a) Recursive 
+(b) Reentrant 
+(c) Relocatable 
+(d) Reusable 
+Ans: (d)
+-------------------------------------------------------------------------------------------
+Q60. When XML is compared with HTML, which of the following functions is enabled only by using XML? 
+(a) Describing documents by using tags 
+(b) Displaying dynamic web pages 
+(c) Embedding hyperlinks to other documents 
+(d) Exchanging structured information
+Ans: (d)

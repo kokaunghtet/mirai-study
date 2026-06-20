@@ -133,6 +133,27 @@
     [type='radio']:not(:checked) {
         background-color: transparent;
     }
+
+    /* Number steppers (the up/down spin buttons) are a native widget — no browser
+       lets you recolor them directly, and Firefox exposes nothing. `color-scheme`
+       is the only cross-browser knob: it makes the native control follow the active
+       surface, killing the opaque white spin box that glares in dark mode. Pinning
+       it per-theme keeps the spinner blended (transparent-looking) on every browser. */
+    [type='number'] {
+        color-scheme: light;
+    }
+
+    .dark [type='number'] {
+        color-scheme: dark;
+    }
+
+    /* Belt-and-suspenders for WebKit/Blink: force the spin button itself transparent
+       and always visible so it sits flat on the themed input background. */
+    [type='number']::-webkit-inner-spin-button,
+    [type='number']::-webkit-outer-spin-button {
+        background: transparent;
+        opacity: 1;
+    }
 }
 
 /* Hide Alpine-managed elements until Alpine initialises (avoids a flash). */
@@ -151,7 +172,7 @@
     offset-rotate: auto;
     /* leaf banks/tumbles along the path tangent */
     transform-origin: center;
-    animation: leaf-travel 1s linear infinite, leaf-sway 1.8s ease-in-out infinite alternate;
+    animation: leaf-travel 1s linear infinite, leaf-sway 1s ease-in-out infinite alternate;
 }
 
 /* Depth: the leaf scales up as it nears mid-flight and shrinks toward the ends, so it
