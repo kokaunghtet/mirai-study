@@ -736,10 +736,18 @@ Alpine.data('questionForm', (cats = []) => ({
     categoryId: '', levelId: '', section: '', answer: '',
     init() {
         const d = this.$root.dataset;
+        this.answer = d.oldAnswer || '';
         this.categoryId = d.oldCategory || '';
-        this.levelId    = d.oldLevel || '';
-        this.section    = d.oldSection || '';
-        this.answer     = d.oldAnswer || '';
+
+        // Level options are rendered by x-for off `categoryId`; wait one tick so the
+        // <option> exists before x-model can select it. Section depends on `levelId`
+        // the same way, so nest a second tick.
+        this.$nextTick(() => {
+            this.levelId = d.oldLevel || '';
+            this.$nextTick(() => {
+                this.section = d.oldSection || '';
+            });
+        });
     },
     get levels()  { return this.cats.find(c => c.id == this.categoryId)?.levels ?? []; },
     get sections(){ return this.levels.find(l => l.id == this.levelId)?.sections ?? {}; },
