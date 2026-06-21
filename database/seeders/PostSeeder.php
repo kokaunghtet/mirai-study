@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Comment;
+use App\Models\Follow;
 use App\Models\Post;
+use App\Models\PostLike;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -31,8 +33,8 @@ class PostSeeder extends Seeder
 
                 $comments->each(function (Comment $comment) use ($post, $users) {
                     Comment::factory(rand(1, 2))->create([
-                        'post_id'   => $post->id,
-                        'user_id'   => $users->random()->id,
+                        'post_id' => $post->id,
+                        'user_id' => $users->random()->id,
                         'parent_id' => $comment->id,
                     ]);
                 });
@@ -40,10 +42,12 @@ class PostSeeder extends Seeder
                 // Collect used user IDs to avoid duplicate likes on same post
                 $usersWhoLiked = collect();
                 $users->random(rand(2, 8))->each(function (User $liker) use ($post, &$usersWhoLiked) {
-                    if ($usersWhoLiked->contains($liker->id)) return;
+                    if ($usersWhoLiked->contains($liker->id)) {
+                        return;
+                    }
                     $usersWhoLiked->push($liker->id);
 
-                    \App\Models\PostLike::create([
+                    PostLike::create([
                         'user_id' => $liker->id,
                         'post_id' => $post->id,
                     ]);
@@ -55,8 +59,8 @@ class PostSeeder extends Seeder
             $users->where('id', '!=', $follower->id)
                 ->random(rand(2, 5))
                 ->each(function (User $following) use ($follower) {
-                    \App\Models\Follow::firstOrCreate([
-                        'follower_id'  => $follower->id,
+                    Follow::firstOrCreate([
+                        'follower_id' => $follower->id,
                         'following_id' => $following->id,
                     ], ['status' => 'accepted']);
                 });

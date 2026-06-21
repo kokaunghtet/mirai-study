@@ -135,6 +135,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/papers/create', [ExamPaperController::class, 'create'])->name('papers.create');
     Route::post('/papers', [ExamPaperController::class, 'store'])->name('papers.store');
     Route::delete('/papers/{paper}', [ExamPaperController::class, 'destroy'])->name('papers.destroy');
+
+    // Quiz question management
+    Route::get('/questions', [QuestionController::class, 'manage'])->name('questions');
+    Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+    Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
+    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 
 // Breeze auth routes

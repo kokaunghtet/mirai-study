@@ -21,9 +21,9 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'theme_mode'   => 'required|in:light,dark,system',
+            'theme_mode' => 'required|in:light,dark,system',
             'accent_color' => 'required|in:venom,aurora,sangria,twilight,inferno',
-            'fill_style'   => 'required|in:gradient,solid',
+            'fill_style' => 'required|in:gradient,solid',
         ]);
 
         $request->user()->preferences()->updateOrCreate(

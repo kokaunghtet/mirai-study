@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
@@ -25,19 +25,20 @@ class CommentController extends Controller
     public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'content'   => 'required|string|max:2000',
+            'content' => 'required|string|max:2000',
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
         $post->comments()->create([
-            'user_id'   => $request->user()->id,
-            'content'   => $validated['content'],
+            'user_id' => $request->user()->id,
+            'content' => $validated['content'],
             'parent_id' => $validated['parent_id'] ?? null,
         ]);
 
         // AJAX (feed drawer): return the refreshed comments partial.
         if ($request->expectsJson() || $request->ajax()) {
             $this->loadComments($post);
+
             return view('feed._comments', compact('post'));
         }
 
@@ -67,6 +68,7 @@ class CommentController extends Controller
         // AJAX (feed drawer): return the refreshed comments partial.
         if ($request->expectsJson() || $request->ajax()) {
             $this->loadComments($post);
+
             return view('feed._comments', compact('post'));
         }
 
@@ -80,7 +82,7 @@ class CommentController extends Controller
     private function loadComments(Post $post): void
     {
         $post->load([
-            'comments' => fn($q) => $q->whereNull('parent_id')
+            'comments' => fn ($q) => $q->whereNull('parent_id')
                 ->with(['user', 'replies.user', 'likes'])
                 ->latest(),
         ]);

@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
-ini_set('memory_limit', '256M'); 
+ini_set('memory_limit', '256M');
 
 define('LARAVEL_START', microtime(true));
 

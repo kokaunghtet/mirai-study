@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use App\Models\Otp;
 use App\Models\User;
-use App\Notifications\OtpNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;

@@ -18,7 +18,7 @@ class Otp extends Model
 
     protected $casts = [
         'expires_at' => 'datetime',
-        'used_at'    => 'datetime',
+        'used_at' => 'datetime',
         'created_at' => 'datetime',
     ];
 
@@ -39,6 +39,6 @@ class Otp extends Model
 
     public function isValid(): bool
     {
-        return !$this->isExpired() && !$this->isUsed();
+        return ! $this->isExpired() && ! $this->isUsed();
     }
 }

@@ -19,7 +19,7 @@ A full-stack educational social platform for students preparing for JLPT (N1–N
 | **Settings / Theming** | Light/dark/system mode + 5 accent colors (venom, aurora, sangria, twilight, inferno) + gradient/solid fill. CSS-variable tokens with Tailwind opacity support. Live preview mockup. Instant-save 2FA toggle. |
 | **Focus Timer** | Pomodoro timer with configurable focus/break durations, SVG ring progress, daily goal tracking. Ambient sounds via Web Audio API (rain, brown noise, binaural beats). Synthesized completion chime. Guest-accessible with lock overlay. |
 | **Quiz Engine** | 4-step wizard: category → level → section → question count. Random draws from 60 questions/pool. Server-side grading (answers never sent to client). Per-question review on results. Resume/discard in-progress quizzes. History with pagination. Config-driven catalog (`config/quiz.php`). |
-| **Exam Paper Browser** | Category/level/year/session filtering. Folder-style browser. Admin upload with PDF storage, auto-title from filename. |
+| **Exam Paper Browser** | Category/level/year/session filtering. Folder-style browser. Admin upload with PDF storage, auto-title from filename. Uploads capped at 20 MB — see [knowledge/compress-pdf-before-upload.md](knowledge/compress-pdf-before-upload.md) to shrink large scans first. |
 | **Notifications** | Controller logic complete; view pending. |
 | **Admin Area** | Routes and middleware gated by `admin` middleware; dashboard/users/reports views pending. |
 

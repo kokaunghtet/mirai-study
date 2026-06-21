@@ -11,8 +11,8 @@ class ExamLevelFactory extends Factory
     {
         return [
             'category_id' => ExamCategory::factory(),
-            'code'        => fake()->bothify('??#'),
-            'name'        => fake()->word(),
+            'code' => fake()->bothify('??#'),
+            'name' => fake()->word(),
         ];
     }
 }

@@ -24,7 +24,7 @@ class PostLikeController extends Controller
         // Works for both regular and AJAX requests
         if ($request->expectsJson()) {
             return response()->json([
-                'liked'      => $liked,
+                'liked' => $liked,
                 'likes_count' => $post->likes()->count(),
             ]);
         }

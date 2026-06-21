@@ -11,10 +11,10 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'post_id'   => Post::factory(),
-            'user_id'   => User::factory(),
+            'post_id' => Post::factory(),
+            'user_id' => User::factory(),
             'parent_id' => null,
-            'content'   => fake()->sentence(),
+            'content' => fake()->sentence(),
         ];
     }
 }

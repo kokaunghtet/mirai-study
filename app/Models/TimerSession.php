@@ -18,9 +18,9 @@ class TimerSession extends Model
     ];
 
     protected $casts = [
-        'completed'  => 'boolean',
+        'completed' => 'boolean',
         'started_at' => 'datetime',
-        'ended_at'   => 'datetime',
+        'ended_at' => 'datetime',
         'created_at' => 'datetime',
     ];
 

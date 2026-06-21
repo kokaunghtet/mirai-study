@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Bookmark extends Model
 {
     public $incrementing = false;
+
     public $timestamps = false;
+
     protected $primaryKey = null;
 
     protected $fillable = ['user_id', 'post_id'];

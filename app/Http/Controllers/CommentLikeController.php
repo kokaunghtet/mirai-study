@@ -23,7 +23,7 @@ class CommentLikeController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'liked'       => $liked,
+                'liked' => $liked,
                 'likes_count' => $comment->likes()->count(),
             ]);
         }

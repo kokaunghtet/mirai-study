@@ -20,7 +20,8 @@ import {
     // Exams
     Folder, FolderOpen, Download, LoaderCircle, Eye,
     // Admin upload
-    Sparkles, TriangleAlert
+    Sparkles, TriangleAlert,
+    ClipboardList
 } from 'lucide';
 
 const icons = {
@@ -32,7 +33,8 @@ const icons = {
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
     Folder, FolderOpen, Download, LoaderCircle, Eye,
-    Sparkles, TriangleAlert
+    Sparkles, TriangleAlert,
+    ClipboardList
 };
 
 Alpine.plugin(collapse);
@@ -726,6 +728,24 @@ Alpine.data('paperUploader', (cats = []) => ({
         if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
         return Math.max(1, Math.round(bytes / 1024)) + ' KB';
     },
+}));
+
+// ── Admin question form (cascading category → level → section) ──
+Alpine.data('questionForm', (cats = []) => ({
+    cats,
+    categoryId: '', levelId: '', section: '', answer: '',
+    init() {
+        const d = this.$root.dataset;
+        this.categoryId = d.oldCategory || '';
+        this.levelId    = d.oldLevel || '';
+        this.section    = d.oldSection || '';
+        this.answer     = d.oldAnswer || '';
+    },
+    get levels()  { return this.cats.find(c => c.id == this.categoryId)?.levels ?? []; },
+    get sections(){ return this.levels.find(l => l.id == this.levelId)?.sections ?? {}; },
+    get needsSection() { return Object.keys(this.sections).length > 0; },
+    onCategoryChange() { this.levelId = ''; this.section = ''; },
+    onLevelChange()    { this.section = ''; },
 }));
 
 document.addEventListener('alpine:initialized', () => {

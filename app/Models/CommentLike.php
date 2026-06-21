@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class CommentLike extends Model
 {
     public $incrementing = false;
+
     public $timestamps = false;
+
     protected $primaryKey = null;
 
     protected $fillable = ['user_id', 'comment_id'];

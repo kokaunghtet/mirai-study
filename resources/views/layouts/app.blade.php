@@ -197,6 +197,16 @@
                         <i data-lucide="upload" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.papers*') ? '' : 'text-muted' }}"></i>
                         <span x-show="!sidebarCollapsed">Manage Papers</span>
                     </a>
+
+                    {{-- Manage Questions (admin) --}}
+                    <a href="{{ route('admin.questions') }}"
+                       @click="sidebarOpen = false"
+                       title="Manage Questions"
+                       class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.questions*') ? 'active' : 'text-muted' }}"
+                       :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                        <i data-lucide="clipboard-list" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.questions*') ? '' : 'text-muted' }}"></i>
+                        <span x-show="!sidebarCollapsed">Manage Questions</span>
+                    </a>
                 @endif
             @endauth
         </nav>

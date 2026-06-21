@@ -17,8 +17,8 @@ class BookmarkController extends Controller
                 'user',
                 'tags',
                 'media',
-                'bookmarks' => fn($q) => $q->where('user_id', $userId),
-                'likes'     => fn($q) => $q->where('user_id', $userId),
+                'bookmarks' => fn ($q) => $q->where('user_id', $userId),
+                'likes' => fn ($q) => $q->where('user_id', $userId),
             ])
             ->withCount(['likes', 'comments'])
             ->latest('bookmarks.created_at')
@@ -26,7 +26,7 @@ class BookmarkController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'html'          => view('bookmarks._posts', compact('posts'))->render(),
+                'html' => view('bookmarks._posts', compact('posts'))->render(),
                 'next_page_url' => $posts->nextPageUrl(),
             ]);
         }
@@ -49,6 +49,7 @@ class BookmarkController extends Controller
             $user->bookmarkedPosts()->attach($post->id);
             $bookmarked = true;
         }
+
         return response()->json(['bookmarked' => $bookmarked]);
     }
 }
