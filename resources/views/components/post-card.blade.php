@@ -106,7 +106,7 @@
                             Edit
                         </a>
                         <form method="POST" action="{{ route('posts.destroy', $post) }}"
-                              onsubmit="return confirm('Delete this post?')">
+                              data-confirm="Delete this post?">
                             @csrf
                             @method('DELETE')
                             <button type="submit"

@@ -71,7 +71,7 @@
                                         @if (auth()->id() === $comment->user_id)
                                             <form method="POST"
                                                   action="{{ route('comments.destroy', $comment) }}"
-                                                  onsubmit="return confirm('Delete this comment?')"
+                                                  data-confirm="Delete this comment?"
                                                   data-loading>
                                                 @csrf
                                                 @method('DELETE')
@@ -133,7 +133,7 @@
                                                         @if (auth()->id() === $reply->user_id)
                                                             <form method="POST"
                                                                   action="{{ route('comments.destroy', $reply) }}"
-                                                                  onsubmit="return confirm('Delete this reply?')"
+                                                                  data-confirm="Delete this reply?"
                                                                   data-loading>
                                                                 @csrf
                                                                 @method('DELETE')

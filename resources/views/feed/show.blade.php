@@ -39,7 +39,7 @@
                                 <a href="{{ route('posts.edit', $post) }}"
                                     class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">Edit</a>
                                 <form method="POST" action="{{ route('posts.destroy', $post) }}"
-                                      onsubmit="return confirm('Delete this post?')">
+                                      data-confirm="Delete this post?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-red-500 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 active:scale-95">

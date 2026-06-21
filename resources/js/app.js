@@ -462,10 +462,40 @@ Alpine.data('quizPlayer', (questions = [], attemptId = null) => ({
             e.returnValue = '';
         };
         window.addEventListener('beforeunload', this._onBeforeUnload);
+
+        // Intercept internal navigation clicks to show a themed leave-quiz modal.
+        this._onClickNav = async (e) => {
+            if (this.submitting || this.answeredCount === 0) return;
+            const link = e.target.closest('a');
+            if (!link) return;
+            if (link.target === '_blank') return;
+            if (link.hasAttribute('download')) return;
+            if (link.getAttribute('href') === '#') return;
+            if (link.hasAttribute('data-no-nav')) return;
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            try {
+                const url = new URL(href, window.location.origin);
+                if (url.origin !== window.location.origin) return;
+            } catch (_) { return; }
+            e.preventDefault();
+            e.stopPropagation();
+            const confirmed = await window.confirmDialog({
+                title: 'Leave quiz?',
+                message: 'Your progress is saved on this device, but the quiz stays in progress. Leave anyway?',
+                confirmLabel: 'Leave',
+            });
+            if (confirmed) {
+                this.submitting = true;
+                window.location.href = href;
+            }
+        };
+        document.addEventListener('click', this._onClickNav, { capture: true });
     },
 
     destroy() {
         window.removeEventListener('beforeunload', this._onBeforeUnload);
+        document.removeEventListener('click', this._onClickNav, { capture: true });
     },
 
     persist() {
@@ -482,16 +512,27 @@ Alpine.data('quizPlayer', (questions = [], attemptId = null) => ({
     prev() { if (this.current > 0) { this.current--; this.persist(); } },
     goTo(i) { this.current = i; this.persist(); },
 
-    onSubmit(e) {
+    async onSubmit(e) {
+        // Re-entry guard: requestSubmit() below re-fires this @submit handler.
+        // Once submitting, let the native POST proceed untouched.
+        if (this.submitting) return;
+
         if (!this.allAnswered) {
+            e.preventDefault();
             const left = this.total - this.answeredCount;
-            if (!confirm(`You have ${left} unanswered question${left === 1 ? '' : 's'}. Submit anyway?`)) {
-                e.preventDefault();
-                return;
-            }
+            const confirmed = await window.confirmDialog({
+                title: 'Submit quiz?',
+                message: `You have ${left} unanswered question${left === 1 ? '' : 's'}. Submit anyway?`,
+                confirmLabel: 'Submit anyway',
+            });
+            if (!confirmed) return;
+            // Drop saved progress so a finished quiz doesn't resurface as "in progress".
+            this.submitting = true;
+            try { localStorage.removeItem(this.storageKey); } catch (e) { /* ignore */ }
+            e.target.requestSubmit();
+            return;
         }
-        // Submitting for real — don't warn, and drop the saved progress so a finished
-        // quiz doesn't resurface as "in progress".
+        // All answered: let the native submit proceed; just mark state + clear progress.
         this.submitting = true;
         try { localStorage.removeItem(this.storageKey); } catch (e) { /* ignore */ }
     },
@@ -504,19 +545,29 @@ Alpine.data('resumeBanner', (attemptId, total) => ({
     attemptId,
     total,
     answered: 0,
+    _confirmed: false,
     init() {
         try {
             const saved = JSON.parse(localStorage.getItem(`quiz-progress-${attemptId}`) || '{}');
             this.answered = Object.keys(saved.answers || {}).length;
         } catch (e) { /* no saved progress on this device */ }
     },
-    abort(e) {
-        if (!confirm('Discard this quiz? Your progress will be lost.')) {
-            e.preventDefault();
-            return;
-        }
+    async abort(e) {
+        // Re-entry guard: requestSubmit() below re-fires this @submit handler.
+        if (this._confirmed) return;
+
+        e.preventDefault();
+        const confirmed = await window.confirmDialog({
+            title: 'Discard quiz?',
+            message: 'Discard this quiz? Your progress will be lost.',
+            confirmLabel: 'Discard',
+            danger: true,
+        });
+        if (!confirmed) return;
         // Drop the saved progress so a discarded quiz leaves nothing behind.
+        this._confirmed = true;
         try { localStorage.removeItem(`quiz-progress-${this.attemptId}`); } catch (e) { /* ignore */ }
+        e.target.requestSubmit();
     },
 }));
 
@@ -755,6 +806,83 @@ Alpine.data('questionForm', (cats = []) => ({
     onCategoryChange() { this.levelId = ''; this.section = ''; },
     onLevelChange()    { this.section = ''; },
 }));
+
+// ── Themed confirm dialog (replaces native confirm()) ──
+Alpine.data('confirmModal', () => ({
+    show: false,
+    title: '',
+    message: '',
+    confirmLabel: 'Confirm',
+    danger: false,
+    _resolve: null,
+
+    open(opts) {
+        this.title = opts.title || 'Confirm';
+        this.message = opts.message || '';
+        this.confirmLabel = opts.confirmLabel || 'Confirm';
+        this.danger = opts.danger || false;
+        this._resolve = opts.resolve || null;
+        this.show = true;
+        this.$nextTick(() => this.$refs.confirmBtn?.focus());
+    },
+
+    handleConfirm() {
+        const fn = this._resolve;
+        this._resolve = null;
+        this.show = false;
+        if (fn) fn(true);
+    },
+
+    handleCancel() {
+        const fn = this._resolve;
+        this._resolve = null;
+        this.show = false;
+        if (fn) fn(false);
+    },
+}));
+
+window.confirmDialog = (opts = {}) => new Promise((resolve) => {
+    window.dispatchEvent(new CustomEvent('open-confirm', {
+        detail: {
+            title: opts.title || 'Confirm',
+            message: opts.message || '',
+            confirmLabel: opts.confirmLabel || 'Confirm',
+            danger: opts.danger || false,
+            resolve,
+        },
+    }));
+});
+
+// ── Global capture-phase handler for <form data-confirm> ──
+// Intercepts form submits, shows the themed modal, re-submits only on confirm.
+document.addEventListener('submit', async (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    const msg = form.dataset.confirm;
+    if (!msg) return;
+
+    // Confirmed re-submit: let it pass through untouched so bubble-phase
+    // handlers (loading spinner, AJAX drawer delete) still run.
+    if (form.dataset.confirmed) {
+        delete form.dataset.confirmed;
+        return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const confirmed = await window.confirmDialog({
+        title: form.dataset.confirmTitle || 'Confirm',
+        message: msg,
+        confirmLabel: form.dataset.confirmLabel || 'Confirm',
+        danger: true,
+    });
+
+    if (!confirmed) return;
+
+    form.dataset.confirmed = '1';
+    form.requestSubmit();
+}, { capture: true });
 
 document.addEventListener('alpine:initialized', () => {
     createIcons({ icons });

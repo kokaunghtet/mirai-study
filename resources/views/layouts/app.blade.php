@@ -340,6 +340,9 @@
         </main>
     </div>
 
+    {{-- Confirm Modal --}}
+    @include('components.confirm-modal')
+
     {{-- Auth Modal for guests --}}
     @guest
         @include('components.auth-modal')

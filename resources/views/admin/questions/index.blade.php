@@ -98,7 +98,7 @@
                                 <span class="hidden sm:inline">Edit</span>
                             </a>
                             <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
-                                  onsubmit="return confirm('Delete this question?')">
+                                  data-confirm="Delete this question?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" title="Delete question"

@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <form method="POST" action="{{ route('admin.papers.destroy', $paper) }}"
-                              onsubmit="return confirm('Delete this paper? This cannot be undone.')">
+                              data-confirm="Delete this paper? This cannot be undone.">
                             @csrf
                             @method('DELETE')
                             <button type="submit" title="Delete paper"
