@@ -60,12 +60,17 @@
                         <a href="{{ route('password.request') }}" class="text-[10px] font-semibold text-accent hover:underline">Forgot Password?</a>
                     @endif
                 </div>
-                <div class="relative">
+                <div class="relative" x-data="{ show: false }">
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </span>
-                    <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
-                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-4 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                    <input :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password" placeholder="••••••••"
+                           class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                    <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-3 flex items-center text-muted hover:text-content transition-colors">
+                        <i x-show="!show" data-lucide="eye" class="w-4 h-4"></i>
+                        <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
+                    </button>
                 </div>
 
                 <label class="mb-5 mt-4 flex items-center gap-2 pl-0.5">

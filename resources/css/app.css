@@ -62,8 +62,10 @@
     }
 
     [data-theme="aurora"] {
-        --accent: 91 15 190;
-        --accent-strong: 74 12 153;
+        /* Flat accent (nav-active, buttons) is a true blue; the gradient still
+           runs cyan → violet for surfaces that use --accent-from/--accent-to. */
+        --accent: 37 99 235;
+        --accent-strong: 29 78 216;
         --accent-from: 0 212 255;
         --accent-to: 91 15 190;
     }
@@ -92,8 +94,8 @@
     /* ── Dark-mode readability: brighten the purple accents that are too dark on the dark canvas.
           Light mode keeps the deeper purples above (they read fine on white). ── */
     .dark[data-theme="aurora"] {
-        --accent: 167 139 250;
-        --accent-strong: 139 92 246;
+        --accent: 96 165 250;
+        --accent-strong: 59 130 246;
     }
 
     .dark[data-theme="twilight"] {
@@ -108,19 +110,6 @@
     [data-fill="solid"] {
         --accent-from: var(--accent);
         --accent-to: var(--accent);
-    }
-
-    /* Aurora's accent is a violet (its gradient runs cyan → violet), which reads as
-       purple when flattened to a solid. In SOLID mode swap it for a true blue —
-       a deeper blue on light surfaces, a brighter one on the dark canvas. */
-    [data-fill="solid"][data-theme="aurora"] {
-        --accent: 37 99 235;
-        --accent-strong: 29 78 216;
-    }
-
-    .dark[data-fill="solid"][data-theme="aurora"] {
-        --accent: 96 165 250;
-        --accent-strong: 59 130 246;
     }
 }
 
@@ -153,6 +142,31 @@
     [type='number']::-webkit-outer-spin-button {
         background: transparent;
         opacity: 1;
+    }
+
+    /* @tailwindcss/forms hard-codes a blue (#2563eb) focus ring on every form
+       control via box-shadow — `outline-none` doesn't remove it, so fields glow
+       blue regardless of the active [data-theme]. Retint that ring (and the focus
+       border) to the accent so all inputs follow the theme. */
+    [type='text']:focus,
+    [type='email']:focus,
+    [type='url']:focus,
+    [type='password']:focus,
+    [type='number']:focus,
+    [type='date']:focus,
+    [type='datetime-local']:focus,
+    [type='month']:focus,
+    [type='search']:focus,
+    [type='tel']:focus,
+    [type='time']:focus,
+    [type='week']:focus,
+    [multiple]:focus,
+    textarea:focus,
+    select:focus,
+    [type='checkbox']:focus,
+    [type='radio']:focus {
+        --tw-ring-color: rgb(var(--accent));
+        border-color: rgb(var(--accent));
     }
 }
 

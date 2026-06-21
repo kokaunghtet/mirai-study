@@ -1,19 +1,11 @@
 <x-app-layout>
-    <!-- Back button to go back to feed page -->
-    <a href="{{ route('feed.index') }}"
-       class="mb-5 inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">
-        <i data-lucide="arrow-left" class="h-4 w-4"></i>
-        Back
-    </a>
-
     <x-slot name="title">Create Post — MiraiStudy</x-slot>
 
-    <div class="flex justify-center px-4 py-6">
-        <div class="w-full max-w-[560px]">
-            <div class="rounded-2xl bg-surface border border-line shadow-sm overflow-hidden">
+    <div class="mx-auto max-w-[600px] px-4">
+        <div class="rounded-2xl bg-surface border border-line shadow-sm overflow-hidden">
 
                 {{-- Header --}}
-                <header class="flex items-center justify-between px-[18px] py-4 border-b border-line">
+                <header class="flex items-center justify-between px-5 py-4 border-b border-line">
                     <h2 class="text-[15px] font-bold text-content">Create post</h2>
                     <a href="{{ route('feed.index') }}"
                        class="grid h-8 w-8 place-items-center rounded-full text-muted hover:bg-surface-muted hover:text-red-500 transition-colors">
@@ -22,7 +14,7 @@
                 </header>
 
                 {{-- Author --}}
-                <section class="flex items-center gap-2.5 px-[18px] py-3.5">
+                <section class="flex items-center gap-2.5 px-5 py-3">
                     <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/15 text-[15px] font-bold text-accent">
                         {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
                     </div>
@@ -38,7 +30,7 @@
                     @csrf
 
                     {{-- Type Tabs --}}
-                    <nav class="flex gap-1 px-[18px] pb-3">
+                    <nav class="flex gap-1 px-5 pb-3">
                         <button type="button" @click="setTab('text')"
                                 :class="tab === 'text'
                                     ? 'bg-surface text-content font-bold border-line shadow-sm'
@@ -66,12 +58,12 @@
                     </nav>
 
                     {{-- Content panels --}}
-                    <section class="px-[18px] pb-2.5">
+                    <section class="px-5 pb-3">
 
                         {{-- Text — always visible --}}
                         <textarea name="content" rows="1"
                                   placeholder="What's on your mind?"
-                                  class="min-h-[60px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
+                                  class="min-h-[88px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
                                   required>{{ old('content') }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -181,14 +173,15 @@
                     </section>
 
                     {{-- Optional title --}}
-                    <div class="px-[18px] pb-3">
+                    <div class="px-5 pb-3">
                         <input type="text" name="title" value="{{ old('title') }}"
                                placeholder="Add a title (optional)"
-                               class="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted border-b border-line pb-1 focus:border-accent transition-colors">
+                               class="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted rounded-xl border-b border-line p-2 focus:border-accent transition-colors">
                     </div>
 
                     {{-- Tags --}}
-                    <div class="px-[18px] pb-3">
+                    <div class="px-5 pb-3">
+                        <p class="text-[11px] font-semibold text-muted uppercase tracking-wide mb-2">Tags</p>
                         <div class="flex flex-wrap gap-2">
                             @foreach ($tags as $tag)
                                 <label class="flex items-center gap-1.5 cursor-pointer">
@@ -202,7 +195,7 @@
                     </div>
 
                     {{-- Submit --}}
-                    <footer class="flex items-center justify-end px-[18px] py-4 border-t border-line">
+                    <footer class="flex items-center justify-end px-5 py-4 border-t border-line">
                         <button type="submit" data-loading-text="Publishing…"
                                 class="flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-accent-strong active:scale-95 shadow-sm">
                             <i data-lucide="send" class="h-4 w-4"></i>
@@ -210,7 +203,6 @@
                         </button>
                     </footer>
                 </form>
-            </div>
         </div>
     </div>
 

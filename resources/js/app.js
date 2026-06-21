@@ -18,7 +18,7 @@ import {
     // Quiz
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
     // Exams
-    Folder, FolderOpen, Download, LoaderCircle, Eye,
+    Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     // Admin upload
     Sparkles, TriangleAlert,
     ClipboardList
@@ -32,7 +32,7 @@ const icons = {
     ArrowLeft, AlignLeft, Image, Trash, Sun, Moon, Plus,
     RotateCcw, Play, Pause, SkipForward, Volume2, ChevronDown, Lock, AudioLines, Camera,
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
-    Folder, FolderOpen, Download, LoaderCircle, Eye,
+    Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     Sparkles, TriangleAlert,
     ClipboardList
 };
@@ -800,11 +800,11 @@ Alpine.data('questionForm', (cats = []) => ({
             });
         });
     },
-    get levels()  { return this.cats.find(c => c.id == this.categoryId)?.levels ?? []; },
-    get sections(){ return this.levels.find(l => l.id == this.levelId)?.sections ?? {}; },
+    get levels() { return this.cats.find(c => c.id == this.categoryId)?.levels ?? []; },
+    get sections() { return this.levels.find(l => l.id == this.levelId)?.sections ?? {}; },
     get needsSection() { return Object.keys(this.sections).length > 0; },
     onCategoryChange() { this.levelId = ''; this.section = ''; },
-    onLevelChange()    { this.section = ''; },
+    onLevelChange() { this.section = ''; },
 }));
 
 // ── Themed confirm dialog (replaces native confirm()) ──

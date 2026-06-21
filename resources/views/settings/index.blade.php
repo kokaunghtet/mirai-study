@@ -14,168 +14,127 @@
                 <p class="mt-1 text-sm text-muted">
                     Customize how your application interface looks and feels.
                 </p>
-                {{-- Saved indicator --}}
-                <p id="save-status" class="mt-2 text-xs text-green-600 font-semibold hidden">
-                    ✓ Saved
-                </p>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-start">
 
                 {{-- Left Column — Controls --}}
-                <div class="lg:col-span-3 space-y-4">
+                <div class="lg:col-span-3">
+                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
 
-                    {{-- Theme Mode --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: true }">
-                        <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between text-left">
-                            <h2 class="text-base font-semibold text-content">Theme</h2>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
-                               :class="open ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="open" x-collapse.duration.700ms x-cloak class="mt-4">
-                            <p class="text-xs text-muted mb-4">Choose a light or dark interface, or match your system.</p>
+                        {{-- Theme Mode --}}
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-muted">Theme</p>
+                            <p class="text-xs text-muted mt-1 mb-4">Choose a light or dark interface, or match your system.</p>
 
                             <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-muted p-1">
                                 <button id="theme-light"
-                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                    <i data-lucide="sun" class="h-5 w-5"></i>
+                                        class="seg-btn flex flex-row items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all cursor-pointer">
+                                    <i data-lucide="sun" class="h-4 w-4"></i>
                                     <span>Light</span>
                                 </button>
                                 <button id="theme-dark"
-                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                    <i data-lucide="moon" class="h-5 w-5"></i>
+                                        class="seg-btn flex flex-row items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all cursor-pointer">
+                                    <i data-lucide="moon" class="h-4 w-4"></i>
                                     <span>Dark</span>
                                 </button>
                                 <button id="theme-system"
-                                        class="seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all">
-                                    <i data-lucide="settings" class="h-5 w-5"></i>
-                                    <span class="text-center leading-tight">System</span>
+                                        class="seg-btn flex flex-row items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all cursor-pointer">
+                                    <i data-lucide="settings" class="h-4 w-4"></i>
+                                    <span>System</span>
                                 </button>
                             </div>
                         </div>
-                    </section>
 
-                    {{-- Gradient Color --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
-                        <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between text-left">
-                            <h2 class="text-base font-semibold text-content">Gradient Color</h2>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
-                               :class="open ? 'rotate-180' : ''"></i>
-                        </button>
+                        <div class="border-t border-line my-5"></div>
 
-                        <div x-show="open" x-collapse.duration.700ms x-cloak class="grid grid-cols-2 gap-3 sm:grid-cols-3 mt-4">
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-lime to-mirai-dark"
-                                    data-theme="venom" data-fill="gradient">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Venom</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-aurora to-mirai-violet"
-                                    data-theme="aurora" data-fill="gradient">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Aurora</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian"
-                                    data-theme="sangria" data-fill="gradient">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Sangria</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-sunset to-mirai-midnight"
-                                    data-theme="twilight" data-fill="gradient">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Twilight</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-gradient-to-tr from-mirai-apricot to-mirai-slate"
-                                    data-theme="inferno" data-fill="gradient">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Inferno</span>
-                            </button>
-                        </div>
-                    </section>
+                        {{-- Accent Color --}}
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-muted">Accent Color</p>
+                            <p class="text-xs text-muted mt-1 mb-4">Pick your accent style and color.</p>
 
-                    {{-- Solid Color --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
-                        <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between text-left">
-                            <h2 class="text-base font-semibold text-content">Solid Color</h2>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
-                               :class="open ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="open" x-collapse.duration.700ms x-cloak class="grid grid-cols-2 gap-3 sm:grid-cols-3 mt-4">
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-lime"
-                                    data-theme="venom" data-fill="solid">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Green</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-blue-600"
-                                    data-theme="aurora" data-fill="solid">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Blue</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-sangria"
-                                    data-theme="sangria" data-fill="solid">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Red</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-midnight"
-                                    data-theme="twilight" data-fill="solid">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Purple</span>
-                            </button>
-                            <button class="theme-btn relative flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all bg-mirai-apricot"
-                                    data-theme="inferno" data-fill="solid">
-                                <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                <span>Orange</span>
-                            </button>
-                        </div>
-                    </section>
-
-                    {{-- Security --}}
-                    <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
-                        <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between text-left">
-                            <h2 class="text-base font-semibold text-content">Security</h2>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform"
-                               :class="open ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="open" x-collapse.duration.700ms x-cloak class="mt-2">
-                        <p class="text-xs text-muted mb-4">Add an extra layer of protection to your account.</p>
-
-                        <div class="flex items-center justify-between gap-4 rounded-xl bg-surface-muted p-4">
-                            <div>
-                                <div class="text-sm font-semibold text-content">Two-factor authentication</div>
-                                <p class="mt-0.5 text-xs text-muted">Email a 6-digit code every time you log in.</p>
+                            {{-- Fill style: Gradient | Solid --}}
+                            <div class="grid grid-cols-2 gap-1 rounded-xl bg-surface-muted p-1 mb-4">
+                                <button id="fill-gradient"
+                                        class="fill-btn flex items-center justify-center rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer">
+                                    Gradient
+                                </button>
+                                <button id="fill-solid"
+                                        class="fill-btn flex items-center justify-center rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer">
+                                    Solid
+                                </button>
                             </div>
-                            <button id="twofa-toggle" type="button" role="switch"
-                                    aria-checked="{{ auth()->user()->two_factor_enabled ? 'true' : 'false' }}"
-                                    data-enabled="{{ auth()->user()->two_factor_enabled ? '1' : '0' }}"
-                                    class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-line transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface">
-                                <span id="twofa-knob" class="inline-block h-5 w-5 translate-x-1 transform rounded-full bg-white shadow transition-transform"></span>
+
+                            {{-- Theme swatches — background painted by JS per fill style --}}
+                            <div class="grid grid-cols-5 gap-2">
+                                <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
+                                        data-theme="venom">
+                                    <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                    <span class="text-[11px] font-semibold">Venom</span>
+                                </button>
+                                <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
+                                        data-theme="aurora">
+                                    <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                    <span class="text-[11px] font-semibold">Aurora</span>
+                                </button>
+                                <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
+                                        data-theme="sangria">
+                                    <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                    <span class="text-[11px] font-semibold">Sangria</span>
+                                </button>
+                                <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
+                                        data-theme="twilight">
+                                    <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                    <span class="text-[11px] font-semibold">Twilight</span>
+                                </button>
+                                <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
+                                        data-theme="inferno">
+                                    <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
+                                    <span class="text-[11px] font-semibold">Inferno</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-line my-5"></div>
+
+                        {{-- Security --}}
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-muted">Security</p>
+                            <p class="text-xs text-muted mt-1 mb-4">Add an extra layer of protection to your account.</p>
+
+                            <div class="flex items-center justify-between gap-4 rounded-xl bg-surface-muted p-4">
+                                <div>
+                                    <div class="text-sm font-semibold text-content">Two-factor authentication</div>
+                                    <p class="mt-0.5 text-xs text-muted">Email a 6-digit code every time you log in.</p>
+                                </div>
+                                <button id="twofa-toggle" type="button" role="switch"
+                                        aria-checked="{{ auth()->user()->two_factor_enabled ? 'true' : 'false' }}"
+                                        data-enabled="{{ auth()->user()->two_factor_enabled ? '1' : '0' }}"
+                                        class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-line transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface cursor-pointer">
+                                    <span id="twofa-knob" class="inline-block h-5 w-5 translate-x-1 transform rounded-full bg-white shadow transition-transform"></span>
+                                </button>
+                            </div>
+                            <p id="twofa-status" class="mt-2 text-xs font-semibold hidden"></p>
+                        </div>
+
+                        <div class="border-t border-line my-5"></div>
+
+                        {{-- Save Button --}}
+                        <div class="flex flex-col gap-2">
+                            <button id="save-btn"
+                                    type="button"
+                                    class="w-full rounded-xl bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all cursor-pointer">
+                                Save Changes
                             </button>
+                            <p id="save-status" class="text-center text-xs text-green-600 font-semibold hidden">
+                                ✓ Preferences saved
+                            </p>
+                            <p id="save-error" class="text-center text-xs text-red-500 font-semibold hidden">
+                                Failed to save. Please try again.
+                            </p>
                         </div>
-                        <p id="twofa-status" class="mt-2 text-xs font-semibold hidden"></p>
-                        </div>
+
                     </section>
-
-                    {{-- Save Button --}}
-                    <div class="flex flex-col gap-2">
-                        <button id="save-btn"
-                                type="button"
-                                class="w-full rounded-xl bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all">
-                            Save Changes
-                        </button>
-                        <p id="save-status" class="text-center text-xs text-green-600 font-semibold hidden">
-                            ✓ Preferences saved
-                        </p>
-                        <p id="save-error" class="text-center text-xs text-red-500 font-semibold hidden">
-                            Failed to save. Please try again.
-                        </p>
-                    </div>
-
                 </div>
 
                 {{-- Right Column — Live Preview --}}
@@ -275,11 +234,11 @@
         // `gradient` is the exact picker-button gradient; prominent fills in the mockup use it.
         // Single-shade custom colors, so tints/badges use opacity modifiers (/10, /15…).
         const themeStyles = {
-            venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       text: 'text-accent', border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
-            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    text: 'text-accent', border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
-            sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', text: 'text-accent', border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
-            twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  text: 'text-accent', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
-            inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    text: 'text-accent', border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
+            venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       solid: 'bg-mirai-lime',     text: 'text-accent', border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
+            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    solid: 'bg-blue-400',       text: 'text-accent', border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
+            sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', solid: 'bg-mirai-sangria',  text: 'text-accent', border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
+            twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  solid: 'bg-mirai-midnight', text: 'text-accent', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
+            inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    solid: 'bg-mirai-apricot',  text: 'text-accent', border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
         };
 
         if (!themeStyles[currentTheme]) currentTheme = 'venom';
@@ -421,13 +380,16 @@
         const themeLightBtn  = document.getElementById('theme-light');
         const themeDarkBtn   = document.getElementById('theme-dark');
         const themeSystemBtn = document.getElementById('theme-system');
-        const themeButtons   = document.querySelectorAll('.theme-btn');
-        const mockupNavItems = document.querySelectorAll('.mockup-nav-item');
+        const themeButtons    = document.querySelectorAll('.theme-btn');
+        const fillGradientBtn = document.getElementById('fill-gradient');
+        const fillSolidBtn    = document.getElementById('fill-solid');
+        const mockupNavItems  = document.querySelectorAll('.mockup-nav-item');
         const saveBtn        = document.getElementById('save-btn');
         const saveStatus     = document.getElementById('save-status');
         const saveError      = document.getElementById('save-error');
 
-        const SEG_BASE = "seg-btn flex flex-col items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all";
+        const SEG_BASE  = "seg-btn flex flex-row items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all cursor-pointer";
+        const FILL_BASE = "fill-btn flex items-center justify-center rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer";
 
         // Accent fill helper: solid mode paints flat `bg-accent` (= --accent); gradient mode
         // uses the theme's mirai gradient. Mirrors the CSS [data-fill] collapse the real app uses.
@@ -589,16 +551,28 @@
             });
         }
 
+        function updateFillToggle() {
+            const fill = accentFill();
+            fillGradientBtn.className = currentFill === 'gradient'
+                ? `${FILL_BASE} text-white shadow-sm ${fill}`
+                : `${FILL_BASE} text-muted hover:text-content`;
+            fillSolidBtn.className = currentFill === 'solid'
+                ? `${FILL_BASE} text-white shadow-sm ${fill}`
+                : `${FILL_BASE} text-muted hover:text-content`;
+        }
+
         function updateColorButtons() {
+            const SWATCH_BASE = 'theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer';
             themeButtons.forEach(btn => {
-                const isActive = btn.getAttribute('data-theme') === currentTheme
-                    && btn.getAttribute('data-fill') === currentFill;
+                const t = btn.getAttribute('data-theme');
+                const isActive = t === currentTheme;
+                const bgClass = currentFill === 'solid' ? themeStyles[t].solid : themeStyles[t].gradient;
                 const checkIcon = btn.querySelector('.check-icon');
+                btn.className = `${SWATCH_BASE} ${bgClass}`;
                 if (isActive) {
                     btn.classList.add('ring-2', 'ring-offset-2', 'ring-content', 'ring-offset-surface');
                     checkIcon?.classList.remove('hidden');
                 } else {
-                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-content', 'ring-offset-surface');
                     checkIcon?.classList.add('hidden');
                 }
             });
@@ -607,6 +581,7 @@
         function render() {
             applyThemeToDocument();   // live-preview on the real app (Save persists)
             updateSegmentedControl();
+            updateFillToggle();
             updateColorButtons();
             applyThemeColorsToMockup();
             safeCreateIcons();
@@ -626,10 +601,16 @@
         themeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 currentTheme = btn.getAttribute('data-theme');
-                currentFill  = btn.getAttribute('data-fill') || 'gradient';
                 render();
                 markDirty();
             });
+        });
+
+        fillGradientBtn.addEventListener('click', () => {
+            currentFill = 'gradient'; render(); markDirty();
+        });
+        fillSolidBtn.addEventListener('click', () => {
+            currentFill = 'solid'; render(); markDirty();
         });
 
         mockupNavItems.forEach(item => {
@@ -660,6 +641,7 @@
         // ── Init ─────────────────────────────────────────────────────
         // Step 1: Pre-select buttons immediately — no Lucide needed
         updateSegmentedControl();
+        updateFillToggle();
         updateColorButtons();
 
         // Step 2: Load mockup content and apply colors

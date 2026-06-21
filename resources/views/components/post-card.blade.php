@@ -139,7 +139,7 @@
     @endif
 
     {{-- Content --}}
-    <div data-no-nav class="px-4 pb-4 pt-0 break-words {{ strlen($post->content) < 80 ? 'text-lg leading-7 font-medium text-content' : 'text-sm leading-6 text-content' }}">
+    <div data-no-nav class="px-4 pb-3 pt-0 break-words {{ strlen($post->content) < 80 ? 'text-lg leading-7 font-medium text-content' : 'text-sm leading-6 text-content' }}">
         {{ Str::limit($post->content, 300) }}
         @if (strlen($post->content) > 300)
             <a href="{{ route('posts.show', $post) }}"
@@ -150,7 +150,7 @@
     {{-- Media (images) --}}
     @php $mediaItems = $post->media->where('type', '!=', 'document'); @endphp
     @if ($mediaItems->isNotEmpty())
-        <div class="mx-3 mb-3" x-data="{ idx: 0 }">
+        <div class="mx-4 mb-3" x-data="{ idx: 0 }">
             <div class="relative aspect-video overflow-hidden rounded-xl bg-black">
 
                 {{-- Slides --}}

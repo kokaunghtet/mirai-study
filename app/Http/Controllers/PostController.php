@@ -6,7 +6,11 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\Laravel\Facades\Image;
 
 class PostController extends Controller
 {
@@ -109,7 +113,7 @@ class PostController extends Controller
         // Handle media uploads (images/videos)
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
-                $path = $file->store('posts/media', 'public');
+                $path = $this->storeUpload($file, 'posts/media');
 
                 $post->media()->create([
                     'url' => Storage::url($path),
@@ -121,13 +125,13 @@ class PostController extends Controller
         // Handle document/file uploads
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('posts/files', 'public');
+                $path = $this->storeUpload($file, 'posts/files');
 
                 $post->media()->create([
                     'url' => Storage::url($path),
                     'type' => 'document',
                     'filename' => $file->getClientOriginalName(),
-                    'filesize' => $file->getSize(),
+                    'filesize' => Storage::disk('public')->size($path),
                 ]);
             }
         }
@@ -195,7 +199,7 @@ class PostController extends Controller
         // Add new media
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
-                $path = $file->store('posts/media', 'public');
+                $path = $this->storeUpload($file, 'posts/media');
 
                 $post->media()->create([
                     'url' => Storage::url($path),
@@ -206,19 +210,46 @@ class PostController extends Controller
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('posts/files', 'public');
+                $path = $this->storeUpload($file, 'posts/files');
 
                 $post->media()->create([
                     'url' => Storage::url($path),
                     'type' => 'document',
                     'filename' => $file->getClientOriginalName(),
-                    'filesize' => $file->getSize(),
+                    'filesize' => Storage::disk('public')->size($path),
                 ]);
             }
         }
 
         return redirect()->route('posts.show', $post)
             ->with('success', 'Post updated successfully.');
+    }
+
+    /**
+     * Store an uploaded file on the public disk.
+     *
+     * Raster images are scaled down to a max width of 1920px and re-encoded
+     * as WebP (quality 80) to shrink storage. Animated GIFs and non-images
+     * are stored untouched. Returns the storage path.
+     */
+    private function storeUpload(UploadedFile $file, string $dir): string
+    {
+        $mime = $file->getMimeType();
+
+        // Only re-encode static raster images; pass GIFs (animation) and
+        // non-images (PDF, txt, …) through unchanged.
+        if (! str_starts_with((string) $mime, 'image/') || $mime === 'image/gif') {
+            return $file->store($dir, 'public');
+        }
+
+        $encoded = Image::decode($file->getRealPath())
+            ->scaleDown(width: 1920)
+            ->encode(new WebpEncoder(quality: 80));
+
+        $path = $dir.'/'.Str::random(40).'.webp';
+        Storage::disk('public')->put($path, (string) $encoded);
+
+        return $path;
     }
 
     public function destroy(Post $post)

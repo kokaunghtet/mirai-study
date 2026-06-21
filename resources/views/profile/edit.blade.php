@@ -151,7 +151,7 @@
         </form>
 
         {{-- ───────────────────── Security / Password ───────────────────── --}}
-        <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: false }">
+        <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm" x-data="{ open: {{ $errors->updatePassword->isNotEmpty() ? 'true' : 'false' }} }">
             <button type="button" @click="open = !open"
                     class="w-full flex items-center justify-between text-left">
                 <h2 class="text-base font-semibold text-content">Password</h2>
@@ -167,28 +167,51 @@
                     @csrf
                     @method('PUT')
 
-                    <div>
+                    <div x-data="{ show: false }">
                         <label class="block text-[13px] font-semibold text-content mb-1.5">Current Password</label>
-                        <input type="password" name="current_password" autocomplete="current-password"
-                               class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
+                        <div class="relative">
+                            <input :type="show ? 'text' : 'password'" name="current_password" autocomplete="current-password"
+                                   class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 pr-10 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
+                            <button type="button" @click="show = !show"
+                                    class="absolute inset-y-0 right-3 flex items-center text-muted hover:text-content transition-colors">
+                                <i x-show="!show" data-lucide="eye" class="w-4 h-4"></i>
+                                <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                         @error('current_password', 'updatePassword')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-[13px] font-semibold text-content mb-1.5">New Password</label>
-                        <input type="password" name="password" autocomplete="new-password"
-                               class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
-                        @error('password', 'updatePassword')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <div x-data="{ show: false }" class="space-y-4">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-content mb-1.5">New Password</label>
+                            <div class="relative">
+                                <input :type="show ? 'text' : 'password'" name="password" autocomplete="new-password"
+                                       class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 pr-10 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
+                                <button type="button" @click="show = !show"
+                                        class="absolute inset-y-0 right-3 flex items-center text-muted hover:text-content transition-colors">
+                                    <i x-show="!show" data-lucide="eye" class="w-4 h-4"></i>
+                                    <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            @error('password', 'updatePassword')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label class="block text-[13px] font-semibold text-content mb-1.5">Confirm New Password</label>
-                        <input type="password" name="password_confirmation" autocomplete="new-password"
-                               class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-content mb-1.5">Confirm New Password</label>
+                            <div class="relative">
+                                <input :type="show ? 'text' : 'password'" name="password_confirmation" autocomplete="new-password"
+                                       class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 pr-10 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors">
+                                <button type="button" @click="show = !show"
+                                        class="absolute inset-y-0 right-3 flex items-center text-muted hover:text-content transition-colors">
+                                    <i x-show="!show" data-lucide="eye" class="w-4 h-4"></i>
+                                    <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="pt-1 flex items-center justify-end gap-3">

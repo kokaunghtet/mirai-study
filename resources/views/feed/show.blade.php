@@ -57,14 +57,14 @@
                 @endif
 
                 {{-- Content --}}
-                <div class="text-content leading-relaxed">
+                <div class="text-content leading-relaxed mb-3">
                     {{ $post->content }}
                 </div>
 
                 {{-- Media (images/videos) --}}
                 @php $mediaItems = $post->media->where('type', '!=', 'document'); @endphp
                 @if ($mediaItems->isNotEmpty())
-                    <div class="mx-3 mb-3" x-data="{ idx: 0 }">
+                    <div class="mt-4" x-data="{ idx: 0 }">
                         <div class="relative aspect-video overflow-hidden rounded-xl bg-black">
 
                             {{-- Slides --}}
@@ -114,7 +114,7 @@
                 {{-- File attachments --}}
                 @php $fileItems = $post->media->where('type', 'document'); @endphp
                 @if ($fileItems->isNotEmpty())
-                    <div class="flex flex-col gap-2 px-4 pb-3">
+                    <div class="mt-4 flex flex-col gap-2">
                         @foreach ($fileItems as $file)
                             <a href="{{ $file->url }}" target="_blank"
                             class="flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 hover:bg-surface-muted transition-colors">

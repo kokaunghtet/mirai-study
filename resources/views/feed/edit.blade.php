@@ -1,12 +1,11 @@
 <x-app-layout>
     <x-slot name="title">Edit Post — MiraiStudy</x-slot>
 
-    <div class="flex justify-center px-4 py-6">
-        <div class="w-full max-w-[560px]">
-            <div class="rounded-2xl bg-surface border border-line shadow-sm overflow-hidden">
+    <div class="mx-auto max-w-[600px] px-4">
+        <div class="rounded-2xl bg-surface border border-line shadow-sm overflow-hidden">
 
                 {{-- Header --}}
-                <header class="flex items-center justify-between px-[18px] py-4 border-b border-line">
+                <header class="flex items-center justify-between px-5 py-4 border-b border-line">
                     <h2 class="text-[15px] font-bold text-content">Edit post</h2>
                     <a href="{{ route('posts.show', $post) }}"
                        class="grid h-8 w-8 place-items-center rounded-full text-muted hover:bg-surface-muted transition-colors">
@@ -15,7 +14,7 @@
                 </header>
 
                 {{-- Author --}}
-                <section class="flex items-center gap-2.5 px-[18px] py-3.5">
+                <section class="flex items-center gap-2.5 px-5 py-3">
                     <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/15 text-[15px] font-bold text-accent">
                         {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
                     </div>
@@ -32,7 +31,7 @@
                     @method('PATCH')
 
                     {{-- Type Tabs --}}
-                    <nav class="flex gap-1 px-[18px] pb-3">
+                    <nav class="flex gap-1 px-5 pb-3">
                         <button type="button" @click="setTab('text')"
                                 :class="tab === 'text'
                                     ? 'bg-surface text-content font-bold border-line shadow-sm'
@@ -59,7 +58,7 @@
                         </button>
                     </nav>
 
-                    <section class="px-[18px] pb-2.5">
+                    <section class="px-5 pb-3">
 
                         {{-- Text --}}
                         <textarea name="content" rows="4"
@@ -224,15 +223,16 @@
                     </section>
 
                     {{-- Title --}}
-                    <div class="px-[18px] pb-3">
+                    <div class="px-5 pb-3">
                         <input type="text" name="title"
                                value="{{ old('title', $post->title) }}"
                                placeholder="Add a title (optional)"
-                               class="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted border-b border-line pb-1 focus:border-accent transition-colors">
+                               class="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted rounded-xl border-b border-line p-2 focus:border-accent transition-colors">
                     </div>
 
                     {{-- Tags --}}
-                    <div class="px-[18px] pb-3">
+                    <div class="px-5 pb-3">
+                        <p class="text-[11px] font-semibold text-muted uppercase tracking-wide mb-2">Tags</p>
                         <div class="flex flex-wrap gap-2">
                             @foreach ($tags as $tag)
                                 <label class="flex items-center gap-1.5 cursor-pointer">
@@ -246,7 +246,7 @@
                     </div>
 
                     {{-- Submit --}}
-                    <footer class="flex items-center justify-end px-[18px] py-4 border-t border-line">
+                    <footer class="flex items-center justify-end px-5 py-4 border-t border-line">
                         <button type="submit" data-loading-text="Saving…"
                                 class="flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-accent-strong active:scale-95 shadow-sm">
                             <i data-lucide="check" class="h-4 w-4"></i>
@@ -254,7 +254,6 @@
                         </button>
                     </footer>
                 </form>
-            </div>
         </div>
     </div>
 
