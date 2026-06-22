@@ -36,6 +36,12 @@ class QuestionController extends Controller
             'section' => Question::whereNotNull('section')->selectRaw('section, COUNT(*) c')->groupBy('section')->pluck('c', 'section'),
         ];
 
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.questions._list', compact('questions', 'categories', 'sections', 'counts'))->render(),
+            ]);
+        }
+
         return view('admin.questions.index', compact('questions', 'categories', 'sections', 'counts'));
     }
 

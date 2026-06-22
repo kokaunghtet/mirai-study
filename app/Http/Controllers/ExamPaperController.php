@@ -73,6 +73,12 @@ class ExamPaperController extends Controller
             'doc_type' => ExamPaper::whereNotNull('doc_type')->selectRaw('doc_type, COUNT(*) c')->groupBy('doc_type')->pluck('c', 'doc_type'),
         ];
 
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.papers._list', compact('papers', 'categories', 'years', 'counts'))->render(),
+            ]);
+        }
+
         return view('admin.papers.index', compact('papers', 'categories', 'years', 'counts'));
     }
 
