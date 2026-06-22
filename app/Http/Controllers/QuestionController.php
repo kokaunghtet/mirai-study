@@ -6,6 +6,7 @@ use App\Models\ExamCategory;
 use App\Models\ExamLevel;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class QuestionController extends Controller
@@ -47,7 +48,12 @@ class QuestionController extends Controller
 
     public function store(Request $request)
     {
-        Question::create($this->validatedQuestion($request));
+        $question = Question::create($this->validatedQuestion($request));
+
+        $question->revisions()->create([
+            'editor_id' => Auth::id(),
+            'action'    => 'created',
+        ]);
 
         return redirect()->route('admin.questions')->with('success', 'Question added.');
     }
@@ -63,7 +69,33 @@ class QuestionController extends Controller
     {
         $question->update($this->validatedQuestion($request));
 
+        $question->revisions()->create([
+            'editor_id' => Auth::id(),
+            'action'    => 'edited',
+        ]);
+
         return redirect()->route('admin.questions')->with('success', 'Question updated.');
+    }
+
+    public function history(Question $question)
+    {
+        $revisions = $question->revisions()->with('editor:id,display_name')->latest()->get();
+        $total = $revisions->count();
+
+        return response()->json(
+            $revisions->values()->map(fn ($r, $i) => [
+                'id'              => $r->id,
+                'is_latest'       => $i === 0,
+                'is_initial'      => $i === $total - 1,
+                'action'          => $r->action,
+                'editor'          => [
+                    'display_name' => $r->editor->display_name,
+                    'initial'      => strtoupper(substr($r->editor->display_name, 0, 1)),
+                ],
+                'created_at'      => $r->created_at->diffForHumans(),
+                'created_at_full' => $r->created_at->format('M j, Y · g:i A'),
+            ])
+        );
     }
 
     public function destroy(Question $question)

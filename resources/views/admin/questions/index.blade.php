@@ -76,37 +76,96 @@
                 @if ($loop->first)
                     <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
                 @endif
-                    <li class="flex items-center gap-3 px-4 py-3">
-                        <i data-lucide="circle-help" class="h-5 w-5 shrink-0 text-accent"></i>
-                        <div class="min-w-0 flex-1">
-                            <div class="truncate text-sm font-semibold text-content">{{ $question->text }}</div>
-                            <div class="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-                                <span class="rounded-md bg-accent/10 px-1.5 py-0.5 font-medium text-accent">{{ $question->category?->name }}</span>
-                                <span>·</span>
-                                <span class="rounded-md bg-accent/10 px-1.5 py-0.5 font-medium text-accent">{{ $question->level?->code }}</span>
-                                @if ($question->section)
+                    <li x-data="questionHistory({{ $question->id }})"
+                        @dblclick="toggle()"
+                        class="cursor-default"
+                        title="Double-click to view history">
+                        <div class="flex items-center gap-3 px-4 py-3">
+                            <i data-lucide="circle-help" class="h-5 w-5 shrink-0 text-accent"></i>
+                            <div class="min-w-0 flex-1">
+                                <div class="truncate text-sm font-semibold text-content">{{ $question->text }}</div>
+                                <div class="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+                                    <span class="rounded-md bg-accent/10 px-1.5 py-0.5 font-medium text-accent">{{ $question->category?->name }}</span>
                                     <span>·</span>
-                                    <span class="rounded-md bg-surface-muted px-1.5 py-0.5">{{ $question->section }}</span>
-                                @endif
-                                <span>· Answer: <span class="font-semibold text-content">{{ $question->answer }}</span></span>
+                                    <span class="rounded-md bg-accent/10 px-1.5 py-0.5 font-medium text-accent">{{ $question->level?->code }}</span>
+                                    @if ($question->section)
+                                        <span>·</span>
+                                        <span class="rounded-md bg-surface-muted px-1.5 py-0.5">{{ $question->section }}</span>
+                                    @endif
+                                    <span>· Answer: <span class="font-semibold text-content">{{ $question->answer }}</span></span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" @click.stop="toggle()" title="View history"
+                                        :class="open ? 'text-accent border-accent/30 bg-accent/5' : 'text-muted'"
+                                        class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold transition-colors hover:bg-surface-muted">
+                                    <i data-lucide="git-branch" class="h-4 w-4"></i>
+                                </button>
+                                <a href="{{ route('admin.questions.edit', $question) }}" title="Edit question"
+                                   class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                                    <i data-lucide="square-pen" class="h-4 w-4"></i>
+                                    <span class="hidden sm:inline">Edit</span>
+                                </a>
+                                <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
+                                      data-confirm="Delete this question?">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" title="Delete question"
+                                            class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
+                                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        <span class="hidden sm:inline">Delete</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.questions.edit', $question) }}" title="Edit question"
-                               class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
-                                <i data-lucide="square-pen" class="h-4 w-4"></i>
-                                <span class="hidden sm:inline">Edit</span>
-                            </a>
-                            <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
-                                  data-confirm="Delete this question?">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="Delete question"
-                                        class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
-                                    <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                    <span class="hidden sm:inline">Delete</span>
-                                </button>
-                            </form>
+
+                        {{-- Git history panel --}}
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             class="border-t border-line px-4 pb-4 pt-3">
+
+                            <div x-show="loading" class="py-3 text-center text-xs text-muted">
+                                <i data-lucide="loader-circle" class="mx-auto mb-1 h-4 w-4 animate-spin text-accent"></i>
+                                Loading history…
+                            </div>
+
+                            <div x-show="!loading" class="relative">
+                                <div class="absolute top-0 bottom-0 left-[11px] w-px bg-line"></div>
+                                <template x-for="(rev, i) in revisions" :key="rev.id">
+                                    <div class="relative flex gap-3" :class="i < revisions.length - 1 ? 'pb-4' : ''">
+                                        <div class="relative z-10 shrink-0 flex justify-center" style="width:24px;padding-top:3px">
+                                            <div :class="rev.is_latest
+                                                ? 'h-[18px] w-[18px] rounded-full bg-accent border-[3px] border-surface'
+                                                : 'h-3.5 w-3.5 rounded-full bg-surface border-2 border-line mt-0.5'">
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <div class="flex items-center gap-1.5">
+                                                    <div class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent/15 text-[10px] font-bold text-accent"
+                                                         x-text="rev.editor.initial"></div>
+                                                    <span class="text-xs font-semibold text-content" x-text="rev.editor.display_name"></span>
+                                                    <span x-show="rev.is_latest"
+                                                          class="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent uppercase tracking-wide">HEAD</span>
+                                                </div>
+                                                <span class="shrink-0 text-[11px] text-muted" x-text="rev.created_at_full"></span>
+                                            </div>
+                                            <p class="mt-0.5 text-[11px] text-muted"
+                                               x-text="rev.action === 'created' ? 'Created this question' : 'Edited question'"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="!loading && revisions.length === 0">
+                                    <div class="flex items-center gap-3">
+                                        <div class="z-10 shrink-0 flex justify-center w-6 pt-0.5">
+                                            <div class="h-3.5 w-3.5 rounded-full bg-surface border-2 border-line mt-0.5"></div>
+                                        </div>
+                                        <p class="py-2 text-xs text-muted">No history yet.</p>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </li>
                 @if ($loop->last)
@@ -131,4 +190,35 @@
 
         </div>
     </div>
+@push('scripts')
+<script>
+function questionHistory(questionId) {
+    return {
+        open: false,
+        loaded: false,
+        loading: false,
+        revisions: [],
+        toggle() {
+            this.open = !this.open;
+            if (this.open && !this.loaded) this.fetch();
+        },
+        async fetch() {
+            this.loading = true;
+            try {
+                const res = await fetch(`/admin/questions/${questionId}/history`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!res.ok) throw new Error(res.status);
+                this.revisions = await res.json();
+                this.loaded = true;
+            } catch (e) {
+                console.error('Question history fetch failed:', e);
+            } finally {
+                this.loading = false;
+            }
+        }
+    };
+}
+</script>
+@endpush
 </x-app-layout>

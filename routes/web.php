@@ -146,6 +146,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
     Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
     Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+    Route::get('/questions/{question}/history', [QuestionController::class, 'history'])->name('questions.history');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 

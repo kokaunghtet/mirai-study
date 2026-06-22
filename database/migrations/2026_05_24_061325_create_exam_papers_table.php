@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('title');
             $table->integer('year');
             $table->string('session')->nullable();
+            $table->string('part')->nullable();     // AM | PM
+            $table->string('doc_type')->nullable();
             $table->text('description')->nullable();
             $table->string('file_url');
             $table->string('file_type');

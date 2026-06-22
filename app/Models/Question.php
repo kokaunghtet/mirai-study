@@ -43,6 +43,11 @@ class Question extends Model
         return $this->belongsTo(ExamLevel::class, 'level_id');
     }
 
+    public function revisions()
+    {
+        return $this->hasMany(QuestionRevision::class);
+    }
+
     public function userAnswers()
     {
         return $this->hasMany(UserAnswer::class);
