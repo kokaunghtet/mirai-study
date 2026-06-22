@@ -690,13 +690,48 @@ Alpine.data('paperUploader', (cats = []) => ({
     init() {
         // Honour any old() values repopulated by the server after a failed submit.
         const d = this.$root.dataset;
+        // Set categoryId first — drives the `levels` and `sessionOptions` x-for loops.
         this.categoryId = d.oldCategory || '';
-        this.levelId = d.oldLevel || '';
-        this.year = d.oldYear || String(new Date().getFullYear());
-        this.session = d.oldSession || '';
-        this.part = d.oldPart || '';
-        this.docType = d.oldDoctype || '';
-        this.title = d.oldTitle || '';
+        this.year      = d.oldYear    || String(new Date().getFullYear());
+        this.part      = d.oldPart    || '';
+        this.docType   = d.oldDoctype || '';
+        this.title     = d.oldTitle   || '';
+
+        // Wait one tick for x-for (levels, sessionOptions) to render their <option>
+        // elements before setting the dependent selects — otherwise the browser
+        // can't match the value and the select stays blank.
+        this.$nextTick(() => {
+            this.levelId = d.oldLevel   || '';
+            this.session = d.oldSession || '';
+
+            // Register watch only after all initial values are restored.
+            this.$nextTick(() => {
+                this.$watch('categoryId', () => {
+                    this.levelId = '';
+                    if (this.isJlpt) this.part = '';
+                    const valid = this.sessionOptions.map(o => o.v);
+                    if (this.session && !valid.includes(this.session)) this.session = '';
+                });
+            });
+        });
+    },
+
+    get selectedCategoryName() {
+        const c = this.cats.find(c => c.id == this.categoryId);
+        return c ? c.name : '';
+    },
+
+    get isJlpt() { return this.selectedCategoryName === 'JLPT'; },
+
+    get sessionOptions() {
+        if (this.isJlpt)
+            return [{ v: 'July', l: 'July' }, { v: 'December', l: 'December' }];
+        if (this.selectedCategoryName === 'ITPEC')
+            return [{ v: 'April', l: 'April' }, { v: 'October', l: 'October' }];
+        return [
+            { v: 'April', l: 'April' }, { v: 'October', l: 'October' },
+            { v: 'December', l: 'December' }, { v: 'July', l: 'July' },
+        ];
     },
 
     get levels() {

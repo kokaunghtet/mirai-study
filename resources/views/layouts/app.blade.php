@@ -144,7 +144,7 @@
                     <span x-show="!sidebarCollapsed">Exams</span>
                 </a>
                 @auth
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->isAdmin() || auth()->user()->isModerator())
                         <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
                             <a href="{{ route('admin.papers') }}"
                                @click="sidebarOpen = false"
@@ -169,7 +169,7 @@
                     <span x-show="!sidebarCollapsed">Quiz</span>
                 </a>
                 @auth
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->isAdmin() || auth()->user()->isModerator())
                         <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
                             <a href="{{ route('admin.questions') }}"
                                @click="sidebarOpen = false"

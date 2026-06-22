@@ -80,16 +80,18 @@
                         <i data-lucide="square-pen" class="h-4 w-4"></i>
                         <span class="hidden sm:inline">Edit</span>
                     </a>
-                    <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
-                          data-confirm="Delete this question?">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" title="Delete question"
-                                class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
-                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            <span class="hidden sm:inline">Delete</span>
-                        </button>
-                    </form>
+                    @if (auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
+                              data-confirm="Delete this question?">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Delete question"
+                                    class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
+                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                <span class="hidden sm:inline">Delete</span>
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 

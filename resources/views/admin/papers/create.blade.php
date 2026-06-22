@@ -151,10 +151,9 @@
                             <select name="session" id="session" x-model="session"
                                     class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent">
                                 <option value="">—</option>
-                                <option value="April">April</option>
-                                <option value="October">October</option>
-                                <option value="December">December</option>
-                                <option value="July">July</option>
+                                <template x-for="opt in sessionOptions" :key="opt.v">
+                                    <option :value="opt.v" x-text="opt.l"></option>
+                                </template>
                             </select>
                             <x-input-error :messages="$errors->get('session')" class="mt-2" />
                         </div>
@@ -165,6 +164,8 @@
                         <div>
                             <x-input-label for="part" value="Sitting (optional)" />
                             <select name="part" id="part" x-model="part"
+                                    :disabled="isJlpt"
+                                    :class="isJlpt ? 'opacity-50 cursor-not-allowed' : ''"
                                     class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent">
                                 <option value="">—</option>
                                 <option value="AM">AM (morning)</option>

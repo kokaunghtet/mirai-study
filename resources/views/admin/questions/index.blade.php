@@ -10,11 +10,13 @@
                     <h1 class="text-2xl font-bold tracking-tight text-content">Manage Questions</h1>
                     <p class="mt-1 text-sm text-muted">Add and remove quiz questions.</p>
                 </div>
-                <a href="{{ route('admin.questions.create') }}"
-                   class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
-                    <i data-lucide="plus" class="h-4 w-4"></i>
-                    <span>New question</span>
-                </a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.questions.create') }}"
+                       class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                        <i data-lucide="plus" class="h-4 w-4"></i>
+                        <span>New question</span>
+                    </a>
+                @endif
             </header>
 
             {{-- Flash --}}

@@ -131,23 +131,28 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
 
-    // Exam paper management
-    Route::get('/papers', [ExamPaperController::class, 'manage'])->name('papers');
+    // Exam paper management — admin only
     Route::get('/papers/create', [ExamPaperController::class, 'create'])->name('papers.create');
     Route::post('/papers', [ExamPaperController::class, 'store'])->name('papers.store');
+    Route::delete('/papers/{paper}', [ExamPaperController::class, 'destroy'])->name('papers.destroy');
+
+    // Quiz question management — admin only
+    Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+    Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+});
+
+// Exam papers + questions — admin or moderator (index, edit, update, history)
+Route::middleware(['auth', 'admin-or-mod'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/papers', [ExamPaperController::class, 'manage'])->name('papers');
     Route::get('/papers/{paper}/edit', [ExamPaperController::class, 'edit'])->name('papers.edit');
     Route::put('/papers/{paper}', [ExamPaperController::class, 'update'])->name('papers.update');
     Route::get('/papers/{paper}/history', [ExamPaperController::class, 'history'])->name('papers.history');
-    Route::delete('/papers/{paper}', [ExamPaperController::class, 'destroy'])->name('papers.destroy');
 
-    // Quiz question management
     Route::get('/questions', [QuestionController::class, 'manage'])->name('questions');
-    Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
-    Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
     Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
     Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::get('/questions/{question}/history', [QuestionController::class, 'history'])->name('questions.history');
-    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 
 // Breeze auth routes
