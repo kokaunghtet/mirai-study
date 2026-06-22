@@ -166,7 +166,12 @@
                                     </div>
                                 </template>
                                 <template x-if="!loading && revisions.length === 0">
-                                    <p class="text-xs text-muted py-2">No history yet.</p>
+                                    <div class="flex items-center gap-3">
+                                        <div class="z-10 shrink-0 flex justify-center w-6 pt-0.5">
+                                            <div class="h-3.5 w-3.5 rounded-full bg-surface border-2 border-line mt-0.5"></div>
+                                        </div>
+                                        <p class="py-2 text-xs text-muted">No history yet.</p>
+                                    </div>
                                 </template>
                             </div>
                         </div>
