@@ -94,16 +94,24 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
-            'content' => 'required|string|max:5000',
+            'content' => ($request->hasFile('media') || $request->hasFile('files'))
+                ? 'nullable|string|max:5000'
+                : 'required|string|max:5000',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
-            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf,txt|max:20480',
         ]);
 
         $post = $request->user()->posts()->create([
             'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
+        ]);
+
+        $post->revisions()->create([
+            'editor_id' => $request->user()->id,
+            'title' => $post->title,
+            'content' => $post->content,
         ]);
 
         if (! empty($validated['tags'])) {
@@ -122,16 +130,17 @@ class PostController extends Controller
             }
         }
 
-        // Handle document/file uploads
+        // Handle document/file uploads (PDF, txt, and images)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $this->storeUpload($file, 'posts/files');
+                $isImage = str_starts_with((string) $file->getMimeType(), 'image/');
 
                 $post->media()->create([
                     'url' => Storage::url($path),
-                    'type' => 'document',
-                    'filename' => $file->getClientOriginalName(),
-                    'filesize' => Storage::disk('public')->size($path),
+                    'type' => $isImage ? 'image' : 'document',
+                    'filename' => $isImage ? null : $file->getClientOriginalName(),
+                    'filesize' => $file->getSize(),
                 ]);
             }
         }
@@ -175,11 +184,13 @@ class PostController extends Controller
 
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
-            'content' => 'required|string|max:5000',
+            'content' => ($request->hasFile('media') || $request->hasFile('files'))
+                ? 'nullable|string|max:5000'
+                : 'required|string|max:5000',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
-            'files.*' => 'nullable|file|max:20480',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf,txt|max:20480',
             'remove_media' => 'nullable|array',
             'remove_media.*' => 'exists:post_media,id',
         ]);
@@ -187,6 +198,12 @@ class PostController extends Controller
         $post->update([
             'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
+        ]);
+
+        $post->revisions()->create([
+            'editor_id' => $request->user()->id,
+            'title' => $post->title,
+            'content' => $post->content,
         ]);
 
         $post->tags()->sync($validated['tags'] ?? []);
@@ -216,7 +233,7 @@ class PostController extends Controller
                     'url' => Storage::url($path),
                     'type' => 'document',
                     'filename' => $file->getClientOriginalName(),
-                    'filesize' => Storage::disk('public')->size($path),
+                    'filesize' => $file->getSize(),
                 ]);
             }
         }
@@ -250,6 +267,28 @@ class PostController extends Controller
         Storage::disk('public')->put($path, (string) $encoded);
 
         return $path;
+    }
+
+    public function history(Post $post)
+    {
+        $revisions = $post->revisions()->with('editor:id,display_name,username')->latest()->get();
+        $total = $revisions->count();
+
+        return response()->json(
+            $revisions->values()->map(fn ($r, $i) => [
+                'id' => $r->id,
+                'is_latest' => $i === 0,
+                'is_initial' => $i === $total - 1,
+                'editor' => [
+                    'display_name' => $r->editor->display_name,
+                    'initial' => strtoupper(substr($r->editor->display_name, 0, 1)),
+                ],
+                'title' => $r->title,
+                'content_preview' => $r->content ? Str::limit($r->content, 80) : null,
+                'created_at' => $r->created_at->diffForHumans(),
+                'created_at_full' => $r->created_at->format('M j, Y · g:i A'),
+            ])
+        );
     }
 
     public function destroy(Post $post)

@@ -64,7 +64,7 @@
                         <textarea name="content" rows="1"
                                   placeholder="What's on your mind?"
                                   class="min-h-[88px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
-                                  required>{{ old('content') }}</textarea>
+                                  :required="tab === 'text'">{{ old('content') }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -73,6 +73,9 @@
                         <input type="file" id="mediaFileInput" name="media[]"
                                accept="image/*" multiple class="hidden"
                                @change="handleMedia($event)">
+                        @error('media.*')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
 
                         {{-- Media panel --}}
                         <div x-show="tab === 'media'" class="mt-2">
@@ -139,8 +142,11 @@
 
                         {{-- IMPORTANT: Persistent file input — always in DOM --}}
                         <input type="file" id="fileAttachInput" name="files[]"
-                               multiple class="hidden"
+                               accept="image/*,.pdf,.txt" multiple class="hidden"
                                @change="handleFiles($event)">
+                        @error('files.*')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
 
                         {{-- File panel --}}
                         <div x-show="tab === 'file'" class="mt-2">
@@ -148,7 +154,7 @@
                                    class="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed border-line px-4 py-4 text-center transition-all hover:bg-surface-muted">
                                 <i data-lucide="upload" class="h-7 w-7 text-muted"></i>
                                 <p class="text-[13px] font-semibold text-content">Attach files</p>
-                                <span class="text-[11px] text-muted">Any file type</span>
+                                <span class="text-[11px] text-muted">Images, PDF or TXT</span>
                             </label>
 
                             {{-- File chips --}}
@@ -232,9 +238,15 @@
 
                 removeFile(index) {
                     this.attachedFiles.splice(index, 1);
-                    // Reset the actual input so the same file can be re-added
+                    // Rebuild the FileList from the pruned array so the form
+                    // submits only the remaining files (FileList is read-only;
+                    // DataTransfer is the only spec-compliant way to write it).
                     const input = document.getElementById('fileAttachInput');
-                    if (input) input.value = '';
+                    if (input) {
+                        const dt = new DataTransfer();
+                        this.attachedFiles.forEach(f => dt.items.add(f));
+                        input.files = dt.files;
+                    }
                 },
 
                 formatSize(bytes) {

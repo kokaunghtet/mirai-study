@@ -21,7 +21,7 @@ import {
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     // Admin upload
     Sparkles, TriangleAlert,
-    ClipboardList
+    ClipboardList, GitBranch, Save
 } from 'lucide';
 
 const icons = {
@@ -34,7 +34,7 @@ const icons = {
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     Sparkles, TriangleAlert,
-    ClipboardList
+    ClipboardList, GitBranch, Save
 };
 
 Alpine.plugin(collapse);

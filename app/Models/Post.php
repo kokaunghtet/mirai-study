@@ -69,6 +69,11 @@ class Post extends Model
         return $this->hasMany(Bookmark::class);
     }
 
+    public function revisions()
+    {
+        return $this->hasMany(PostRevision::class);
+    }
+
     /**
      * Order the query by a Reddit-style "hot" score blending engagement,
      * recency and a boost for authors the viewer follows, plus a subtle

@@ -12,10 +12,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Main Content --}}
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-6" x-data="postHistory({{ $post->id }})">
 
             {{-- Post --}}
-            <article class="bg-surface border border-line rounded-xl p-6">
+            <article class="bg-surface border border-line rounded-xl p-6 cursor-default"
+                     @dblclick="toggle()" title="Double-click to view edit history">
 
                 {{-- Author --}}
                 <div class="flex items-center justify-between mb-4">
@@ -206,6 +207,14 @@
                             </button>
                         @endauth
 
+                        {{-- History --}}
+                        <button type="button" @click="toggle()"
+                                :title="open ? 'Hide history' : 'View edit history'"
+                                :class="open ? 'text-accent' : 'text-muted hover:text-accent'"
+                                class="rounded-lg px-2.5 py-1.5 hover:bg-surface-muted transition-all">
+                            <i data-lucide="git-branch" class="h-[18px] w-[18px]"></i>
+                        </button>
+
                         {{-- Share — Alpine handles copy to clipboard, works for everyone --}}
                         <div x-data="{ copied: false }">
                             <button type="button"
@@ -224,6 +233,81 @@
                     </div>
                 </div>
             </article>
+
+            {{-- Git History Panel --}}
+            <div x-show="open" x-cloak
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="rounded-xl border border-line bg-surface overflow-hidden">
+
+                <div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+                    <div class="flex items-center gap-2 text-sm font-semibold text-content">
+                        <i data-lucide="git-branch" class="h-4 w-4 text-accent"></i>
+                        Edit History
+                    </div>
+                    <button @click="open = false" class="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-surface-muted hover:text-content transition-colors">
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i>
+                    </button>
+                </div>
+
+                {{-- Loading --}}
+                <div x-show="loading" class="px-5 py-10 text-center text-sm text-muted">
+                    <i data-lucide="loader-circle" class="mx-auto h-5 w-5 animate-spin text-accent mb-2"></i>
+                    Loading history…
+                </div>
+
+                {{-- Git graph --}}
+                <div x-show="!loading" class="px-5 py-5">
+                    <div class="relative">
+                        {{-- Vertical line --}}
+                        <div class="absolute top-0 bottom-0 left-[11px] w-px bg-line"></div>
+
+                        <template x-for="(rev, i) in revisions" :key="rev.id">
+                            <div class="relative flex gap-4" :class="i < revisions.length - 1 ? 'pb-6' : ''">
+                                {{-- Dot --}}
+                                <div class="relative z-10 shrink-0 flex justify-center" style="width:24px;padding-top:3px">
+                                    <div :class="rev.is_latest
+                                        ? 'h-[18px] w-[18px] rounded-full bg-accent border-[3px] border-surface'
+                                        : 'h-3.5 w-3.5 rounded-full bg-surface border-2 border-line mt-0.5'">
+                                    </div>
+                                </div>
+                                {{-- Content --}}
+                                <div class="flex-1 min-w-0 pb-0.5">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-[11px] font-bold text-accent"
+                                                 x-text="rev.editor.initial"></div>
+                                            <span class="text-sm font-semibold text-content" x-text="rev.editor.display_name"></span>
+                                            <span x-show="rev.is_latest"
+                                                  class="inline-flex items-center rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent uppercase tracking-wide">HEAD</span>
+                                            <span x-show="rev.is_initial && !rev.is_latest"
+                                                  class="inline-flex items-center rounded-full bg-surface-muted px-1.5 py-0.5 text-[10px] font-medium text-muted uppercase tracking-wide">Initial</span>
+                                        </div>
+                                        <span class="shrink-0 text-[11px] text-muted" x-text="rev.created_at_full"></span>
+                                    </div>
+                                    <p class="mt-0.5 text-[12px] text-muted"
+                                       x-text="rev.is_initial ? 'Created this post' : 'Edited this post'"></p>
+                                    <template x-if="rev.content_preview">
+                                        <p class="mt-1.5 rounded-lg bg-surface-muted px-3 py-2 text-xs text-muted font-mono leading-relaxed"
+                                           x-text="rev.content_preview"></p>
+                                    </template>
+                                    <template x-if="!rev.content_preview && rev.title">
+                                        <p class="mt-1.5 text-xs text-muted italic" x-text="'Title: ' + rev.title"></p>
+                                    </template>
+                                    <template x-if="!rev.content_preview && !rev.title">
+                                        <p class="mt-1.5 text-xs text-muted italic">Media / file-only post</p>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!loading && revisions.length === 0">
+                            <p class="py-4 text-sm text-muted">No history available.</p>
+                        </template>
+                    </div>
+                </div>
+            </div>
 
             {{-- Comments Section --}}
             <section id="comments" class="bg-surface border border-line rounded-xl p-6">
@@ -248,4 +332,37 @@
         </aside>
 
     </div>
+
+    <script>
+        function postHistory(postId) {
+            return {
+                open: false,
+                loaded: false,
+                loading: false,
+                revisions: [],
+
+                toggle() {
+                    if (window.getSelection().toString().length > 0) return;
+                    this.open = !this.open;
+                    if (this.open && !this.loaded) this.fetch();
+                },
+
+                async fetch() {
+                    this.loading = true;
+                    try {
+                        const res = await fetch(`/posts/${postId}/history`, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        });
+                        if (!res.ok) throw new Error(res.status);
+                        this.revisions = await res.json();
+                        this.loaded = true;
+                    } catch (e) {
+                        console.error('History fetch failed:', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+            };
+        }
+    </script>
 </x-app-layout>

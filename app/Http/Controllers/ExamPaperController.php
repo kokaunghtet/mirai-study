@@ -51,14 +51,72 @@ class ExamPaperController extends Controller
     // -----------------------------------------------------------------
 
     /** List every uploaded paper for admins to manage. */
-    public function manage()
+    public function manage(Request $request)
     {
         $papers = ExamPaper::with(['category', 'level'])
             ->withCount('downloads')
+            ->when($request->filled('category'), fn ($q) => $q->whereHas('category', fn ($c) => $c->where('name', $request->category)))
+            ->when($request->filled('level'), fn ($q) => $q->whereHas('level', fn ($l) => $l->where('code', $request->level)))
+            ->when($request->filled('year'), fn ($q) => $q->where('year', $request->year))
+            ->when($request->filled('doc_type'), fn ($q) => $q->where('doc_type', $request->doc_type))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.papers.index', compact('papers'));
+        $categories = ExamCategory::with('levels:id,category_id,code,name')->orderBy('name')->get(['id', 'name']);
+        $years = ExamPaper::distinct()->orderByDesc('year')->pluck('year');
+
+        $counts = [
+            'category' => ExamPaper::selectRaw('category_id, COUNT(*) c')->groupBy('category_id')->pluck('c', 'category_id'),
+            'level' => ExamPaper::selectRaw('level_id, COUNT(*) c')->whereNotNull('level_id')->groupBy('level_id')->pluck('c', 'level_id'),
+            'year' => ExamPaper::selectRaw('year, COUNT(*) c')->groupBy('year')->pluck('c', 'year'),
+            'doc_type' => ExamPaper::whereNotNull('doc_type')->selectRaw('doc_type, COUNT(*) c')->groupBy('doc_type')->pluck('c', 'doc_type'),
+        ];
+
+        return view('admin.papers.index', compact('papers', 'categories', 'years', 'counts'));
+    }
+
+    /** Edit form for paper metadata (PDF is not replaceable here). */
+    public function edit(ExamPaper $paper)
+    {
+        $categories = ExamCategory::with('levels:id,category_id,code,name')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('admin.papers.edit', compact('categories', 'paper'));
+    }
+
+    /** Update paper metadata only — file_url and file_type are left untouched. */
+    public function update(Request $request, ExamPaper $paper)
+    {
+        $validated = $request->validate([
+            'category_id' => ['required', 'exists:exam_categories,id'],
+            'level_id' => ['required', Rule::exists('exam_levels', 'id')->where('category_id', $request->category_id)],
+            'title' => ['nullable', 'string', 'max:255'],
+            'year' => ['required', 'integer', 'min:1990', 'max:'.(now()->year + 1)],
+            'session' => ['nullable', 'string', 'max:255'],
+            'part' => ['nullable', 'string', Rule::in(['AM', 'PM'])],
+            'doc_type' => ['nullable', 'string', Rule::in(['question', 'answer', 'combined'])],
+            'description' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $paper->update([
+            'category_id' => $validated['category_id'],
+            'level_id' => $validated['level_id'],
+            'title' => filled($validated['title']) ? $validated['title'] : $paper->title,
+            'year' => $validated['year'],
+            'session' => $validated['session'] ?? null,
+            'part' => $validated['part'] ?? null,
+            'doc_type' => $validated['doc_type'] ?? null,
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        $paper->revisions()->create([
+            'editor_id' => $request->user()->id,
+            'action' => 'edited',
+        ]);
+
+        return redirect()->route('admin.papers')->with('success', 'Paper updated.');
     }
 
     /** Upload form. Categories carry their levels for the dependent dropdown. */
@@ -102,7 +160,7 @@ class ExamPaperController extends Controller
 
         $path = $file->store('exam-papers', 'public');
 
-        ExamPaper::create([
+        $paper = ExamPaper::create([
             'category_id' => $validated['category_id'],
             'level_id' => $validated['level_id'],
             'uploaded_by' => $request->user()->id,
@@ -116,7 +174,33 @@ class ExamPaperController extends Controller
             'file_type' => 'pdf',
         ]);
 
+        $paper->revisions()->create([
+            'editor_id' => $request->user()->id,
+            'action' => 'uploaded',
+        ]);
+
         return redirect()->route('admin.papers')->with('success', 'Paper uploaded.');
+    }
+
+    public function history(ExamPaper $paper)
+    {
+        $revisions = $paper->revisions()->with('editor:id,display_name')->latest()->get();
+        $total = $revisions->count();
+
+        return response()->json(
+            $revisions->values()->map(fn ($r, $i) => [
+                'id'              => $r->id,
+                'is_latest'       => $i === 0,
+                'is_initial'      => $i === $total - 1,
+                'action'          => $r->action,
+                'editor'          => [
+                    'display_name' => $r->editor->display_name,
+                    'initial'      => strtoupper(substr($r->editor->display_name, 0, 1)),
+                ],
+                'created_at'      => $r->created_at->diffForHumans(),
+                'created_at_full' => $r->created_at->format('M j, Y · g:i A'),
+            ])
+        );
     }
 
     /** Delete the stored file then the row. */

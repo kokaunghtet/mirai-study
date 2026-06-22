@@ -39,4 +39,9 @@ class ExamPaper extends Model
     {
         return $this->hasMany(PaperDownload::class, 'paper_id');
     }
+
+    public function revisions()
+    {
+        return $this->hasMany(PaperRevision::class, 'paper_id');
+    }
 }

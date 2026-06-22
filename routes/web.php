@@ -116,6 +116,7 @@ Route::middleware('auth')->group(function () {
 // -------------------------------------------------------
 // Comments partial for the feed drawer (loaded via AJAX) — public, like the show page
 Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
+Route::get('/posts/{post}/history', [PostController::class, 'history'])->name('posts.history');
 
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
@@ -134,6 +135,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/papers', [ExamPaperController::class, 'manage'])->name('papers');
     Route::get('/papers/create', [ExamPaperController::class, 'create'])->name('papers.create');
     Route::post('/papers', [ExamPaperController::class, 'store'])->name('papers.store');
+    Route::get('/papers/{paper}/edit', [ExamPaperController::class, 'edit'])->name('papers.edit');
+    Route::put('/papers/{paper}', [ExamPaperController::class, 'update'])->name('papers.update');
+    Route::get('/papers/{paper}/history', [ExamPaperController::class, 'history'])->name('papers.history');
     Route::delete('/papers/{paper}', [ExamPaperController::class, 'destroy'])->name('papers.destroy');
 
     // Quiz question management

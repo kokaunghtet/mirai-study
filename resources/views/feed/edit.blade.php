@@ -64,7 +64,7 @@
                         <textarea name="content" rows="4"
                                   placeholder="What's on your mind?"
                                   class="min-h-[90px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
-                                  required>{{ old('content', $post->content) }}</textarea>
+                                  :required="tab === 'text'">{{ old('content', $post->content) }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -75,7 +75,7 @@
                                @change="handleNewMedia($event)">
 
                         <input type="file" id="editFileInput" name="files[]"
-                               multiple class="hidden"
+                               accept="image/*,.pdf,.txt" multiple class="hidden"
                                @change="handleNewFiles($event)">
 
                         {{-- Media panel --}}
@@ -211,7 +211,7 @@
                                                 <div class="truncate text-xs font-semibold text-content" x-text="file.name"></div>
                                                 <div class="text-[11px] text-muted" x-text="formatSize(file.size)"></div>
                                             </div>
-                                            <button type="button" @click="newFiles.splice(i, 1)"
+                                            <button type="button" @click="removeNewFile(i)"
                                                     class="text-muted hover:text-red-500 transition-colors">
                                                 <i data-lucide="x" class="h-4 w-4"></i>
                                             </button>
@@ -276,6 +276,16 @@
 
                 handleNewFiles(event) {
                     this.newFiles = Array.from(event.target.files);
+                },
+
+                removeNewFile(index) {
+                    this.newFiles.splice(index, 1);
+                    const input = document.getElementById('editFileInput');
+                    if (input) {
+                        const dt = new DataTransfer();
+                        this.newFiles.forEach(f => dt.items.add(f));
+                        input.files = dt.files;
+                    }
                 },
 
                 formatSize(bytes) {
