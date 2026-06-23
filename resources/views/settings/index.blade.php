@@ -2,11 +2,10 @@
     <x-slot name="title">Settings — MiraiStudy</x-slot>
 
     <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        html, body { overflow: hidden; }
     </style>
 
-    <div class="w-full min-h-screen flex items-center p-6 md:p-10 lg:p-12 bg-canvas transition-colors duration-300">
+    <div class="w-full min-h-full flex justify-center items-center p-6 md:p-10 lg:p-12 bg-canvas transition-colors duration-300">
         <div class="max-w-6xl mx-auto w-full">
 
             <header class="mb-8">
