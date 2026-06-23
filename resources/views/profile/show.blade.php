@@ -3,6 +3,13 @@
 
     <div class="max-w-[720px] mx-auto">
 
+        <!-- Back button to go back to feed page -->
+        <a href="{{ route('feed.index') }}"
+           class="mb-5 inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+            Back
+        </a>
+
         {{-- Profile Header --}}
         <div class="bg-surface rounded-2xl border border-line p-6 mb-5">
             <div class="flex items-start gap-5">
