@@ -35,6 +35,13 @@
                 </div>
             </div>
 
+            {{-- User profile card (shown when search matches a user) --}}
+            <div id="user-card-container">
+                @if (!empty($profileUser))
+                    <x-user-card :user="$profileUser" />
+                @endif
+            </div>
+
             {{-- Posts --}}
             <div id="posts-container" class="space-y-4">
                 @include('feed._posts')
@@ -122,6 +129,7 @@
             const filterSearch = document.getElementById('filter-search');
             const filterTag = document.getElementById('filter-tag');
             const clearFiltersBtn = document.getElementById('clear-filters');
+            const userCardContainer = document.getElementById('user-card-container');
 
             let currentAbortController = null;
             // Bumped on every applyFilters() run. An in-flight loadMore() or a
@@ -187,6 +195,11 @@
                     // A newer filter run superseded this one while awaiting.
                     if (myRequestId !== requestId) return;
 
+                    if (userCardContainer) {
+                        userCardContainer.innerHTML = data.user_card_html ?? '';
+                        if (data.user_card_html) window.renderIcons(userCardContainer);
+                    }
+
                     if (data.html.trim() === '') {
                         container.innerHTML = `
                             <div class="flex flex-col items-center justify-center py-20 text-center">
@@ -234,6 +247,7 @@
                 clearFiltersBtn.addEventListener('click', () => {
                     if (filterSearch) filterSearch.value = '';
                     if (filterTag) filterTag.value = '';
+                    if (userCardContainer) userCardContainer.innerHTML = '';
                     applyFilters();
                 });
             }

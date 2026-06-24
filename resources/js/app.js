@@ -21,7 +21,7 @@ import {
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     // Admin upload
     Sparkles, TriangleAlert,
-    ClipboardList, GitBranch, Save
+    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2
 } from 'lucide';
 
 const icons = {
@@ -34,7 +34,7 @@ const icons = {
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     Sparkles, TriangleAlert,
-    ClipboardList, GitBranch, Save
+    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2
 };
 
 Alpine.plugin(collapse);
@@ -692,16 +692,16 @@ Alpine.data('paperUploader', (cats = []) => ({
         const d = this.$root.dataset;
         // Set categoryId first — drives the `levels` and `sessionOptions` x-for loops.
         this.categoryId = d.oldCategory || '';
-        this.year      = d.oldYear    || String(new Date().getFullYear());
-        this.part      = d.oldPart    || '';
-        this.docType   = d.oldDoctype || '';
-        this.title     = d.oldTitle   || '';
+        this.year = d.oldYear || String(new Date().getFullYear());
+        this.part = d.oldPart || '';
+        this.docType = d.oldDoctype || '';
+        this.title = d.oldTitle || '';
 
         // Wait one tick for x-for (levels, sessionOptions) to render their <option>
         // elements before setting the dependent selects — otherwise the browser
         // can't match the value and the select stays blank.
         this.$nextTick(() => {
-            this.levelId = d.oldLevel   || '';
+            this.levelId = d.oldLevel || '';
             this.session = d.oldSession || '';
 
             // Register watch only after all initial values are restored.

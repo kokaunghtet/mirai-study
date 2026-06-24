@@ -127,9 +127,14 @@ Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::patch('/users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
     Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('users.status');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
+
+    // Analytics
+    Route::get('/analytics',      [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/analytics/data', [AdminController::class, 'analyticsData'])->name('analytics.data');
 
     // Exam paper management — admin only
     Route::get('/papers/create', [ExamPaperController::class, 'create'])->name('papers.create');

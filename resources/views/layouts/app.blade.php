@@ -123,6 +123,21 @@
         {{-- Navigation Links --}}
         <nav class="flex-1 overflow-y-auto py-4 space-y-1" :class="sidebarCollapsed ? 'px-2' : 'px-3'">
 
+            {{-- Admin Dashboard --}}
+            @auth
+                @if (auth()->user()->isAdmin())
+                    {{-- Admin Dashboard --}}
+                    <a href="{{ route('admin.dashboard') }}"
+                       @click="sidebarOpen = false"
+                       title="Dashboard"
+                       class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'active' : 'text-muted' }}"
+                       :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.dashboard') ? '' : 'text-muted' }}"></i>
+                        <span x-show="!sidebarCollapsed">Dashboard</span>
+                    </a>
+                @endif
+            @endauth
+
             {{-- Feed --}}
             <a href="{{ route('feed.index') }}"
                @click="sidebarOpen = false"
@@ -197,6 +212,7 @@
             <div class="border-t border-line my-3"></div>
 
             @auth
+
                 {{-- Notifications --}}
                 <a href="{{ route('notifications.index') }}"
                    @click="sidebarOpen = false"

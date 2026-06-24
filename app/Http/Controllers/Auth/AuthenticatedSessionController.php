@@ -42,7 +42,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('feed.index', absolute: false));
+        $default = $user->isAdmin()
+            ? route('admin.dashboard', absolute: false)
+            : route('feed.index', absolute: false);
+
+        return redirect()->intended($default);
     }
 
     /**

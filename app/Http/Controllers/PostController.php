@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -29,6 +30,8 @@ class PostController extends Controller
 
         $query = Post::with($with)->withCount(['likes', 'comments', 'bookmarks']);
 
+        $profileUser = null;
+
         // 1. Search filter
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -43,6 +46,19 @@ class PostController extends Controller
                             ->orWhere('username', 'like', "%{$escapedSearch}%");
                     });
             });
+
+            // Top-1 user match for profile card (exact hits rank first)
+            $profileUser = User::withCount([
+                'posts',
+                'followers' => fn ($q) => $q->where('follows.status', 'accepted'),
+                'following' => fn ($q) => $q->where('follows.status', 'accepted'),
+            ])
+                ->where(function ($q) use ($escapedSearch) {
+                    $q->where('username', 'like', "%{$escapedSearch}%")
+                        ->orWhere('display_name', 'like', "%{$escapedSearch}%");
+                })
+                ->orderByRaw('CASE WHEN username = ? THEN 0 WHEN display_name = ? THEN 1 ELSE 2 END', [$search, $search])
+                ->first();
         }
 
         // 2. Tag filter
@@ -74,13 +90,16 @@ class PostController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('feed._posts', compact('posts'))->render(),
+                'user_card_html' => $profileUser
+                    ? view('components.user-card', ['user' => $profileUser])->render()
+                    : '',
                 'next_page_url' => $posts->nextPageUrl(),
             ]);
         }
 
         $tags = Tag::all();
 
-        return view('feed.index', compact('posts', 'tags'));
+        return view('feed.index', compact('posts', 'tags', 'profileUser'));
     }
 
     public function create()
