@@ -43,8 +43,10 @@
 
                     @auth
                         @if (auth()->id() !== $followed->id)
+                            @php $isFollowing = in_array($followed->id, $authFollowingIds); @endphp
                             <div x-data="{
-                                    following: true,
+                                    following: {{ $isFollowing ? 'true' : 'false' }},
+                                    isOwnList: {{ auth()->id() === $user->id ? 'true' : 'false' }},
                                     hovered: false,
                                     loading: false,
                                     async toggle() {
@@ -60,14 +62,15 @@
                                             });
                                             const data = await res.json();
                                             this.following = data.following;
-                                            if (!data.following) {
+                                            if (!data.following && this.isOwnList) {
                                                 window.dispatchEvent(new Event('following-decremented'));
-                                                this.$el.closest('.follow-row').style.transition = 'opacity 0.3s, max-height 0.3s';
-                                                this.$el.closest('.follow-row').style.opacity = '0';
-                                                this.$el.closest('.follow-row').style.maxHeight = '0';
-                                                this.$el.closest('.follow-row').style.overflow = 'hidden';
-                                                this.$el.closest('.follow-row').style.padding = '0';
-                                                setTimeout(() => this.$el.closest('.follow-row')?.remove(), 350);
+                                                const row = this.$el.closest('.follow-row');
+                                                row.style.transition = 'opacity 0.3s, max-height 0.3s';
+                                                row.style.opacity = '0';
+                                                row.style.maxHeight = '0';
+                                                row.style.overflow = 'hidden';
+                                                row.style.padding = '0';
+                                                setTimeout(() => row?.remove(), 350);
                                             }
                                         } finally {
                                             this.loading = false;
@@ -79,11 +82,11 @@
                                         @mouseenter="hovered = true"
                                         @mouseleave="hovered = false"
                                         :disabled="loading"
-                                        :class="hovered
-                                            ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100'
-                                            : 'border-line text-content bg-surface hover:bg-surface-muted'"
+                                        :class="following
+                                            ? (hovered ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100' : 'border-line text-content bg-surface hover:bg-surface-muted')
+                                            : 'border-transparent bg-accent text-white hover:bg-accent-strong'"
                                         class="rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
-                                    <span x-text="hovered ? 'Unfollow' : 'Following'"></span>
+                                    <span x-text="following ? (hovered ? 'Unfollow' : 'Following') : 'Follow'"></span>
                                 </button>
                             </div>
                         @endif

@@ -16,14 +16,16 @@
     <div class="flex flex-wrap items-center gap-1.5">
         <span class="w-16 text-xs font-semibold text-muted">Level</span>
         @foreach ($categories as $cat)
-            @foreach ($cat->levels as $lvl)
-                @php $on = request('level') === $lvl->code; @endphp
-                <a href="{{ request()->fullUrlWithQuery(['level' => $on ? null : $lvl->code, 'page' => null]) }}"
-                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
-                    {{ $lvl->code }}
-                    <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['level'][$lvl->id] ?? 0 }}</span>
-                </a>
-            @endforeach
+            @if (!request('category') || request('category') === $cat->name)
+                @foreach ($cat->levels as $lvl)
+                    @php $on = request('level') === $lvl->code; @endphp
+                    <a href="{{ request()->fullUrlWithQuery(['level' => $on ? null : $lvl->code, 'page' => null]) }}"
+                       class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+                        {{ $lvl->code }}
+                        <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['level'][$lvl->id] ?? 0 }}</span>
+                    </a>
+                @endforeach
+            @endif
         @endforeach
     </div>
     {{-- Year row --}}

@@ -18,6 +18,7 @@
                 this.title   = title || 'Comments';
                 this.postId  = id ?? null;
                 this.isOpen  = true;
+
                 this.loading = true;
                 await this.load();
             },

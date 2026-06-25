@@ -81,7 +81,11 @@ class ProfileController extends Controller
 
         $followers = $user->followers()->paginate(20);
 
-        return view('profile.followers', compact('user', 'followers'));
+        $authFollowingIds = auth()->check()
+            ? auth()->user()->following()->pluck('users.id')->all()
+            : [];
+
+        return view('profile.followers', compact('user', 'followers', 'authFollowingIds'));
     }
 
     // ── Following list ───────────────────────────────────
@@ -91,7 +95,11 @@ class ProfileController extends Controller
 
         $following = $user->following()->paginate(20);
 
-        return view('profile.following', compact('user', 'following'));
+        $authFollowingIds = auth()->check()
+            ? auth()->user()->following()->pluck('users.id')->all()
+            : [];
+
+        return view('profile.following', compact('user', 'following', 'authFollowingIds'));
     }
 
     // ── Edit profile settings (private) ─────────────────

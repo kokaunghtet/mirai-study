@@ -90,7 +90,7 @@
                 </div>
             @endguest
 
-            <div class="bg-surface border border-line rounded-xl p-5">
+            <div id="quick-links" x-show="!isOpen" class="bg-surface border border-line rounded-xl p-5">
                 <h3 class="font-semibold text-content mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm text-muted">
                     <li><a href="{{ route('exams.index') }}" class="hover:text-accent">Exam Papers</a></li>

@@ -80,6 +80,42 @@
                                     Remove
                                 </button>
                             </div>
+                        @elseif (auth()->id() !== $user->id && auth()->id() !== $follower->id)
+                            @php $isFollowing = in_array($follower->id, $authFollowingIds); @endphp
+                            <div x-data="{
+                                    following: {{ $isFollowing ? 'true' : 'false' }},
+                                    hovered: false,
+                                    loading: false,
+                                    async toggle() {
+                                        if (this.loading) return;
+                                        this.loading = true;
+                                        try {
+                                            const res = await fetch('{{ route('users.follow', $follower) }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                    'Accept': 'application/json',
+                                                }
+                                            });
+                                            const data = await res.json();
+                                            this.following = data.following;
+                                        } finally {
+                                            this.loading = false;
+                                        }
+                                    }
+                                }" class="shrink-0 ml-3">
+                                <button type="button"
+                                        @click="toggle()"
+                                        @mouseenter="hovered = true"
+                                        @mouseleave="hovered = false"
+                                        :disabled="loading"
+                                        :class="following
+                                            ? (hovered ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100' : 'border-line text-content bg-surface hover:bg-surface-muted')
+                                            : 'border-transparent bg-accent text-white hover:bg-accent-strong'"
+                                        class="rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
+                                    <span x-text="following ? (hovered ? 'Unfollow' : 'Following') : 'Follow'"></span>
+                                </button>
+                            </div>
                         @endif
                     @endauth
                 </div>
