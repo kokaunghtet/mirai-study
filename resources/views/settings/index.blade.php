@@ -234,7 +234,7 @@
         // Single-shade custom colors, so tints/badges use opacity modifiers (/10, /15…).
         const themeStyles = {
             venom:    { gradient: 'bg-gradient-to-tr from-mirai-lime to-mirai-dark',       solid: 'bg-mirai-lime',     text: 'text-accent', border: 'border-mirai-lime',     bgLight: 'bg-mirai-lime/10',    bgDarkActive: 'bg-mirai-dark/40',     badgeBg: 'bg-mirai-lime/10'    },
-            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    solid: 'bg-blue-400',       text: 'text-accent', border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
+            aurora:   { gradient: 'bg-gradient-to-tr from-mirai-aurora to-mirai-violet',    solid: 'bg-blue-700',       text: 'text-accent', border: 'border-mirai-violet',   bgLight: 'bg-mirai-aurora/10',  bgDarkActive: 'bg-mirai-violet/40',   badgeBg: 'bg-mirai-aurora/15'  },
             sangria:  { gradient: 'bg-gradient-to-tr from-mirai-sangria to-mirai-obsidian', solid: 'bg-mirai-sangria',  text: 'text-accent', border: 'border-mirai-sangria',  bgLight: 'bg-mirai-sangria/10', bgDarkActive: 'bg-mirai-obsidian/40', badgeBg: 'bg-mirai-sangria/10' },
             twilight: { gradient: 'bg-gradient-to-tr from-mirai-sunset to-mirai-midnight',  solid: 'bg-mirai-midnight', text: 'text-accent', border: 'border-mirai-midnight', bgLight: 'bg-mirai-sunset/15',  bgDarkActive: 'bg-mirai-midnight/40', badgeBg: 'bg-mirai-sunset/20'  },
             inferno:  { gradient: 'bg-gradient-to-tr from-mirai-apricot to-mirai-slate',    solid: 'bg-mirai-apricot',  text: 'text-accent', border: 'border-mirai-apricot',  bgLight: 'bg-mirai-apricot/10', bgDarkActive: 'bg-mirai-slate/40',    badgeBg: 'bg-mirai-apricot/10' }
@@ -270,7 +270,7 @@
                     <div class="pt-1 flex items-center justify-between border-t border-line text-muted">
                         <div class="flex items-center gap-3">
                             <span class="flex items-center gap-1 text-[8px]"><i data-lucide="thumbs-up" class="h-2.5 w-2.5"></i> 12</span>
-                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-square" class="h-2.5 w-2.5"></i> 4</span>
+                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-circle" class="h-2.5 w-2.5"></i> 4</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i data-lucide="bookmark" class="h-2.5 w-2.5"></i>
@@ -296,7 +296,7 @@
                     <div class="pt-1 flex items-center justify-between border-t border-line text-muted">
                         <div class="flex items-center gap-3">
                             <span class="flex items-center gap-1 text-[8px]"><i data-lucide="thumbs-up" class="h-2.5 w-2.5"></i> 5</span>
-                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-square" class="h-2.5 w-2.5"></i> 2</span>
+                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-circle" class="h-2.5 w-2.5"></i> 2</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i data-lucide="bookmark" class="h-2.5 w-2.5"></i>
