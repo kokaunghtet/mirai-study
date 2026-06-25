@@ -94,8 +94,8 @@
     /* ── Dark-mode readability: brighten the purple accents that are too dark on the dark canvas.
           Light mode keeps the deeper purples above (they read fine on white). ── */
     .dark[data-theme="aurora"] {
-        --accent: 96 165 250;
-        --accent-strong: 59 130 246;
+        --accent: 37 99 235;
+        --accent-strong: 29 78 216;
     }
 
     .dark[data-theme="twilight"] {
