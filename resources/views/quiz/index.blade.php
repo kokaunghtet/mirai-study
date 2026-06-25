@@ -36,7 +36,7 @@
                             </button>
                         </form>
                         <a href="{{ route('quiz.show', $activeAttempt) }}"
-                           class="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                           class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
                             Resume <i data-lucide="arrow-right" class="h-4 w-4"></i>
                         </a>
                     </div>
@@ -65,7 +65,7 @@
                                         ? 'border-accent bg-accent/10 ring-1 ring-accent'
                                         : 'border-line bg-surface hover:border-accent/40 hover:bg-surface-muted'">
                                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg"
-                                      :class="category === key ? 'bg-accent text-white' : 'bg-surface-muted text-muted'">
+                                      :class="category === key ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'bg-surface-muted text-muted'">
                                     <i :data-lucide="key === 'JLPT' ? 'languages' : 'cpu'" class="h-5 w-5"></i>
                                 </span>
                                 <span class="min-w-0">
@@ -129,11 +129,11 @@
                         <h2 class="text-base font-semibold text-content">How many questions?</h2>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-muted p-1">
+                    <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface-muted p-1">
                         <template x-for="n in counts" :key="n">
                             <button type="button" @click="count = n"
                                     class="flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-semibold transition-all"
-                                    :class="count === n ? 'bg-accent text-white shadow-sm' : 'text-muted hover:text-content'">
+                                    :class="count === n ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white shadow-sm' : 'text-muted hover:text-content'">
                                 <span x-text="n"></span>
                                 <span class="text-xs font-normal opacity-80">Q</span>
                             </button>
@@ -147,7 +147,7 @@
 
                 {{-- Start --}}
                 <button type="submit" :disabled="!canStart"
-                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50">
+                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-5 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50">
                     <span x-text="canStart ? `Start ${count}-question quiz` : 'Complete the steps above'"></span>
                     <i data-lucide="arrow-right" class="h-4 w-4" x-show="canStart"></i>
                 </button>

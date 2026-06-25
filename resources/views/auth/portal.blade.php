@@ -79,7 +79,7 @@
                 </label>
 
                 <button type="submit" data-loading-text="Signing in…"
-                        class="w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                        class="w-full rounded-xl bg-gradient-to-tr from-accent-from to-accent-to py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     Sign in
                 </button>
 
@@ -229,7 +229,7 @@
                 </div>
 
                 <button type="submit" data-loading-text="Creating account…"
-                        class="mt-4 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                        class="mt-4 w-full rounded-xl bg-gradient-to-tr from-accent-from to-accent-to py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     Create account
                 </button>
 

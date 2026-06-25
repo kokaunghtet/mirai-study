@@ -57,7 +57,7 @@
                         <input type="hidden" name="section" value="{{ $attempt->section }}">
                         <input type="hidden" name="count" value="{{ $total }}">
                         <button type="submit"
-                                class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-strong sm:w-auto">
+                                class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-sm font-bold text-white transition-colors hover:opacity-90 sm:w-auto">
                             <i data-lucide="rotate-ccw" class="h-4 w-4"></i> Retake
                         </button>
                     </form>

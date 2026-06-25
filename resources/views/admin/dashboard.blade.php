@@ -11,7 +11,7 @@
                     <p class="mt-1 text-sm text-muted">Platform overview and quick actions.</p>
                 </div>
                 <a href="{{ route('admin.analytics') }}"
-                   class="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-bold text-white hover:opacity-90 transition-colors">
+                   class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 py-2.5 text-sm font-bold text-white hover:opacity-90 transition">
                     <i data-lucide="bar-chart-2" class="h-4 w-4"></i>
                     Analytics
                 </a>

@@ -25,7 +25,7 @@
                     <p class="mt-4 text-sm font-semibold text-content">No quizzes yet</p>
                     <p class="mt-1 text-xs text-muted">Take your first quiz to start tracking your results.</p>
                     <a href="{{ route('quiz.index') }}"
-                       class="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                       class="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-sm font-bold text-white transition-colors hover:opacity-90">
                         Start a quiz <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>

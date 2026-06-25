@@ -105,7 +105,7 @@
             Cancel
         </a>
         <button type="submit"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-accent px-5 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2 text-sm font-bold text-white transition-colors hover:opacity-90">
             <i data-lucide="plus" class="h-4 w-4"></i>
             {{ $submitLabel ?? 'Add Question' }}
         </button>

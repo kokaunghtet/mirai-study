@@ -143,7 +143,7 @@
                     @endif
                     <button type="submit" data-loading-text="Saving…"
                             :disabled="!canSave"
-                            class="rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
+                            class="rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-[13px] font-bold text-white hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
                         Save Changes
                     </button>
                 </div>
@@ -220,7 +220,7 @@
                                x-transition class="text-xs font-semibold text-green-600">✓ Password updated</p>
                         @endif
                         <button type="submit" data-loading-text="Updating…"
-                                class="rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95">
+                                class="rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-[13px] font-bold text-white hover:opacity-90 transition-all active:scale-95">
                             Update Password
                         </button>
                     </div>

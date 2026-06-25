@@ -32,7 +32,7 @@
                 <x-input-error :messages="$errors->get('code')" class="mt-3 justify-center text-center" />
 
                 <button type="submit" data-loading-text="Verifying…" :class="{ 'opacity-50': expired }"
-                        class="mt-5 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                        class="mt-5 w-full rounded-xl bg-gradient-to-tr from-accent-from to-accent-to py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                     {{ $isLogin ? 'Verify & sign in' : 'Verify email' }}
                 </button>
             </form>

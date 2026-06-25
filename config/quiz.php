@@ -23,7 +23,7 @@ $jlptSections = [
 return [
 
     // Number of questions a user may choose to answer.
-    'counts' => [20, 40, 60],
+    'counts' => [10, 20, 40, 60],
 
     // Questions generated per (category, level, section) pool by ExamSeeder.
     // Must be >= max(counts) so every choice can be filled.

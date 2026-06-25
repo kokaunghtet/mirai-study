@@ -65,7 +65,7 @@
                         Next <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </button>
                     <button type="submit" x-show="current === total - 1"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 py-2 text-sm font-bold text-white transition-colors hover:opacity-90">
                         Submit <i data-lucide="check" class="h-4 w-4"></i>
                     </button>
                 </div>
@@ -75,7 +75,7 @@
                     <div class="mb-3 flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted">Jump to question</span>
                         <button type="submit"
-                                class="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-accent-strong">
+                                class="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-3 py-1.5 text-xs font-bold text-white transition-colors hover:opacity-90">
                             Submit quiz <i data-lucide="check" class="h-3.5 w-3.5"></i>
                         </button>
                     </div>

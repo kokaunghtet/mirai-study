@@ -84,7 +84,7 @@
                         Connect with learners, share knowledge, and track your study progress.
                     </p>
                     <a href="{{ route('register') }}"
-                       class="block w-full text-center bg-accent text-white text-sm font-medium py-2.5 rounded-lg hover:bg-accent-strong">
+                       class="block w-full text-center bg-gradient-to-tr from-accent-from to-accent-to text-white text-sm font-medium py-2.5 rounded-lg hover:opacity-90">
                         Create Account
                     </a>
                 </div>

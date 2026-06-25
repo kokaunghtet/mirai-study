@@ -72,7 +72,7 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5 px-0.5" />
 
             <button type="submit"
-                    class="mt-5 w-full rounded-xl bg-accent py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    class="mt-5 w-full rounded-xl bg-gradient-to-tr from-accent-from to-accent-to py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                 Reset password
             </button>
         </form>

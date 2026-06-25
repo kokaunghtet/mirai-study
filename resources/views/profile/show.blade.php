@@ -93,7 +93,7 @@
                                             :disabled="loading"
                                             :class="following
                                                 ? 'bg-surface border-line text-content hover:border-red-200 hover:text-red-600 hover:bg-red-50'
-                                                : 'bg-accent border-transparent text-white hover:bg-accent-strong'"
+                                                : 'bg-gradient-to-tr from-accent-from to-accent-to border-transparent text-white hover:opacity-90'"
                                             class="shrink-0 rounded-lg border px-4 py-1.5 text-[13px] font-bold transition-all active:scale-95">
                                         <span x-text="following ? 'Following' : 'Follow'"></span>
                                     </button>
@@ -101,7 +101,7 @@
                             @else
                                 <button type="button"
                                         onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                                        class="shrink-0 rounded-lg border border-transparent bg-accent px-4 py-1.5 text-[13px] font-bold text-white hover:bg-accent-strong transition-all active:scale-95">
+                                        class="shrink-0 rounded-lg border border-transparent bg-gradient-to-tr from-accent-from to-accent-to px-4 py-1.5 text-[13px] font-bold text-white hover:opacity-90 transition-all active:scale-95">
                                     Follow
                                 </button>
                             @endauth
@@ -146,17 +146,17 @@
         <div class="flex gap-1 mb-5 bg-surface rounded-xl border border-line p-1">
             <a href="{{ route('profile.show', $user->username) }}?tab=posts"
                class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
-                      {{ $tab === 'posts'
-                          ? 'bg-accent text-white shadow-sm'
+                       {{ $tab === 'posts'
+                          ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white shadow-sm'
                           : 'text-muted hover:bg-surface-muted' }}">
                 Posts
             </a>
             @if ($showLikedTab)
                 <a href="{{ route('profile.show', $user->username) }}?tab=liked"
                    class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
-                          {{ $tab === 'liked'
-                              ? 'bg-accent text-white shadow-sm'
-                              : 'text-muted hover:bg-surface-muted' }}">
+                           {{ $tab === 'liked'
+                               ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white shadow-sm'
+                               : 'text-muted hover:bg-surface-muted' }}">
                     Liked
                     @if ($isOwnProfile && !($user->preferences?->show_liked_posts ?? true))
                         <span class="ml-1 text-[10px] text-muted">(Private)</span>

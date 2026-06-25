@@ -62,7 +62,7 @@
 
                     {{-- Play / Pause --}}
                     <button type="button" @click="toggle()" aria-label="Start or pause timer"
-                            class="w-[52px] h-[52px] grid place-items-center rounded-full bg-accent text-white shadow-sm hover:bg-accent-strong transition-colors">
+                            class="w-[52px] h-[52px] grid place-items-center rounded-full bg-gradient-to-tr from-accent-from to-accent-to text-white shadow-sm hover:bg-accent-strong transition-colors">
                         <i data-lucide="play" x-show="!isRunning" class="w-6 h-6 translate-x-[1px]"></i>
                         <i data-lucide="pause" x-show="isRunning" x-cloak class="w-6 h-6"></i>
                     </button>

@@ -63,7 +63,7 @@
                            class="h-10 rounded-xl border border-line bg-surface px-3 text-sm text-content
                                   focus:border-accent focus:ring-1 focus:ring-accent/30" />
                     <button @click="applyCustomRange()"
-                            class="h-10 rounded-xl bg-accent px-4 text-sm font-bold text-white hover:opacity-90 transition-colors disabled:opacity-50"
+                            class="h-10 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 text-sm font-bold text-white hover:opacity-90 transition-colors disabled:opacity-50"
                             :disabled="!customFrom || !customTo || loading">
                         Apply Range
                     </button>

@@ -248,7 +248,7 @@
                     {{-- Submit --}}
                     <footer class="flex items-center justify-end px-5 py-4 border-t border-line">
                         <button type="submit" data-loading-text="Saving…"
-                                class="flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:bg-accent-strong active:scale-95 shadow-sm">
+                                class="flex items-center gap-1.5 rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-[13px] font-bold text-white transition-all hover:opacity-90 active:scale-95 shadow-sm">
                             <i data-lucide="check" class="h-4 w-4"></i>
                             Save Changes
                         </button>

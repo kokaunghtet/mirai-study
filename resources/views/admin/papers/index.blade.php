@@ -12,7 +12,7 @@
                 </div>
                 @if (auth()->user()->isAdmin())
                     <a href="{{ route('admin.papers.create') }}"
-                       class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
+                       class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-strong">
                         <i data-lucide="plus" class="h-4 w-4"></i>
                         <span>Upload</span>
                     </a>

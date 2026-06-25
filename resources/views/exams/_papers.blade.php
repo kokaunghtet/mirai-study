@@ -27,7 +27,7 @@
                 </a>
                 <a href="{{ route('exams.download', $paper) }}"
                    title="Download"
-                   class="inline-flex items-center gap-1.5 rounded-xl bg-accent px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-strong">
+                   class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-3 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90">
                     <i data-lucide="download" class="h-4 w-4"></i>
                     <span class="hidden sm:inline">Download</span>
                 </a>

@@ -7,7 +7,7 @@
         @php $on = request('status', 'pending') === $val; @endphp
         <a href="{{ request()->fullUrlWithQuery(['status' => $val, 'page' => null]) }}"
            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors
-                  {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+                  {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
             {{ $label }}
         </a>
     @endforeach
@@ -19,7 +19,7 @@
         @php $on = request('type') === $val; @endphp
         <a href="{{ request()->fullUrlWithQuery(['type' => $on ? null : $val, 'page' => null]) }}"
            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors
-                  {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+                  {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
             {{ $label }}
         </a>
     @endforeach

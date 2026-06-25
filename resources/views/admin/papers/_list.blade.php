@@ -6,7 +6,7 @@
         @foreach ($categories as $cat)
             @php $on = request('category') === $cat->name; @endphp
             <a href="{{ request()->fullUrlWithQuery(['category' => $on ? null : $cat->name, 'page' => null]) }}"
-               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                 {{ $cat->name }}
                 <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['category'][$cat->id] ?? 0 }}</span>
             </a>
@@ -20,7 +20,7 @@
                 @foreach ($cat->levels as $lvl)
                     @php $on = request('level') === $lvl->code; @endphp
                     <a href="{{ request()->fullUrlWithQuery(['level' => $on ? null : $lvl->code, 'page' => null]) }}"
-                       class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+                       class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                         {{ $lvl->code }}
                         <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['level'][$lvl->id] ?? 0 }}</span>
                     </a>
@@ -34,7 +34,7 @@
         @foreach ($years as $year)
             @php $on = request('year') == $year; @endphp
             <a href="{{ request()->fullUrlWithQuery(['year' => $on ? null : $year, 'page' => null]) }}"
-               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                 {{ $year }}
                 <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['year'][$year] ?? 0 }}</span>
             </a>
@@ -46,7 +46,7 @@
         @foreach (['question' => 'Question', 'answer' => 'Answer', 'combined' => 'Combined'] as $code => $label)
             @php $on = request('doc_type') === $code; @endphp
             <a href="{{ request()->fullUrlWithQuery(['doc_type' => $on ? null : $code, 'page' => null]) }}"
-               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-accent text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
+               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                 {{ $label }}
                 <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['doc_type'][$code] ?? 0 }}</span>
             </a>

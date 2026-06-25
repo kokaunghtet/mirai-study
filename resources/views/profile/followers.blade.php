@@ -111,7 +111,7 @@
                                         :disabled="loading"
                                         :class="following
                                             ? (hovered ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100' : 'border-line text-content bg-surface hover:bg-surface-muted')
-                                            : 'border-transparent bg-accent text-white hover:bg-accent-strong'"
+                                            : 'border-transparent bg-gradient-to-tr from-accent-from to-accent-to text-white hover:opacity-90'"
                                         class="rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
                                     <span x-text="following ? (hovered ? 'Unfollow' : 'Following') : 'Follow'"></span>
                                 </button>

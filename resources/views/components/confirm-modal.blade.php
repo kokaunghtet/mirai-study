@@ -20,7 +20,7 @@
                     @click="handleConfirm()"
                     :class="danger
                         ? 'bg-red-600 hover:bg-red-700'
-                        : 'bg-accent hover:bg-accent-strong'"
+                        : 'bg-gradient-to-tr from-accent-from to-accent-to hover:opacity-90'"
                     class="rounded-lg px-4 py-2 text-sm font-semibold text-white">
                 <span x-text="confirmLabel"></span>
             </button>

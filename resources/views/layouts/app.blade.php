@@ -325,7 +325,7 @@
                         <span x-show="!sidebarCollapsed">Login</span>
                     </a>
                     <a href="{{ route('register') }}"
-                       class="flex items-center justify-center gap-2 text-sm font-medium bg-accent text-white px-3 py-2 rounded-lg hover:bg-accent-strong transition-colors"
+                       class="flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-tr from-accent-from to-accent-to text-white px-3 py-2 rounded-lg hover:opacity-90 transition-colors"
                        :title="sidebarCollapsed ? 'Sign up' : ''">
                         <i data-lucide="user-plus" class="w-4 h-4 shrink-0"></i>
                         <span x-show="!sidebarCollapsed">Sign up</span>

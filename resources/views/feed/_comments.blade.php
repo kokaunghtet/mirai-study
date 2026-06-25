@@ -17,7 +17,7 @@
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
             <button type="submit" data-loading-text="Posting…"
-                    class="mt-2 bg-accent text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-accent-strong">
+                    class="mt-2 bg-gradient-to-tr from-accent-from to-accent-to text-white text-sm font-medium px-5 py-2 rounded-lg hover:opacity-90">
                 Post Comment
             </button>
         </form>
