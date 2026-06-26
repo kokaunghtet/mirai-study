@@ -1,0 +1,659 @@
+Q1. When the types of programs that are executed when a PC is started are broadly classified into three categories, namely BIOS (Basic Input Output System), OS, and resident application program, which of the following is the order of execution of the programs? 
+(a) BIOS, OS, resident application program 
+(b) OS, BIOS, resident application program 
+(c) OS, resident application program, BIOS 
+(d) Resident application program, BIOS, OS
+Ans: a
+----------------------------------------------------------------------------------
+Q2. Which of the following is an appropriate combination of software that includes only OSS (Open Source Software)? 
+(a) Internet Explorer, Linux, PostgreSQL
+(b) Internet Explorer, PostgreSQL, Windows
+(c) Firefox, Linux, Thunderbird 
+(d) Firefox, Thunderbird, Windows
+Ans: c
+----------------------------------------------------------------------------------
+Q3. Which of the following is an input method where a touch panel is operated by touching it in two or more locations simultaneously? 
+(a) Touch type 
+(b) Double click 
+(c) Multitask
+(d) Multi-touch
+Ans: d
+----------------------------------------------------------------------------------
+Q4. On a display screen, various colors are created through additive color mixing with three colors, namely red, green, and blue. When the red, green, and blue are mixed evenly, which of the following colors is formed? 
+(a) Red-violet 
+(b) Yellow 
+(c) White
+(d) Green rust
+Ans: c
+----------------------------------------------------------------------------------
+Q5. In a relational database, which of the following is the reason for a primary key being specified? 
+(a) To clearly indicate that something is not subject to an arithmetic operation 
+(b) To enable the search of the column that is specified as the primary key 
+(c) To prevent reference from another table
+(d) To enable any record in the table to be uniquely identified
+Ans: d
+----------------------------------------------------------------------------------
+Q6. Which of the following is an appropriate description about association of records for a relational database? 
+(a) Records in multiple tables are associated at the same row position relative to the first row in each of the tables. 
+(b) Records in multiple tables are associated through the values of corresponding fields. 
+(c) Records are associated with one another by a pointer that represents the parentage. 
+(d) Records are associated with one another by a hash function.
+Ans: b
+----------------------------------------------------------------------------------
+Q7. Which of the following is not an appropriate description of online storage? 
+(a) It can be used not only from a computer, but also from a smartphone or a tablet, if the device is connected to the Internet. 
+(b) There is a free service that can be used with limited capacity and functionalities. 
+(c) There is a service that allows multiple registered users to share and edit the same file. 
+(d) If the capacity of the auxiliary storage unit built into the user�s computer or tablet is increased, the capacity of online storage will also increase automatically.
+Ans: d
+----------------------------------------------------------------------------------
+Q8. If the capacity of the auxiliary storage unit built into the user�s computer or tablet is increased, the capacity of online storage will also increase automatically. Which of the following is an appropriate explanation of tethering? 
+(a) A type of virus that replicates itself and spreads infection throughout a network 
+(b) A function of connecting a PC to the Internet by using a communication terminal such as a smartphone like a mobile router 
+(c) A method of detecting a tamper by using a hash function and public key cryptography for electronic data 
+(d) An attack that attempts to illegally manipulate the information in a database by deliberately entering an SQL command in an input field on a web page
+Ans: b
+----------------------------------------------------------------------------------
+Q9. There is a room that stores important information. Which of the following is the most appropriate countermeasure for unauthorized entry to this room and unauthorized access to the important information in the room? 
+(a) The monitoring of entry and exit of the room and work that is performed in the room with security staff and monitoring cameras 
+(b) The wearing of an entry pass in a place where other people cannot see it when in the room 
+(c) The use of only electronic methods such as card authentication with no staffed desk for entrance and exit control 
+(d) The informing of all employees of the existence of the room and the information that it stores
+Ans: a
+----------------------------------------------------------------------------------
+Q10. Which of the following is the appropriate description concerning a wireless LAN? 
+(a) Countermeasures against unauthorized use of an access point are required.
+(b) The standard for encryption is limited to WPA2.
+(c) Communication between a terminal and an access point is possible over any distance.
+(d) There are multiple standards for wireless LANs, and communication is possible among them all.
+Ans: a
+----------------------------------------------------------------------------------
+�Q11. There is an electronic file that needs to be made confidential. Which of the following is the appropriate security technology to use in order to ensure the confidentiality of this file? 
+(a) Access control 
+(b) Timestamp
+(c) Digital signature 
+(d) Hot standby
+Ans: a
+----------------------------------------------------------------------------------
+Q12. One of the methods of cracking a password is a brute force attack that attempts all character combinations. When the number of characters of a password that is composed of 26 letters from A through Z is increased from four (4) to six (6) characters, by what factor is the maximum number of attempts to successfully crack the password with the brute force attack increased? 
+(a) 2 
+(b) 24 
+(c) 52 
+(d) 676
+Ans: d
+----------------------------------------------------------------------------------
+Q13. Which of the following is used to confirm that there is no falsification of the content of an e-mail? 
+(a) IMAP 
+(b) SMTP 
+(c) Information security policy 
+(d) Digital signature
+Ans: d
+----------------------------------------------------------------------------------
+�Q14. Which of the following is an appropriate example of biometric authentication? 
+(a) Authentication of an individual by the shape of the veins in a finger
+(b) Authentication of an individual with a digital certificate
+(c) Authentication by testing whether a distorted text in an image can be read correctly or not
+(d) Authentication by using a one-time password
+Ans: a
+----------------------------------------------------------------------------------
+Q15. Which of the following is the aim of an attacker who infects someone else�s PC with ransomware? 
+(a) To obtain personal information on the PC via a network
+(b) To make files on the PC unusable, and to obtain money in exchange from unlocking them
+(c) To obtain characters typed with the PC keyboard via a network 
+(d) To maliciously operate the PC by sending instructions for operations via a network
+Ans: b
+----------------------------------------------------------------------------------
+Q16. An IoT device with a vulnerability was used in large numbers by several companies. One 
+(1) of the devices was infected with malware, and the infection spreads to many other 
+IoT devices. On a certain date at a certain time, the many IoT devices that were infected 
+with the malware attempted many connections to a certain website simultaneously, and 
+this forced the service of the website to stop. Which of the following attacks was made 
+against the website? 
+(a) DDoS attack
+(b) Cross-site scripting �
+(c) Dictionary attack
+(d) Social engineering 
+Ans: a
+----------------------------------------------------------------------------------
+Q17. Which of the following is an appropriate explanation of phishing? 
+(a) An attacker�s act of sending a command via network to a virus-infected PC and 
+having it execute an illegal program
+(b) Sending an e-mail that pretends to be from a financial institution, directing a user 
+to a false web site, and illegally acquiring a PIN, a credit card number, or other 
+information 
+(c) Identifying a password by using a dictionary data that enumerates strings that are 
+likely to be used as a password 
+(d) Sending a large number of packets from multiple computers to a target server and 
+disabling the function of the server
+Ans: b
+----------------------------------------------------------------------------------
+Q18. A company contracted to develop an accounting system held meetings with the customer 
+and clarified the types of required financial statements and the target value of the 
+processing time from confirmation of accounting data to the output of the documents of 
+settlement of accounts. Which of the following is the appropriate process for 
+implementing this activity? 
+(a) System test �
+(b) System requirements definition 
+(c) Software detailed design
+(d) Software architecture design 
+Ans: b
+----------------------------------------------------------------------------------
+Q19. What is the term for revising and changing programs after system development? 
+(a) Computerization planning 
+(b) System operation �
+(c) Software maintenance 
+(d) Requirements definition 
+Ans: c
+----------------------------------------------------------------------------------
+Q20. The processes of system development include software requirements definition, software 
+architecture design, software integration test, software installation, and software 
+acceptance. Which of the following activities is implemented during software 
+acceptance? Here, the persons concerned with system development are divided into 
+developers and users. 
+(a) The developers deploy the software for which development is complete into the 
+production environment. 
+(b) The developers interview the users for clarification of the functions and 
+performance required of the software.
+(c) The users confirm that the software satisfies the requirements and is at a usable 
+level. 
+(d)The developers perform a review to confirm that the definition of software 
+requirements satisfies the needs of the users.
+Ans: c
+----------------------------------------------------------------------------------
+Q21. When the test for system development is conducted in the order of unit test, integration 
+test, system test, and operational test, which of the following is appropriate as an activity 
+in the system test? 
+(a) It is verified that there is no error in each program.
+(b) It is verified by the developer that the performance requirements are being satisfied.
+(c) It is verified that there is no error in the interface between programs.
+(d) It is verified that business operations can be performed as defined in the 
+requirements through actual operation by users.
+Ans: �b
+----------------------------------------------------------------------------------
+Q22. Which of the following is an appropriate description concerning the water fall model 
+known as one of software development models? 
+(a) It is a technique in object-oriented development for making improvements through 
+trial and error by repeatedly going back and forth between design and programming. 
+(b) It is a technique for making improvements by repeating the development process for 
+each subsystem while responding to requests from users. 
+(c) It is a technique that divides the processes of system development into stages, and 
+based upon the output of previous processes, performs later processes in order. 
+(d) It is a technique that creates a prototype at an early stage of system development, and 
+defines requirements and specifications with input from user comments. 
+Ans: �c
+----------------------------------------------------------------------------------
+Q23. Which of the following is a diagram where bugs detected during the testing of a system 
+are accumulated by their cause and arranged in the order of higher frequency of cause, 
+and a cumulative curve is inserted? 
+(a) Scatter diagram 
+(b) Cause and effect diagram 
+(c) Pareto chart 
+(d) Histogram
+Ans: �c
+----------------------------------------------------------------------------------
+Q24. Which of the following is the appropriate explanation of a master schedule in a system 
+development project where processes from requirements definition to installation are 
+performed? 
+(a) A schedule that describes in detail the activities of one (1) week 
+(b) A schedule that describes the activities of one (1) day, the start and end time of the 
+activities, and the persons in charge
+(c) A schedule that describes in detail the activities of the main processes 
+(d) A schedule that aggregates the main deliverables and activities of the entire project
+Ans: �d
+----------------------------------------------------------------------------------
+Q25. Which of the following items must be clarified in order to determine the appropriate 
+assignment of the project members? 
+(a) Cost estimation method �
+(b) Reporting method of activity progress
+(c) Accep0tance standards of deliverables 
+(d) Roles and responsibilities to be allocated
+Ans: �d
+----------------------------------------------------------------------------------
+Q26. Which of the following is the most appropriate example concerning a chatbot that uses 
+AI? 
+(a) By connecting everything over the Internet, the switch of the air conditioner in one�s 
+house can be turned on by a smart device from the outside of the house.
+(b) By recognizing and learning a large number of images of various animals, a 
+computer can differentiate between the images of a dog and a cat. 
+(c) If questions on how to use a product are entered, a person who has detailed 
+knowledge submits a reply or advise.
+(d) If a user enters the desired functions of a product on a sales site of products, the 
+computer introduces recommended products in an interactive manner. 
+Ans: d
+----------------------------------------------------------------------------------
+Q27. In the PDCA cycle of service level management, which of the following is implemented 
+as C (Check)? 
+(a) Providing services that are based on the SLA 
+(b) Preparing an improvement plan for services on the basis of the report and review of 
+service provision results 
+(c) Agreeing upon the desired service quality on the basis of the service requirements 
+and the service improvement plan, and preparing an SLA 
+(d) Monitoring and measuring the provided services, and preparing a service report
+Ans: �d
+----------------------------------------------------------------------------------
+Q28. Which of the following is the appropriate characteristic of agile development? 
+(a) Information is passed between processes through documents, making it easy to 
+understand the progress of overall development. 
+(b) Prototyping is implemented in each process, making it possible to locate potential 
+problems and requests.
+(c) Development is taken forward in a stepwise manner, resulting in retrospective 
+corrections when a problem occurs in the last process, thus increasing rework. 
+(d) Priority is given to preparation of software over preparation of documents, making 
+it possible to quickly incorporate the changing demands of customers. 
+Ans: �d
+----------------------------------------------------------------------------------
+Q29. In IT service management, which of the following is appropriate as a process for 
+resolving the root causes of incidents and preventing their recurrence? 
+(a) Incident management 
+(b) Change management 
+(c) Problem management 
+(d) Release management
+Ans: �c
+----------------------------------------------------------------------------------
+Q30. Which of the following is the purpose of systems audit? 
+(a) Making a backup of important data in the information system operation stage 
+(b) Improving the skills of the information system development staff members 
+(c) Investigating the user needs in the information system planning stage, and 
+documenting them as computerization requirements 
+(d) Controlling the risks concerning the information system to enable a safe, effective, 
+and efficient functioning of the information system
+Ans: d
+----------------------------------------------------------------------------------
+Q31. Which of the following is the appropriate explanation of monitoring in internal control? 
+(a) It is a process of continuously evaluating if internal control is working effectively.
+(b) It is a process of promoting compliance to the laws and other regulations concerning 
+internal control. 
+(c) It is a process of constructing an organization for internal control. 
+(d) It is a process of analyzing the risks that hinder internal control.
+Ans: a
+----------------------------------------------------------------------------------
+Q32. Which of the following persons are responsible for building and promoting IT 
+governance in a company? 
+(a) Shareholders 
+(b) Directors 
+(c) Employees 
+(d) Information system department members
+Ans: b
+----------------------------------------------------------------------------------
+Q33. Retail company A is teaching the general distribution process for food products in an 
+easily understandable manner at elementary schools that are near the company�s 
+distribution center. Which of the following is an idea behind these activities by company 
+A? 
+(a) �CSR �
+(b) Alliance 
+(c) �Core competence 
+(d) Corporate governance
+Ans: a
+----------------------------------------------------------------------------------
+Q34. One (1) piece of Product P consists of two (2) pieces of Part Q, and Part Q consists of 
+four (4) pieces of Part R. When there is one (1) piece of Part Q and there are three (3) 
+pieces of Part R in the inventory, how many more pieces of Part R are needed to produce 
+six (6) pieces of Product P? 
+(a) 41 
+(b) 44
+(c) 45 
+(d) 48
+Ans: a
+----------------------------------------------------------------------------------
+Q35. �Which of the following is free software that can be copied or modified freely without 
+permission from the author? 
+(a) Shareware
+(b) Package software �
+(c) Public domain software 
+(d) Utility software 
+Ans: c
+----------------------------------------------------------------------------------
+Q36. �Among actions concerning the creation of software, which of the following is a 
+copyright violation? �
+(a) Creating another Web page by using the source of HTML that was downloaded from 
+the Internet �
+(b) Creating a program based on an idea that was discussed on a bulletin board on the 
+Internet �
+(c) Creating a program to increase a company�s operational efficiency by using a program 
+that was created during one�s school days �
+(d) Creating a program based on a flowchart that was shown in a purchased book 
+Ans: a
+----------------------------------------------------------------------------------
+Q37. �Which of the following codes stores information in a vertical and horizontal two
+dimensional pattern? 
+(a) ASCII code 
+(b) G-code
+(c) EAN code �
+(d) QR code 
+Ans: d
+----------------------------------------------------------------------------------
+Q38. �Which of the following is the purpose of strengthening compliance in corporate 
+management? 
+(a) To prevent corporate management and employees from being involved in misconduct 
+or scandals that may threaten the continued existence of the company 
+(b) To retain management resources for differentiation from competitors and thereby gain 
+a competitive edge 
+(c) To curb the exercise of the management powers and thereby build a framework for 
+sound management 
+(d) To improve the satisfaction of stakeholders including customers, shareholders, and 
+employees in order to achieve the company�s continued growth
+Ans: a
+----------------------------------------------------------------------------------
+Q39. �Which of the following is an international standard for environmental management 
+systems developed by ISO? 
+(a) ISO 9000
+(b) ISO 14000 
+(c) ISO/IEC 20000 
+(d) ISO/IEC 27000
+Ans: �b
+----------------------------------------------------------------------------------
+Q40. �Which of the following is an appropriate explanation of SWOT analysis? 
+(a) It is a technique for deriving the future direction of corporate activities by analyzing 
+opportunities and threats underlying in the external environment surrounding the 
+company, and the strengths and weaknesses of the company. 
+(b) It is a technique of evaluating and analyzing the business performance of a company 
+in a well-balanced manner, from the perspectives of finance, customer, internal 
+business processes, and learning and growth. 
+(c) It is a technique of designing corporate activities from the viewpoint of what kind of 
+value the in-house activities finally generate for customers and whether this satisfies 
+the customers. 
+(d) It is a technique of plotting a business on a matrix created by the two (2) quantitative 
+items of market growth rate and market share, and then optimizing the allocation of 
+management resources.
+Ans: a
+----------------------------------------------------------------------------------
+Q41. �Which of the following is a system that centrally manages the processes from materials 
+procurement to product sales, and aims for the optimization of supply? 
+(a) ASP 
+(b) CRM 
+(c) ERP 
+(d) SCM
+Ans: d
+----------------------------------------------------------------------------------
+Q42. �Among the business alliance strategies, which of the following is the appropriate 
+explanation of a joint venture? 
+(a) It refers to a company that is managed by two (2) or more companies who together 
+provide the funding. 
+(b) It refers to building cooperative relationships between companies, such as mutual 
+financial contribution and cross-shareholdings. 
+(c) It refers to the obtaining of control over a counterpart company by a corporate 
+merger or acquisition. 
+(d) It refers to permitting the usage of rights concerning technology, a brand, or sales 
+activities, etc.
+Ans: a
+----------------------------------------------------------------------------------
+Q43. �Which of the following techniques is used to set specific targets and evaluate the result 
+from the four (4) viewpoints of �finance,� �customer,� �internal business processes,� 
+and �learning and growth� in order to implement the vision and strategy of the company? 
+(a) PPM 
+(b) SWOT analysis
+(c) Balanced scorecard 
+(d) Marketing mix
+Ans: c
+----------------------------------------------------------------------------------
+Q44. �Which of the following is an appropriate explanation of blue ocean strategy? 
+(a) Generating a new market that has no competition by providing new value
+(b) Trying to increase sales opportunities by handling a wide range of products other 
+than best-selling products
+(c) Thoroughly proceeding with differentiation from products provided by the top 
+companies in the industry
+(d) Building predominance over competitors through cost reduction 
+Ans: a
+----------------------------------------------------------------------------------
+Q45. �Which of the following is an approach among two (2) or more companies, where each 
+of them is granted the right to use the technologies patented by the other parties? �
+(a) Alliancing 
+(b) Cross licensing 
+(c) Joint venturing 
+(d) Loyalty 
+Ans: b
+----------------------------------------------------------------------------------
+Q46. �Which of the following terminologies refers to an initiative to develop unprecedented 
+and innovative services by utilizing IT in the field of finance, such as a service provided 
+by a bank where AI manages depositors� assets automatically? 
+(a) FA 
+(b) Fintech 
+(c) OA 
+(d) Sharing economy
+Ans: b
+----------------------------------------------------------------------------------
+Q47. �Which of the following is the most appropriate description concerning deep learning? 
+(a) It is a mechanism that integrates information and the workflow between 
+departments that are involved with customers, such as sales, marketing, and after
+sales service. 
+(b) It is a form of education, learning, and training that is implemented by using digital 
+devices such as computers, and communication networks. 
+(c) It is a mechanism for the sharing and the effective utilization of the knowledge and 
+knowhow possessed by each individual in an organization by the organization as a 
+whole. 
+(d) It is a technology where a computer itself identifies and learns the characteristics of 
+data by analyzing a large volume of data with a model that imitates the neural 
+circuits of a human being. 
+Ans: �d
+----------------------------------------------------------------------------------
+Q48. �Which of the following is the most appropriate example of the utilization of artificial 
+intelligence? 
+(a) A system controls the acceleration, steering, and braking of an automobile without 
+intervention by the driver. 
+(b) A person can check occupancy for a conference room or toilet in real time from his 
+or her desk in an office.
+(c) Approval for a transaction is granted through distributed consensus building 
+technology without the need for a central administrator, such as a bank. 
+(d) A person enters information in advance from a PC at his or her house in order to 
+perform a money transfer automatically without going to the bank.
+Ans: a
+----------------------------------------------------------------------------------
+Q49. �Which of the following is the most appropriate description concerning SEO? 
+(a) Displaying search results that match the objectives of a community on social media 
+to participants in the community 
+(b) Using a search engine by a company to analyze the access log of the company�s 
+website, and checking for unauthorized access 
+(c) Devising ways to display a certain website at the top of the search results when a 
+user uses a search engine to search for a keyword 
+(d) Investigating what kind of search engine users want, and developing a search engine 
+that fits their needs
+Ans: c
+----------------------------------------------------------------------------------
+Q50. �Which of the following examples of e-business sales methods is based on the concept 
+of the long tail? � 
+(a) Placing products on an Internet auction site for a long time, and selling the products 
+to the persons who win the auction by bidding the highest price 
+(b) Enabling online ordering of products that match customers� physiques, on the basis 
+of customers� body measurements taken at a store, in order to encourage ongoing 
+purchase of the company�s products 
+(c) Engaging in online sale of large volumes of only those products that have shown 
+large sales volume over a long period of time in physical stores
+(d) Handling and engaging in online sales of a wide range of products for which the 
+prospect for number of sales is considerably low
+Ans: d
+----------------------------------------------------------------------------------
+Q51. �Which of the following is an appropriate explanation of CAD? 
+(a) Education with the use of computers 
+(b) Manufacturing with the use of computers 
+(c) Design and drafting with the use of computers 
+(d) Software design, development, and maintenance with the use of computers 
+Ans: c
+----------------------------------------------------------------------------------
+Q52. �Which of the following is an appropriate example of a function that uses an IC tag? 
+(a) Scanning barcode at a POS register 
+(b)Sending images from a remote medical system 
+(c) Identifying current location with a car navigation system 
+(d) Monitoring at theft prevention gate in a library
+Ans: d
+----------------------------------------------------------------------------------
+Q53. �Which of the following is the most appropriate example of IoT? 
+(a) A member can participate in an auction by connecting the member�s PC to the 
+auction venue via the Internet.
+(b) An employee can use groupware anytime and anywhere via the Internet by moving 
+it from an internal server to a server in an external data center. 
+(c) A pharmacy can manage the dosing history for a drug via the Internet by embedding 
+a sensor in the container, and utilize this in guidance for the patient taking the drug. 
+(d) A preparatory school can enable students to take classes anytime and anywhere with 
+a smartphone or PC by streaming video of classes from a website.
+Ans: c
+----------------------------------------------------------------------------------
+Q54. �Against a background of issues such as population decline and aging, attempts are being 
+made to use ICT in order to streamline the functions and services of cities and regions 
+and make them more advanced in order to solve regional problems, and rejuvenate 
+regions. Which of the following is the most appropriate term or phrase to describe such 
+a solution for community development? 
+(a) Capacity 
+(b) Smart city 
+(c) Diversity 
+(d) University
+Ans: b
+----------------------------------------------------------------------------------
+Q55. �The task of using statistics, machine learning, and other such methods to analyze large 
+volumes of data and gain hints and ideas for the creation of new services and value is 
+now very important. Which of the following is the most appropriate human resource to 
+perform this task? 
+(a) IT strategist 
+(b) System architect 
+(c) System analyst 
+(d) Data scientist
+Ans: d
+----------------------------------------------------------------------------------
+Q56. �Which of the following corresponds to information literacy? 
+(a) Knowledge of new PC products and the performance of each model 
+(b) The ability to perceive the impacts of technological innovations on society 
+(c) The ability to search for data necessary and use it in accordance with goals
+(d) The ability to use high-level programming languages and develop software
+Ans: c
+----------------------------------------------------------------------------------
+Q57. �Which of the following is the most appropriate description of IoT? 
+(a) It is a learning mechanism in artificial intelligence. 
+(b) It is a mechanism where devices or control units equipped with a sensor connect 
+directly to the Internet, and exchange a variety of information via the Internet. 
+(c) It is a group of functions and procedures that are made public in order to enable 
+some of the features of a piece of software to be used by other programs. 
+(d) It is a tool that uses a software robot to streamline routine work.
+Ans: b
+----------------------------------------------------------------------------------
+Q58. �A company planning the development of a business information system decided to 
+present an RFP to SI vendors. Which of the following must be described in the RFP at a 
+minimum? 
+(a) The development schedule 
+(b) The functions that should be implemented in the business information system 
+(c) The method for achieving the business information system 
+(d) The project team
+Ans: b
+----------------------------------------------------------------------------------
+Q59. �Which of the following items is determined when computerization plan is created on 
+the basis of a company�s information system strategy? 
+(a) Development schedule 
+(b) Management objectives 
+(c) Output screen layout 
+(d) Hardware configuration
+Ans: a
+----------------------------------------------------------------------------------
+Q60. There is a room that stores important information. Which of the following is the most 
+appropriate countermeasure for unauthorized entry to this room and unauthorized access 
+to the important information in the room? 
+(a) The monitoring of entry and exit of the room and work that is performed in the 
+room with security staff and monitoring cameras 
+(b) The wearing of an entry pass in a place where other people cannot see it when in 
+the room 
+(c) The use of only electronic methods such as card authentication with no staffed desk 
+for entrance and exit control �
+(d) The informing of all employees of the existence of the room and the information 
+that it stores
+Ans: a
+----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+�
+
+
+
+�
+
+
+�
+
+
+
+
+
+�
+
+
+
+
+�
+
+
+
+
+
+
+�
+�
+�
+
+�
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+�
+
+
+
+
+
+
+
+
+�
+
+
+
+�
+
+
+�
+
+�
+
+
+
+
+�
+�
+�
+
+�
+
+
+
+
+
+
+
+
+
+
+

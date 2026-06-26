@@ -175,12 +175,18 @@ class QuizController extends Controller
         $questionIds = $request->session()->get($this->sessionKey($attempt), []);
 
         // Grade only questions that belong to this attempt.
-        $questions = Question::whereIn('id', $questionIds)->get(['id', 'answer']);
+        // Keyed by id so we can iterate $questionIds in quiz order for insertion.
+        $questions = Question::whereIn('id', $questionIds)->get(['id', 'answer'])->keyBy('id');
 
         $score = 0;
         $rows = [];
 
-        foreach ($questions as $question) {
+        foreach ($questionIds as $qid) {
+            $question = $questions->get($qid);
+            if (! $question) {
+                continue;
+            }
+
             $selected = $answers[$question->id] ?? null;
 
             if ($selected === null) {
@@ -223,7 +229,7 @@ class QuizController extends Controller
             return redirect()->route('quiz.show', $attempt);
         }
 
-        $attempt->load(['answers.question']);
+        $attempt->load(['answers' => fn ($q) => $q->orderBy('id'), 'answers.question']);
 
         return view('quiz.result', [
             'attempt' => $attempt,

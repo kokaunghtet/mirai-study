@@ -18,7 +18,13 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PostSeeder::class,
             ExamSeeder::class,
+            IpQuestionSeeder::class,
             FeQuestionSeeder::class,
+            N1QuestionSeeder::class,
+            N2QuestionSeeder::class,
+            N3QuestionSeeder::class,
+           N4QuestionSeeder::class,
+           N5QuestionSeeder::class,
             QuizSeeder::class,
         ]);
     }
