@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -29,11 +30,40 @@ class CommentController extends Controller
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
-        $post->comments()->create([
-            'user_id' => $request->user()->id,
+        $commenter = $request->user();
+
+        $comment = $post->comments()->create([
+            'user_id' => $commenter->id,
             'content' => $validated['content'],
             'parent_id' => $validated['parent_id'] ?? null,
         ]);
+
+        // Notify post owner
+        if ($post->user_id !== $commenter->id) {
+            NotificationService::send(
+                recipient: $post->user,
+                type: 'comment_post',
+                title: $commenter->display_name.' commented on your post',
+                content: str($validated['content'])->limit(100),
+                sender: $commenter,
+                url: route('posts.show', $post),
+            );
+        }
+
+        // Notify parent comment owner on reply (if different from post owner)
+        if ($comment->parent_id) {
+            $parent = Comment::find($comment->parent_id);
+            if ($parent && $parent->user_id !== $commenter->id && $parent->user_id !== $post->user_id) {
+                NotificationService::send(
+                    recipient: $parent->user,
+                    type: 'comment_post',
+                    title: $commenter->display_name.' replied to your comment',
+                    content: str($validated['content'])->limit(100),
+                    sender: $commenter,
+                    url: route('posts.show', $post),
+                );
+            }
+        }
 
         // AJAX (feed drawer): return the refreshed comments partial.
         if ($request->expectsJson() || $request->ajax()) {

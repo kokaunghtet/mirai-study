@@ -18,23 +18,54 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
-    public function markRead(Request $request, Notification $notification)
+    public function markRead(Request $request, Notification $notification): mixed
     {
-        // Only mark your own notifications
         abort_if($notification->user_id !== $request->user()->id, 403);
 
         $notification->markAsRead();
 
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
         return back();
     }
 
-    public function markAllRead(Request $request)
+    public function markAllRead(Request $request): mixed
     {
         $request->user()
             ->appNotifications()
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
         return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function destroy(Request $request, Notification $notification): mixed
+    {
+        abort_if($notification->user_id !== $request->user()->id, 403);
+
+        $notification->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return back();
+    }
+
+    public function destroyAll(Request $request): mixed
+    {
+        $request->user()->appNotifications()->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return back()->with('success', 'All notifications deleted.');
     }
 }

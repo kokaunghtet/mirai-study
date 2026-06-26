@@ -214,12 +214,22 @@
             @auth
 
                 {{-- Notifications --}}
+                @php
+                    $unreadCount = auth()->user()->appNotifications()->whereNull('read_at')->count();
+                @endphp
                 <a href="{{ route('notifications.index') }}"
                    @click="sidebarOpen = false"
                    title="Notifications"
+                   x-data="notificationBell({ unread: {{ $unreadCount }}, userId: {{ auth()->id() }} })"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('notifications.*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                    <i data-lucide="bell" class="w-5 h-5 shrink-0 {{ request()->routeIs('notifications.*') ? '' : 'text-muted' }}"></i>
+                    <span class="relative shrink-0">
+                        <i data-lucide="bell" class="w-5 h-5 {{ request()->routeIs('notifications.*') ? '' : 'text-muted' }}"></i>
+                        <span x-show="unread > 0"
+                              x-cloak
+                              x-text="unread > 99 ? '99+' : unread"
+                              class="absolute -top-1.5 -right-1.5 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center rounded-full bg-red-500 text-white text-[0.6rem] font-bold leading-none px-0.5"></span>
+                    </span>
                     <span x-show="!sidebarCollapsed">Notifications</span>
                 </a>
 

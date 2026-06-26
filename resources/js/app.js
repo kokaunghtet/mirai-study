@@ -1,4 +1,17 @@
 import Alpine from 'alpinejs';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+});
 import collapse from '@alpinejs/collapse';
 import {
     createIcons,
@@ -918,6 +931,29 @@ document.addEventListener('submit', async (e) => {
     form.dataset.confirmed = '1';
     form.requestSubmit();
 }, { capture: true });
+
+// ── Notification bell (sidebar) ──
+// Listens on the authenticated user's private Reverb channel.
+// userId and initial unreadCount are seeded from Blade.
+Alpine.data('notificationBell', (opts = {}) => ({
+    unread: opts.unread ?? 0,
+    userId: opts.userId ?? null,
+    _channel: null,
+
+    init() {
+        if (!this.userId || !window.Echo) return;
+        this._channel = window.Echo.private(`App.Models.User.${this.userId}`)
+            .listen('.notification.created', () => {
+                this.unread++;
+            });
+    },
+
+    destroy() {
+        if (this._channel) {
+            window.Echo.leave(`App.Models.User.${this.userId}`);
+        }
+    },
+}));
 
 document.addEventListener('alpine:initialized', () => {
     createIcons({ icons });

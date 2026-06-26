@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class FollowController extends Controller
@@ -25,6 +26,15 @@ class FollowController extends Controller
         } else {
             $authUser->following()->attach($user->id, ['status' => 'accepted']);
             $following = true;
+
+            NotificationService::send(
+                recipient: $user,
+                type: 'follow_user',
+                title: $authUser->display_name.' started following you',
+                content: '@'.$authUser->username.' is now following you.',
+                sender: $authUser,
+                url: route('profile.show', $authUser->username),
+            );
         }
 
         return response()->json(['following' => $following]);
