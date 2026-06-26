@@ -69,27 +69,27 @@
                                 <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
                                         data-theme="venom">
                                     <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                    <span class="text-[11px] font-semibold">Venom</span>
+                                    <span class="text-[11px] font-semibold">Green</span>
                                 </button>
                                 <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
                                         data-theme="aurora">
                                     <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                    <span class="text-[11px] font-semibold">Aurora</span>
+                                    <span class="text-[11px] font-semibold">Blue</span>
                                 </button>
                                 <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
                                         data-theme="sangria">
                                     <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                    <span class="text-[11px] font-semibold">Sangria</span>
+                                    <span class="text-[11px] font-semibold">Red</span>
                                 </button>
                                 <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
                                         data-theme="twilight">
                                     <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                    <span class="text-[11px] font-semibold">Twilight</span>
+                                    <span class="text-[11px] font-semibold">Purple</span>
                                 </button>
                                 <button class="theme-btn relative flex flex-col items-center justify-center gap-1 rounded-xl py-4 text-white shadow-sm transition-all cursor-pointer"
                                         data-theme="inferno">
                                     <i data-lucide="check" class="check-icon h-4 w-4 hidden"></i>
-                                    <span class="text-[11px] font-semibold">Inferno</span>
+                                    <span class="text-[11px] font-semibold">Orange</span>
                                 </button>
                             </div>
                         </div>

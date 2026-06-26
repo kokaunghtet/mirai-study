@@ -53,10 +53,14 @@ class ExamPaperController extends Controller
     /** List every uploaded paper for admins to manage. */
     public function manage(Request $request)
     {
-        $papers = ExamPaper::with(['category', 'level'])
-            ->withCount('downloads')
+        // Base scope for category+level — reused to contextualise year and doc_type chips.
+        $baseScope = ExamPaper::query()
             ->when($request->filled('category'), fn ($q) => $q->whereHas('category', fn ($c) => $c->where('name', $request->category)))
-            ->when($request->filled('level'), fn ($q) => $q->whereHas('level', fn ($l) => $l->where('code', $request->level)))
+            ->when($request->filled('level'), fn ($q) => $q->whereHas('level', fn ($l) => $l->where('code', $request->level)));
+
+        $papers = (clone $baseScope)
+            ->with(['category', 'level'])
+            ->withCount('downloads')
             ->when($request->filled('year'), fn ($q) => $q->where('year', $request->year))
             ->when($request->filled('doc_type'), fn ($q) => $q->where('doc_type', $request->doc_type))
             ->latest()
@@ -64,13 +68,16 @@ class ExamPaperController extends Controller
             ->withQueryString();
 
         $categories = ExamCategory::with('levels:id,category_id,code,name')->orderBy('name')->get(['id', 'name']);
-        $years = ExamPaper::distinct()->orderByDesc('year')->pluck('year');
+
+        // Years scoped to active category/level so irrelevant years disappear.
+        $years = (clone $baseScope)->distinct()->orderByDesc('year')->pluck('year');
 
         $counts = [
             'category' => ExamPaper::selectRaw('category_id, COUNT(*) c')->groupBy('category_id')->pluck('c', 'category_id'),
             'level' => ExamPaper::selectRaw('level_id, COUNT(*) c')->whereNotNull('level_id')->groupBy('level_id')->pluck('c', 'level_id'),
-            'year' => ExamPaper::selectRaw('year, COUNT(*) c')->groupBy('year')->pluck('c', 'year'),
-            'doc_type' => ExamPaper::whereNotNull('doc_type')->selectRaw('doc_type, COUNT(*) c')->groupBy('doc_type')->pluck('c', 'doc_type'),
+            // Year and doc_type counts also scoped to active category/level.
+            'year' => (clone $baseScope)->selectRaw('year, COUNT(*) c')->groupBy('year')->pluck('c', 'year'),
+            'doc_type' => (clone $baseScope)->whereNotNull('doc_type')->selectRaw('doc_type, COUNT(*) c')->groupBy('doc_type')->pluck('c', 'doc_type'),
         ];
 
         if ($request->ajax()) {

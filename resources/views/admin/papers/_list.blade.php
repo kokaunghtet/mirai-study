@@ -44,12 +44,14 @@
     <div class="flex flex-wrap items-center gap-1.5">
         <span class="w-16 text-xs font-semibold text-muted">Type</span>
         @foreach (['question' => 'Question', 'answer' => 'Answer', 'combined' => 'Combined'] as $code => $label)
-            @php $on = request('doc_type') === $code; @endphp
+            @php $on = request('doc_type') === $code; $cnt = $counts['doc_type'][$code] ?? 0; @endphp
+            @if ($on || $cnt > 0)
             <a href="{{ request()->fullUrlWithQuery(['doc_type' => $on ? null : $code, 'page' => null]) }}"
                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                 {{ $label }}
-                <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['doc_type'][$code] ?? 0 }}</span>
+                <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $cnt }}</span>
             </a>
+            @endif
         @endforeach
     </div>
 </div>
