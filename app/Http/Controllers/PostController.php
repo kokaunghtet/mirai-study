@@ -124,7 +124,7 @@ class PostController extends Controller
 
         $post = $request->user()->posts()->create([
             'title' => $validated['title'] ?? null,
-            'content' => $validated['content'],
+            'content' => $validated['content'] ?? null,
         ]);
 
         $post->revisions()->create([
