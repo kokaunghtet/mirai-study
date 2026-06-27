@@ -5,7 +5,7 @@
         <span class="w-16 text-xs font-semibold text-muted">Category</span>
         @foreach ($categories as $cat)
             @php $on = request('category') === $cat->name; @endphp
-            <a href="{{ request()->fullUrlWithQuery(['category' => $on ? null : $cat->name, 'page' => null]) }}"
+            <a href="{{ request()->fullUrlWithQuery(['category' => $on ? null : $cat->name, 'level' => null, 'section' => null, 'page' => null]) }}"
                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                 {{ $cat->name }}
                 <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['category'][$cat->id] ?? 0 }}</span>
@@ -19,7 +19,7 @@
             @if (!request('category') || request('category') === $cat->name)
                 @foreach ($cat->levels as $lvl)
                     @php $on = request('level') === $lvl->code; @endphp
-                    <a href="{{ request()->fullUrlWithQuery(['level' => $on ? null : $lvl->code, 'page' => null]) }}"
+                    <a href="{{ request()->fullUrlWithQuery(['level' => $on ? null : $lvl->code, 'section' => null, 'page' => null]) }}"
                        class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors {{ $on ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white' : 'border border-line bg-surface text-muted hover:text-content' }}">
                         {{ $lvl->code }}
                         <span class="rounded-full px-1.5 {{ $on ? 'bg-white/20' : 'bg-surface-muted text-muted' }}">{{ $counts['level'][$lvl->id] ?? 0 }}</span>
@@ -28,8 +28,8 @@
             @endif
         @endforeach
     </div>
-    {{-- Section row — ITPEC only --}}
-    @if (!request('category') || request('category') === 'ITPEC')
+    {{-- Section row — scoped to selected category --}}
+    @if (!empty($sections))
     <div class="flex flex-wrap items-center gap-1.5">
         <span class="w-16 text-xs font-semibold text-muted">Section</span>
         @foreach ($sections as $code => $label)

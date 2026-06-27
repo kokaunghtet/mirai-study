@@ -13,9 +13,12 @@ class QuestionController extends Controller
 {
     public function manage(Request $request)
     {
-        $questions = Question::with(['category', 'level'])
+        $baseScope = Question::query()
             ->when($request->filled('category'), fn ($q) => $q->whereHas('category', fn ($c) => $c->where('name', $request->category)))
-            ->when($request->filled('level'), fn ($q) => $q->whereHas('level', fn ($l) => $l->where('code', $request->level)))
+            ->when($request->filled('level'), fn ($q) => $q->whereHas('level', fn ($l) => $l->where('code', $request->level)));
+
+        $questions = (clone $baseScope)
+            ->with(['category', 'level'])
             ->when($request->filled('section'), fn ($q) => $q->where('section', $request->section))
             ->latest()
             ->paginate(20)
@@ -23,17 +26,21 @@ class QuestionController extends Controller
 
         $categories = ExamCategory::with('levels:id,category_id,code,name')->orderBy('name')->get(['id', 'name']);
 
+        $catalog = config('quiz.catalog');
         $sections = [];
-        foreach (config('quiz.catalog') as $cat) {
-            foreach ($cat['levels'] as $lvl) {
-                $sections += $lvl['sections'];
+        foreach ($catalog as $catName => $catDef) {
+            if ($request->filled('category') && $request->category !== $catName) {
+                continue;
+            }
+            foreach ($catDef['levels'] as $lvlDef) {
+                $sections += $lvlDef['sections'] ?? [];
             }
         }
 
         $counts = [
             'category' => Question::selectRaw('category_id, COUNT(*) c')->groupBy('category_id')->pluck('c', 'category_id'),
-            'level' => Question::selectRaw('level_id, COUNT(*) c')->groupBy('level_id')->pluck('c', 'level_id'),
-            'section' => Question::whereNotNull('section')->selectRaw('section, COUNT(*) c')->groupBy('section')->pluck('c', 'section'),
+            'level' => (clone $baseScope)->selectRaw('level_id, COUNT(*) c')->whereNotNull('level_id')->groupBy('level_id')->pluck('c', 'level_id'),
+            'section' => (clone $baseScope)->whereNotNull('section')->selectRaw('section, COUNT(*) c')->groupBy('section')->pluck('c', 'section'),
         ];
 
         if ($request->ajax()) {
