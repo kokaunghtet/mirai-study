@@ -34,7 +34,9 @@ import {
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     // Admin upload
     Sparkles, TriangleAlert,
-    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2
+    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2,
+    // Admin dashboard
+    TrendingUp, TrendingDown, Activity, Inbox, CheckCircle, Server, ShieldBan
 } from 'lucide';
 
 const icons = {
@@ -47,7 +49,8 @@ const icons = {
     ArrowRight, Languages, Cpu, CircleCheck, CircleX, Award, Trash2, Brain,
     Folder, FolderOpen, Download, LoaderCircle, Eye, EyeOff,
     Sparkles, TriangleAlert,
-    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2
+    ClipboardList, GitBranch, Save, LayoutDashboard, Users, Flag, BookOpen, BarChart2,
+    TrendingUp, TrendingDown, Activity, Inbox, CheckCircle, Server, ShieldBan
 };
 
 Alpine.plugin(collapse);

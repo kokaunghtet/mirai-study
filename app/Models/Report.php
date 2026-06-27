@@ -29,9 +29,10 @@ class Report extends Model
     public function target()
     {
         return match ($this->target_type) {
-            'post' => $this->belongsTo(Post::class, 'target_id'),
+            'post'    => $this->belongsTo(Post::class, 'target_id'),
             'comment' => $this->belongsTo(Comment::class, 'target_id'),
-            'user' => $this->belongsTo(User::class, 'target_id'),
+            'user'    => $this->belongsTo(User::class, 'target_id'),
+            default   => null,
         };
     }
 }

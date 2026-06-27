@@ -1,6 +1,6 @@
 @props(['activityItems'])
 
-<section class="rounded-2xl border border-line bg-surface shadow-sm overflow-hidden mb-6">
+<section class="rounded-2xl border border-line bg-surface shadow-sm overflow-hidden mb-6" data-activity-feed>
     <div class="flex items-center justify-between px-5 py-4 border-b border-line">
         <h2 class="text-sm font-bold text-content">Recent Activity</h2>
         <i data-lucide="activity" class="h-4 w-4 text-muted"></i>

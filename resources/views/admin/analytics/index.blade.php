@@ -114,7 +114,7 @@
                         <i data-lucide="loader-2" class="h-6 w-6 text-accent animate-spin"></i>
                     </div>
                     <h2 class="text-sm font-bold text-content mb-4">User Registrations</h2>
-                    <div x-show="!charts.registrations" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
                         <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
                         <p class="font-bold text-content">No data for this period</p>
                         <p>Try a wider date range or check back once users are active.</p>
@@ -147,7 +147,7 @@
                             </span>
                         </div>
                     </div>
-                    <div x-show="!charts.examContent" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
                         <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
                         <p class="font-bold text-content">No data for this period</p>
                         <p>Try a wider date range or check back once users are active.</p>
@@ -176,7 +176,7 @@
                             </span>
                         </div>
                     </div>
-                    <div x-show="!charts.quizPerformance" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
                         <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
                         <p class="font-bold text-content">No data for this period</p>
                         <p>Try a wider date range or check back once users are active.</p>
@@ -234,6 +234,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
     function analyticsPage() {
+        // Kept outside Alpine reactive data — Chart.js instances have circular getters
+        // that cause Alpine's toRaw() to recurse infinitely if stored as reactive state.
+        const _charts = { registrations: null, examContent: null, quizPerformance: null };
+
         return {
             // --- State ---
             range: '30d',
@@ -244,7 +248,7 @@
             error: null,
             dateError: null,
             kpis: @json($initialData['kpis']),
-            charts: { registrations: null, examContent: null, quizPerformance: null },
+            chartsReady: false,
 
             // --- CSS variable helper ---
             getCSSColor(varName) {
@@ -267,7 +271,7 @@
                 const content     = this.getCSSColor('--content');
 
                 // Chart A: User Registrations (line)
-                this.charts.registrations = new Chart(
+                _charts.registrations = new Chart(
                     document.getElementById('chart-registrations'),
                     {
                         type: 'line',
@@ -310,7 +314,7 @@
                 );
 
                 // Chart B: Exam Content (bar, 2 series)
-                this.charts.examContent = new Chart(
+                _charts.examContent = new Chart(
                     document.getElementById('chart-exam-content'),
                     {
                         type: 'bar',
@@ -356,7 +360,7 @@
                 );
 
                 // Chart C: Quiz Performance (mixed bar + line, dual Y axis)
-                this.charts.quizPerformance = new Chart(
+                _charts.quizPerformance = new Chart(
                     document.getElementById('chart-quiz-performance'),
                     {
                         type: 'bar',
@@ -415,11 +419,12 @@
                         }
                     }
                 );
+                this.chartsReady = true;
             },
 
             // --- Update all charts in-place via Chart.js .update() ---
             updateCharts(data) {
-                const c = this.charts;
+                const c = _charts;
                 if (c.registrations) {
                     c.registrations.data.labels = data.labels;
                     c.registrations.data.datasets[0].data = data.registrations;
@@ -456,6 +461,7 @@
                     this.updateCharts(data);
                     history.pushState(null, '', `/admin/analytics?${params}`);
                 } catch (err) {
+                    console.error('[analytics fetchData]', err);
                     this.error = 'Could not load analytics data. Please try again.';
                     setTimeout(() => { this.error = null; }, 5000);
                 } finally {

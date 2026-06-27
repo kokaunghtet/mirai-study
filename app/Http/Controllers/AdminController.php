@@ -11,22 +11,42 @@ use App\Models\Report;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        $stats = [
-            'total_users' => User::count(),
-            'active_users' => User::where('status', 'active')->count(),
-            'banned_users' => User::where('status', 'banned')->count(),
-            'total_posts' => Post::count(),
-            'posts_today' => Post::whereDate('created_at', today())->count(),
-            'pending_reports' => Report::where('status', 'pending')->count(),
-            'total_papers' => ExamPaper::count(),
-            'total_questions' => Question::count(),
-        ];
+        $stats = Cache::remember('admin_stats', 300, function () {
+            return [
+                'total_users'      => User::count(),
+                'active_users'     => User::where('status', 'active')->count(),
+                'banned_users'     => User::where('status', 'banned')->count(),
+                'total_posts'      => Post::count(),
+                'posts_today'      => Post::whereDate('created_at', today())->count(),
+                'pending_reports'  => Report::where('status', 'pending')->count(),
+                'total_papers'     => ExamPaper::count(),
+                'total_questions'  => Question::count(),
+            ];
+        });
+
+        $trends = Cache::remember('admin_trends', 300, function () {
+            $now = now();
+            $last7  = $now->copy()->subDays(7);
+            $prev7  = $now->copy()->subDays(14);
+
+            return [
+                'users'     => User::where('created_at', '>=', $last7)->count() - User::whereBetween('created_at', [$prev7, $last7])->count(),
+                'posts'     => Post::where('created_at', '>=', $last7)->count() - Post::whereBetween('created_at', [$prev7, $last7])->count(),
+                'reports'   => Report::where('created_at', '>=', $last7)->count() - Report::whereBetween('created_at', [$prev7, $last7])->count(),
+                'papers'    => ExamPaper::where('created_at', '>=', $last7)->count() - ExamPaper::whereBetween('created_at', [$prev7, $last7])->count(),
+                'questions' => Question::where('created_at', '>=', $last7)->count() - Question::whereBetween('created_at', [$prev7, $last7])->count(),
+                'attempts'  => QuizAttempt::where('completed_at', '>=', $last7)->count() - QuizAttempt::whereBetween('completed_at', [$prev7, $last7])->count(),
+            ];
+        });
 
         $recent_users = User::latest()->limit(5)->get();
         $recent_reports = Report::with('reporter')
@@ -40,7 +60,40 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recent_users', 'recent_reports', 'activityItems'));
+        $health = [
+            'queue_size'     => DB::table('jobs')->count(),
+            'failed_jobs'    => DB::table('failed_jobs')->count(),
+            'storage_used'   => Cache::remember('admin_storage_used', 3600, fn () => $this->getStorageUsed()),
+            'last_deploy'    => file_exists(base_path('DEPLOY_TIME'))
+                ? Carbon::createFromTimestamp(filemtime(base_path('DEPLOY_TIME')))->diffForHumans()
+                : null,
+        ];
+
+        return view('admin.dashboard', compact('stats', 'trends', 'recent_users', 'recent_reports', 'activityItems', 'health'));
+    }
+
+    private function getStorageUsed(): string
+    {
+        try {
+            $bytes = 0;
+            foreach (Storage::disk('public')->allFiles() as $file) {
+                $bytes += Storage::disk('public')->size($file);
+            }
+            return $this->humanFileSize($bytes);
+        } catch (\Throwable) {
+            return '—';
+        }
+    }
+
+    private function humanFileSize(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
+        while ($bytes >= 1024 && $i < count($units) - 1) {
+            $bytes /= 1024;
+            $i++;
+        }
+        return round($bytes, 1).' '.$units[$i];
     }
 
     public function users(Request $request)
@@ -88,6 +141,20 @@ class AdminController extends Controller
 
         $user->update(['status' => $request->status]);
 
+        if ($request->status === 'banned') {
+            ActivityLog::create([
+                'user_id'      => auth()->id(),
+                'action'       => 'user_banned',
+                'subject_type' => 'User',
+                'subject_id'   => $user->id,
+                'properties'   => ['username' => $user->username],
+                'created_at'   => now(),
+            ]);
+        }
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
+
         return response()->json(['status' => $user->status]);
     }
 
@@ -112,6 +179,9 @@ class AdminController extends Controller
                 'created_at' => now(),
             ]);
         });
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
 
         return redirect()->back()->with('success', "{$user->display_name}'s role has been updated to {$request->role}.");
     }
@@ -153,6 +223,18 @@ class AdminController extends Controller
             'status' => $request->status,
             'reviewed_by' => auth()->id(),
         ]);
+
+        ActivityLog::create([
+            'user_id'      => auth()->id(),
+            'action'       => 'report_resolved',
+            'subject_type' => 'Report',
+            'subject_id'   => $report->id,
+            'properties'   => ['outcome' => $request->status],
+            'created_at'   => now(),
+        ]);
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
 
         return response()->json(['status' => $report->status]);
     }

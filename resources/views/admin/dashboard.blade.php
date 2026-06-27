@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Dashboard — MiraiStudy Admin</x-slot>
 
-    <div class="px-4 pb-10">
+    <div class="px-4 pb-10" x-data="adminDashboard()">
         <div class="max-w-6xl mx-auto">
 
             {{-- Header --}}
@@ -36,6 +36,12 @@
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-500"></span>
                             {{ number_format($stats['banned_users']) }} banned
                         </span>
+                        @if ($trends['users'] !== 0)
+                            <span class="flex items-center gap-0.5 {{ $trends['users'] > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                <i data-lucide="{{ $trends['users'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
+                                {{ $trends['users'] > 0 ? '+' : '' }}{{ $trends['users'] }} this week
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -46,8 +52,14 @@
                         <i data-lucide="file-text" class="h-4 w-4 text-muted"></i>
                     </div>
                     <div class="text-3xl font-bold text-content">{{ number_format($stats['total_posts']) }}</div>
-                    <div class="mt-2 text-xs text-muted">
-                        +{{ number_format($stats['posts_today']) }} today
+                    <div class="mt-2 flex items-center gap-3 text-xs text-muted">
+                        <span>+{{ number_format($stats['posts_today']) }} today</span>
+                        @if ($trends['posts'] !== 0)
+                            <span class="flex items-center gap-0.5 {{ $trends['posts'] > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                <i data-lucide="{{ $trends['posts'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
+                                {{ $trends['posts'] > 0 ? '+' : '' }}{{ $trends['posts'] }} this week
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -60,8 +72,14 @@
                     <div class="text-3xl font-bold {{ $stats['pending_reports'] > 0 ? 'text-accent' : 'text-content' }}">
                         {{ number_format($stats['pending_reports']) }}
                     </div>
-                    <div class="mt-2 text-xs {{ $stats['pending_reports'] > 0 ? 'text-accent/80' : 'text-muted' }}">
-                        pending review
+                    <div class="mt-2 flex items-center gap-3 text-xs {{ $stats['pending_reports'] > 0 ? 'text-accent/80' : 'text-muted' }}">
+                        <span>pending review</span>
+                        @if ($trends['reports'] !== 0)
+                            <span class="flex items-center gap-0.5 {{ $trends['reports'] > 0 ? 'text-red-600' : 'text-green-600' }}">
+                                <i data-lucide="{{ $trends['reports'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
+                                {{ $trends['reports'] > 0 ? '+' : '' }}{{ $trends['reports'] }} this week
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -72,8 +90,15 @@
                         <i data-lucide="book-open" class="h-4 w-4 text-muted"></i>
                     </div>
                     <div class="text-3xl font-bold text-content">{{ number_format($stats['total_papers']) }}</div>
-                    <div class="mt-2 text-xs text-muted">
-                        papers · {{ number_format($stats['total_questions']) }} questions
+                    <div class="mt-2 flex items-center gap-3 text-xs text-muted">
+                        <span>papers · {{ number_format($stats['total_questions']) }} questions</span>
+                        @php $contentDelta = $trends['papers'] + $trends['questions']; @endphp
+                        @if ($contentDelta !== 0)
+                            <span class="flex items-center gap-0.5 {{ $contentDelta > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                <i data-lucide="{{ $contentDelta > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
+                                {{ $contentDelta > 0 ? '+' : '' }}{{ $contentDelta }} this week
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -167,7 +192,7 @@
                     @else
                         <ul class="divide-y divide-line">
                             @foreach ($recent_reports as $report)
-                                <li class="px-5 py-3">
+                                <li class="px-5 py-3" x-data="{ resolved: false }" x-show="!resolved" x-transition>
                                     <div class="flex items-center justify-between gap-2 mb-0.5">
                                         <span class="text-xs font-semibold text-content">
                                             @{{ $report->reporter?->username ?? 'deleted' }}
@@ -177,7 +202,17 @@
                                         </span>
                                     </div>
                                     <p class="text-xs text-muted truncate">{{ Str::limit($report->reason, 60) }}</p>
-                                    <p class="mt-0.5 text-[10px] text-muted">{{ $report->created_at->diffForHumans() }}</p>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <p class="flex-1 text-[10px] text-muted">{{ $report->created_at->diffForHumans() }}</p>
+                                        <button @click="resolveReport({{ $report->id }}, 'reviewed', $el); resolved = true"
+                                                class="rounded-lg bg-green-100 px-2 py-1 text-[10px] font-semibold text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 transition-colors">
+                                            Reviewed
+                                        </button>
+                                        <button @click="resolveReport({{ $report->id }}, 'dismissed', $el); resolved = true"
+                                                class="rounded-lg bg-surface-muted px-2 py-1 text-[10px] font-semibold text-muted hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors">
+                                            Dismiss
+                                        </button>
+                                    </div>
                                 </li>
                             @endforeach
                         </ul>
@@ -185,6 +220,71 @@
                 </section>
 
             </div>
+
+            {{-- System Health --}}
+            <section class="mt-6 rounded-2xl border border-line bg-surface shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-line">
+                    <h2 class="text-sm font-bold text-content">System Health</h2>
+                    <i data-lucide="server" class="h-4 w-4 text-muted"></i>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-line">
+                    <div class="px-5 py-4">
+                        <div class="text-xs font-semibold text-muted mb-1">Queue Jobs</div>
+                        <div class="text-lg font-bold {{ $health['queue_size'] > 50 ? 'text-red-600' : 'text-content' }}">{{ $health['queue_size'] }}</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-xs font-semibold text-muted mb-1">Failed Jobs</div>
+                        <div class="text-lg font-bold {{ $health['failed_jobs'] > 0 ? 'text-red-600' : 'text-content' }}">{{ $health['failed_jobs'] }}</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-xs font-semibold text-muted mb-1">Storage Used</div>
+                        <div class="text-lg font-bold text-content">{{ $health['storage_used'] }}</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-xs font-semibold text-muted mb-1">Last Deploy</div>
+                        <div class="text-lg font-bold text-content">{{ $health['last_deploy'] ?? '—' }}</div>
+                    </div>
+                </div>
+            </section>
+
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function adminDashboard() {
+            return {
+                resolveReport(reportId, status, btn) {
+                    fetch(`/admin/reports/${reportId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ status }),
+                    }).catch(() => {});
+                },
+            };
+        }
+
+        // Auto-refresh activity feed every 60s
+        setInterval(() => {
+            fetch(window.location.href, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            }).then(r => r.text()).then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const feed = doc.querySelector('[data-activity-feed]');
+                if (feed) {
+                    const current = document.querySelector('[data-activity-feed]');
+                    if (current) {
+                        current.innerHTML = feed.innerHTML;
+                        window.renderIcons?.(current);
+                    }
+                }
+            }).catch(() => {});
+        }, 60000);
+    </script>
+    @endpush
 </x-app-layout>

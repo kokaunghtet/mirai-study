@@ -7,6 +7,7 @@ use App\Models\ExamLevel;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 class QuestionController extends Controller
@@ -68,6 +69,9 @@ class QuestionController extends Controller
             'action'    => 'created',
         ]);
 
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
+
         return redirect()->route('admin.questions')->with('success', 'Question added.');
     }
 
@@ -114,6 +118,9 @@ class QuestionController extends Controller
     public function destroy(Question $question)
     {
         $question->delete();
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
 
         return redirect()->route('admin.questions')->with('success', 'Question deleted.');
     }

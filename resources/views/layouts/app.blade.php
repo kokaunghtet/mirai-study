@@ -127,14 +127,39 @@
             @auth
                 @if (auth()->user()->isAdmin())
                     {{-- Admin Dashboard --}}
-                    <a href="{{ route('admin.dashboard') }}"
-                       @click="sidebarOpen = false"
-                       title="Dashboard"
-                       class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'active' : 'text-muted' }}"
-                       :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.dashboard') ? '' : 'text-muted' }}"></i>
-                        <span x-show="!sidebarCollapsed">Dashboard</span>
-                    </a>
+                    <div>
+                        <a href="{{ route('admin.dashboard') }}"
+                           @click="sidebarOpen = false"
+                           title="Dashboard"
+                           class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'active' : 'text-muted' }}"
+                           :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.dashboard') ? '' : 'text-muted' }}"></i>
+                            <span x-show="!sidebarCollapsed">Dashboard</span>
+                        </a>
+                        <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
+                            <a href="{{ route('admin.users') }}"
+                               @click="sidebarOpen = false"
+                               title="Manage Users"
+                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.users*') ? 'active' : 'text-muted' }}">
+                                <i data-lucide="users" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.users*') ? '' : 'text-muted' }}"></i>
+                                <span>Users</span>
+                            </a>
+                            <a href="{{ route('admin.reports') }}"
+                               @click="sidebarOpen = false"
+                               title="Reports"
+                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.reports*') ? 'active' : 'text-muted' }}">
+                                <i data-lucide="flag" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.reports*') ? '' : 'text-muted' }}"></i>
+                                <span>Reports</span>
+                            </a>
+                            <a href="{{ route('admin.analytics') }}"
+                               @click="sidebarOpen = false"
+                               title="Analytics"
+                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.analytics*') ? 'active' : 'text-muted' }}">
+                                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.analytics*') ? '' : 'text-muted' }}"></i>
+                                <span>Analytics</span>
+                            </a>
+                        </div>
+                    </div>
                 @endif
             @endauth
 

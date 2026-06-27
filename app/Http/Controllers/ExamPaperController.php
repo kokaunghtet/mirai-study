@@ -7,6 +7,7 @@ use App\Models\ExamLevel;
 use App\Models\ExamPaper;
 use App\Models\PaperDownload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -192,6 +193,9 @@ class ExamPaperController extends Controller
             'action' => 'uploaded',
         ]);
 
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
+
         return redirect()->route('admin.papers')->with('success', 'Paper uploaded.');
     }
 
@@ -221,6 +225,9 @@ class ExamPaperController extends Controller
     {
         Storage::disk('public')->delete($paper->file_url);
         $paper->delete();
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
 
         return redirect()->route('admin.papers')->with('success', 'Paper deleted.');
     }
