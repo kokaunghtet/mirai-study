@@ -31,7 +31,7 @@ class IpQuestionSeeder extends Seeder
         }
 
         $banks = [
-            '' => base_path('knowledge/ipquiz.txt'),
+            '' => base_path('knowledge/itpec/ipquiz.txt'),
         ];
 
         foreach ($banks as $section => $path) {

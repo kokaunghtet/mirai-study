@@ -31,8 +31,8 @@ class FeQuestionSeeder extends Seeder
         }
 
         $banks = [
-            'technology' => base_path('knowledge/fetechnology.txt'),
-            'strategy' => base_path('knowledge/festrategy.txt'),
+            'technology' => base_path('knowledge/itpec/fetechnology.txt'),
+            'strategy' => base_path('knowledge/itpec/festrategy.txt'),
         ];
 
         foreach ($banks as $section => $path) {
