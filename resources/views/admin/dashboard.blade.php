@@ -195,7 +195,7 @@
                                 <li class="px-5 py-3" x-data="{ resolved: false }" x-show="!resolved" x-transition>
                                     <div class="flex items-center justify-between gap-2 mb-0.5">
                                         <span class="text-xs font-semibold text-content">
-                                            @{{ $report->reporter?->username ?? 'deleted' }}
+                                            {{ '@' . ($report->reporter?->username ?? 'deleted') }}
                                         </span>
                                         <span class="rounded-full bg-surface-muted px-2 py-0.5 text-[10px] font-semibold text-muted border border-line capitalize">
                                             {{ $report->target_type }}

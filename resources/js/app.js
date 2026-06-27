@@ -858,6 +858,59 @@ Alpine.data('questionForm', (cats = []) => ({
     onLevelChange() { this.section = ''; },
 }));
 
+// ── Report modal ──
+Alpine.data('reportModal', () => ({
+    open: false,
+    targetType: null,
+    targetId: null,
+    category: '',
+    detail: '',
+    state: 'idle', // 'idle' | 'submitting' | 'success' | 'duplicate' | 'error'
+    _closeTimer: null,
+
+    show(type, id) {
+        clearTimeout(this._closeTimer);
+        this.targetType = type;
+        this.targetId = id;
+        this.category = '';
+        this.detail = '';
+        this.state = 'idle';
+        this.open = true;
+    },
+
+    close() {
+        clearTimeout(this._closeTimer);
+        this.open = false;
+    },
+
+    async submit() {
+        if (!this.category || this.state === 'submitting') return;
+        this.state = 'submitting';
+        try {
+            const res = await fetch('/reports', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || '',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    target_type: this.targetType,
+                    target_id: this.targetId,
+                    category: this.category,
+                    reason: this.detail,
+                }),
+            });
+            if (res.status === 409) { this.state = 'duplicate'; return; }
+            if (!res.ok) { this.state = 'error'; return; }
+            this.state = 'success';
+            this._closeTimer = setTimeout(() => { this.open = false; }, 2000);
+        } catch (e) {
+            this.state = 'error';
+        }
+    },
+}));
+
 // ── Themed confirm dialog (replaces native confirm()) ──
 Alpine.data('confirmModal', () => ({
     show: false,

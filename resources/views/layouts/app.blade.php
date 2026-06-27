@@ -403,6 +403,9 @@
     {{-- Confirm Modal --}}
     @include('components.confirm-modal')
 
+    {{-- Report Modal --}}
+    @include('components.report-modal')
+
     {{-- Auth Modal for guests --}}
     @guest
         @include('components.auth-modal')

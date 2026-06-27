@@ -113,9 +113,9 @@
                                 Delete
                             </button>
                         </form>
-                    @else
-                        {{-- Non-owner: Report (placeholder until report feature is built) --}}
+                    @elseif(auth()->check())
                         <button type="button"
+                                @click="$dispatch('open-report', { type: 'post', id: {{ $post->id }} }); open = false"
                                 class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
                             Report
                         </button>

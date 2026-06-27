@@ -10,6 +10,7 @@ class Report extends Model
         'reporter_id',
         'target_type',
         'target_id',
+        'category',
         'reason',
         'status',
         'reviewed_by',

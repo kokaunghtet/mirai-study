@@ -217,7 +217,7 @@ class AdminController extends Controller
             abort(422, 'This report has already been processed.');
         }
 
-        $request->validate(['status' => 'required|in:reviewed,dismissed']);
+        $request->validate(['status' => 'required|in:reviewed,resolved,rejected']);
 
         $report->update([
             'status' => $request->status,

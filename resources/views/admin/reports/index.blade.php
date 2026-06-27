@@ -34,6 +34,35 @@
 
 @push('scripts')
 <script>
+async function resolveReport(reportId, status) {
+    const badge   = document.getElementById('report-badge-' + reportId);
+    const actions = document.getElementById('report-actions-' + reportId);
+    if (!badge) return;
+    try {
+        const res = await fetch(`/admin/reports/${reportId}`, {
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+        const cls = {
+            resolved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+            reviewed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+            rejected: 'bg-surface-muted text-muted border border-line',
+        };
+        badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold ' + (cls[data.status] || 'bg-surface-muted text-muted border border-line');
+        if (actions) actions.innerHTML = '<span class="text-xs text-muted">—</span>';
+    } catch (e) {
+        console.error('Failed to update report:', e);
+    }
+}
+
 function adminFilter() {
     return {
         init() {

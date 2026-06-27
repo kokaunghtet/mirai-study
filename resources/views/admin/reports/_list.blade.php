@@ -3,7 +3,7 @@
 {{-- Filters --}}
 <div class="mb-5 flex flex-wrap items-center gap-2">
     {{-- Status chips --}}
-    @foreach (['pending' => 'Pending', 'reviewed' => 'Reviewed', 'dismissed' => 'Dismissed'] as $val => $label)
+    @foreach (['pending' => 'Pending', 'reviewed' => 'Reviewed', 'resolved' => 'Resolved', 'rejected' => 'Rejected'] as $val => $label)
         @php $on = request('status', 'pending') === $val; @endphp
         <a href="{{ request()->fullUrlWithQuery(['status' => $val, 'page' => null]) }}"
            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors
@@ -38,20 +38,29 @@
                 <tr class="border-b border-line bg-surface-muted">
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Reporter</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Type</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden md:table-cell">Reason</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden md:table-cell">Category / Detail</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden sm:table-cell">Reported</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden lg:table-cell">Reviewed by</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Status</th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-muted">Actions</th>
                 </tr>
             </thead>
+            @php
+                $categoryLabels = [
+                    'spam'           => 'Spam',
+                    'harassment'     => 'Harassment',
+                    'misinformation' => 'Misinformation',
+                    'inappropriate'  => 'Inappropriate',
+                    'other'          => 'Other',
+                ];
+            @endphp
             <tbody class="divide-y divide-line">
                 @foreach ($reports as $report)
                     <tr class="hover:bg-surface-muted transition-colors" id="report-row-{{ $report->id }}">
 
                         {{-- Reporter --}}
                         <td class="px-4 py-3 text-xs text-muted">
-                            @{{ $report->reporter?->username ?? 'deleted' }}
+                            {{ '@' . ($report->reporter?->username ?? 'deleted') }}
                         </td>
 
                         {{-- Target type --}}
@@ -61,9 +70,14 @@
                             </span>
                         </td>
 
-                        {{-- Reason --}}
+                        {{-- Category / Detail --}}
                         <td class="px-4 py-3 text-xs text-muted hidden md:table-cell max-w-xs">
-                            <span title="{{ $report->reason }}">{{ Str::limit($report->reason, 80) }}</span>
+                            <span class="inline-block rounded-full bg-surface-muted px-2 py-0.5 text-[10px] font-semibold text-content border border-line mb-0.5">
+                                {{ $categoryLabels[$report->category] ?? $report->category }}
+                            </span>
+                            @if ($report->reason)
+                                <div title="{{ $report->reason }}" class="mt-0.5 truncate max-w-[200px]">{{ Str::limit($report->reason, 60) }}</div>
+                            @endif
                         </td>
 
                         {{-- Reported at --}}
@@ -82,8 +96,9 @@
                                   @class([
                                       'rounded-full px-2 py-0.5 text-[10px] font-bold',
                                       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' => $report->status === 'pending',
-                                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' => $report->status === 'reviewed',
-                                      'bg-surface-muted text-muted border border-line' => $report->status === 'dismissed',
+                                      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'   => $report->status === 'reviewed',
+                                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' => $report->status === 'resolved',
+                                      'bg-surface-muted text-muted border border-line' => $report->status === 'rejected',
                                   ])>
                                 {{ ucfirst($report->status) }}
                             </span>
@@ -94,14 +109,14 @@
                             @if ($report->status === 'pending')
                                 <div id="report-actions-{{ $report->id }}" class="flex items-center justify-end gap-1.5">
                                     <button
-                                        onclick="resolveReport({{ $report->id }}, 'reviewed')"
+                                        onclick="resolveReport({{ $report->id }}, 'resolved')"
                                         class="rounded-lg bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50">
-                                        Reviewed
+                                        Resolve
                                     </button>
                                     <button
-                                        onclick="resolveReport({{ $report->id }}, 'dismissed')"
+                                        onclick="resolveReport({{ $report->id }}, 'rejected')"
                                         class="rounded-lg border border-line bg-surface-muted px-2.5 py-1 text-xs font-semibold text-muted transition-colors hover:bg-surface">
-                                        Dismiss
+                                        Reject
                                     </button>
                                 </div>
                             @else
@@ -123,39 +138,3 @@
     @endif
 @endif
 
-<script>
-async function resolveReport(reportId, status) {
-    const badge   = document.getElementById('report-badge-' + reportId);
-    const actions = document.getElementById('report-actions-' + reportId);
-    if (!badge) return;
-
-    try {
-        const res = await fetch(`/admin/reports/${reportId}`, {
-            method: 'PATCH',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ status }),
-        });
-
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-
-        // Swap badge
-        badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-        badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold ' + (
-            data.status === 'reviewed'
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                : 'bg-surface-muted text-muted border border-line'
-        );
-
-        // Hide action buttons
-        if (actions) actions.innerHTML = '<span class="text-xs text-muted">—</span>';
-
-    } catch (e) {
-        console.error('Failed to update report:', e);
-    }
-}
-</script>

@@ -9,6 +9,7 @@ use App\Http\Controllers\ExamPaperController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
@@ -103,6 +104,9 @@ Route::middleware('auth')->group(function () {
     // --- Timer (auth: stores sessions + settings) ---
     Route::post('/timer/sessions', [TimerController::class, 'store'])->name('timer.store');
     Route::patch('/timer/settings', [TimerController::class, 'updateSettings'])->name('timer.settings');
+
+    // --- Reports ---
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store')->middleware('throttle:10,1');
 
     // --- Notifications ---
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

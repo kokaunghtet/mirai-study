@@ -83,6 +83,7 @@
                                             </form>
                                         @else
                                             <button type="button"
+                                                    @click="$dispatch('open-report', { type: 'comment', id: {{ $comment->id }} }); open = false"
                                                     class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
                                                 Report
                                             </button>
@@ -145,6 +146,7 @@
                                                             </form>
                                                         @else
                                                             <button type="button"
+                                                                    @click="$dispatch('open-report', { type: 'comment', id: {{ $reply->id }} }); open = false"
                                                                     class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
                                                                 Report
                                                             </button>
