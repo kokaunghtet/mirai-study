@@ -959,6 +959,7 @@ document.addEventListener('alpine:initialized', () => {
     createIcons({ icons });
 });
 
+Alpine.store('commentCounts', {});
 Alpine.start();
 
 

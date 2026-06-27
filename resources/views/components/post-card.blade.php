@@ -1,7 +1,6 @@
 @props(['post'])
 
 <article x-data="{ commentsCount: {{ $post->comments_count }} }"
-    @comments-updated.window="if ($event.detail.postId === {{ $post->id }}) commentsCount = $event.detail.count"
     @dblclick="if (!$event.target.closest('a,button,input,textarea,video,form,[data-no-nav]')) window.location='{{ route('posts.show', $post) }}'"
     class="relative rounded-2xl bg-surface border border-line shadow-sm">
 
@@ -293,7 +292,7 @@
                })"
                class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
                 <i data-lucide="message-circle" class="h-[18px] w-[18px]"></i>
-                <span class="text-xs font-semibold" x-text="commentsCount">{{ $post->comments_count }}</span>
+                <span class="text-xs font-semibold" x-text="$store.commentCounts[{{ $post->id }}] ?? commentsCount">{{ $post->comments_count }}</span>
             </a>
         </div>
 

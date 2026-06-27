@@ -10,9 +10,10 @@
         <form method="POST" action="{{ route('comments.store', $post) }}" data-loading class="mb-6">
             @csrf
             <textarea name="content" rows="2"
-                      placeholder="Write a comment..."
+                      placeholder="Write a comment… (Enter to post, Shift+Enter for new line)"
                       class="w-full bg-surface-muted text-content border border-line rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent/40"
-                      required>{{ old('content') }}</textarea>
+                      required
+                      @keydown.enter.prevent="if (!$event.shiftKey) $el.closest('form').requestSubmit()">{{ old('content') }}</textarea>
             @error('content')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror

@@ -27,14 +27,12 @@
                 this.isOpen = false;
             },
 
-            // Read the comment count baked into the partial and tell the
-            // matching post card to refresh its badge.
+            // Read the comment count baked into the partial and push it into
+            // the shared Alpine store so the matching post card badge updates.
             syncCount() {
                 const root = this.$refs.content.querySelector('[data-comments-root]');
                 if (!root || this.postId === null) return;
-                window.dispatchEvent(new CustomEvent('comments-updated', {
-                    detail: { postId: this.postId, count: Number(root.dataset.count) }
-                }));
+                Alpine.store('commentCounts')[this.postId] = Number(root.dataset.count);
             },
 
             async load() {
