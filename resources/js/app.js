@@ -803,7 +803,7 @@ Alpine.data('paperUploader', (cats = []) => ({
             const lvl = (c.levels || []).find((l) => l.code.toUpperCase() === code.toUpperCase());
             if (lvl) {
                 this.categoryId = String(c.id);
-                this.levelId = String(lvl.id);
+                this.$nextTick(() => { this.levelId = String(lvl.id); });
                 break;
             }
         }
