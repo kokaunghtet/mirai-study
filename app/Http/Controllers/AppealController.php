@@ -90,6 +90,10 @@ class AppealController extends Controller
             return redirect()->route('login');
         }
 
+        $request->validate([
+            'message' => ['required', 'string', 'min:10', 'max:1000'],
+        ]);
+
         $user = User::find($banAppeal['user_id']);
 
         if (! $user || ! $user->isBanned()) {
@@ -111,10 +115,6 @@ class AppealController extends Controller
 
             return redirect()->route('login');
         }
-
-        $request->validate([
-            'message' => ['required', 'string', 'min:10', 'max:1000'],
-        ]);
 
         Appeal::create([
             'user_ban_id' => $ban->id,

@@ -7,7 +7,7 @@
 --}}
 @php($banAppeal = session('ban_appeal'))
 
-@if($banAppeal)
+@if ($banAppeal)
 
 {{-- ─────────────── BAN APPEAL ─────────────── --}}
 <div class="mx-auto w-full max-w-[360px]">
@@ -20,7 +20,7 @@
             </div>
             <div>
                 <p class="mb-1 text-sm font-bold text-red-400">
-                    {{ $banAppeal['ban_type'] === 'temporary' ? 'Account temporarily suspended' : 'Account permanently banned' }}
+                    {{ ($banAppeal['ban_type'] ?? '') === 'temporary' ? 'Account temporarily suspended' : 'Account permanently banned' }}
                 </p>
                 @if (! empty($banAppeal['ban_reason']))
                     <p class="text-xs leading-relaxed text-red-400/70">{{ $banAppeal['ban_reason'] }}</p>
@@ -72,9 +72,12 @@
     @endif
 
     <p class="mt-5 text-center text-[11px] text-muted">
-        <a href="{{ route('login.clear-ban') }}" class="font-semibold text-accent hover:underline">
-            Use a different account
-        </a>
+        <form method="POST" action="{{ route('login.clear-ban') }}" class="inline">
+            @csrf
+            <button type="submit" class="font-semibold text-accent hover:underline">
+                Use a different account
+            </button>
+        </form>
     </p>
 
 </div>

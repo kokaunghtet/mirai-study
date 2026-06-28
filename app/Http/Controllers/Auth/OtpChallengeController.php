@@ -60,6 +60,8 @@ class OtpChallengeController extends Controller
             ]);
         }
 
+        // Email is marked verified before the ban check intentionally: verifying the address
+        // is a low-privilege action and must complete even if login is then denied.
         if ($purpose === 'email_verification' && ! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
             event(new Verified($user));
@@ -84,9 +86,11 @@ class OtpChallengeController extends Controller
         $request->session()->forget('otp_challenge');
         $request->session()->regenerate();
 
-        $default = $user->isAdmin()
-            ? route('admin.dashboard', absolute: false)
-            : route('feed.index', absolute: false);
+        $default = match (true) {
+            $user->isAdmin() => route('admin.dashboard', absolute: false),
+            $user->isModerator() => route('admin.reports', absolute: false),
+            default => route('feed.index', absolute: false),
+        };
 
         return redirect()->intended($default);
     }

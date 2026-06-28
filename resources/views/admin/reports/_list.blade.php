@@ -3,7 +3,7 @@
 {{-- Filters --}}
 <div class="mb-5 flex flex-wrap items-center gap-2">
     {{-- Status chips --}}
-    @foreach (['pending' => 'Pending', 'reviewed' => 'Reviewed', 'resolved' => 'Resolved', 'rejected' => 'Rejected'] as $val => $label)
+    @foreach (['pending' => 'Pending', 'resolved' => 'Resolved', 'rejected' => 'Rejected'] as $val => $label)
         @php $on = request('status', 'pending') === $val; @endphp
         <a href="{{ request()->fullUrlWithQuery(['status' => $val, 'page' => null]) }}"
            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors
@@ -156,7 +156,6 @@ $actionLabels = [
                                   @class([
                                       'rounded-full px-2 py-0.5 text-[10px] font-bold',
                                       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' => $report->status === 'pending',
-                                      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'   => $report->status === 'reviewed',
                                       'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' => $report->status === 'resolved',
                                       'bg-surface-muted text-muted border border-line' => $report->status === 'rejected',
                                   ])>
