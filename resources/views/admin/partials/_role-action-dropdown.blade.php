@@ -3,6 +3,7 @@
 @php
     $isSelf = $user->id === auth()->id();
     $currentRole = $user->role;
+    $isBanned = $user->isBannedNow();
 @endphp
 
 @if ($isSelf)
@@ -29,8 +30,11 @@
              class="absolute right-0 z-50 mt-1 w-48 rounded-lg border border-line bg-surface shadow-lg"
              role="menu">
 
-            {{-- Promote options --}}
-            @if ($currentRole === 'user')
+            {{-- Promote options (hidden for banned users) --}}
+            @if ($currentRole === 'user' && $isBanned)
+                <p class="px-4 py-2 text-xs text-muted">Unban user before promoting.</p>
+            @endif
+            @if ($currentRole === 'user' && ! $isBanned)
                 <button
                     @click="open = false; window.dispatchEvent(new CustomEvent('open-confirm', { detail: { title: 'Promote ' + userName + ' to Moderator?', message: 'They will be able to moderate content and manage exam papers.', confirmLabel: 'Make Moderator', danger: false, onConfirm: () => { document.getElementById('role-form-' + userId + '-moderator').submit(); } } }))"
                     class="block w-full px-4 py-2 text-left text-sm text-content hover:bg-surface-muted transition-colors"
@@ -46,12 +50,14 @@
             @endif
 
             @if ($currentRole === 'moderator')
+                @if (! $isBanned)
                 <button
                     @click="open = false; window.dispatchEvent(new CustomEvent('open-confirm', { detail: { title: 'Promote ' + userName + ' to Admin?', message: 'They will have full access to all admin features.', confirmLabel: 'Make Admin', danger: false, onConfirm: () => { document.getElementById('role-form-' + userId + '-admin').submit(); } } }))"
                     class="block w-full px-4 py-2 text-left text-sm text-content hover:bg-surface-muted transition-colors"
                     role="menuitem">
                     Make Admin
                 </button>
+                @endif
                 <button
                     @click="open = false; window.dispatchEvent(new CustomEvent('open-confirm', { detail: { title: 'Demote ' + userName + ' from Moderator to User?', message: 'This will remove their moderation privileges.', confirmLabel: 'Demote to User', danger: true, onConfirm: () => { document.getElementById('role-form-' + userId + '-user').submit(); } } }))"
                     class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-surface-muted transition-colors"

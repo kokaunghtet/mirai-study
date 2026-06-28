@@ -44,16 +44,16 @@
         <p class="mt-1 text-xs text-muted">Try adjusting your filters.</p>
     </div>
 @else
-    <div class="rounded-2xl border border-line bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-2xl border border-line bg-surface shadow-sm overflow-visible">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-line bg-surface-muted">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted">User</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted rounded-tl-2xl">User</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden sm:table-cell">Email</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Role</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Status</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden md:table-cell">Joined</th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-muted">Actions</th>
+                    <th class="px-4 py-3 text-right text-xs font-semibold text-muted rounded-tr-2xl">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-line">

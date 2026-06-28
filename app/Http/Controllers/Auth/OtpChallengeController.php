@@ -65,6 +65,20 @@ class OtpChallengeController extends Controller
             event(new Verified($user));
         }
 
+        // Permanently banned: don't authenticate — show appeal on the login page instead
+        if ($user->isBanned()) {
+            $ban = $user->activeBan();
+            $request->session()->forget('otp_challenge');
+            $request->session()->put('ban_appeal', [
+                'user_id' => $user->id,
+                'ban_reason' => $ban?->reason,
+                'ban_type' => $ban?->type,
+                'has_open_appeal' => $ban?->hasOpenAppeal() ?? false,
+            ]);
+
+            return redirect()->route('login');
+        }
+
         Auth::login($user, (bool) ($challenge['remember'] ?? false));
 
         $request->session()->forget('otp_challenge');

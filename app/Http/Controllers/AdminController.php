@@ -178,6 +178,10 @@ class AdminController extends Controller
             abort(403, 'You cannot change your own role.');
         }
 
+        if ($user->isBannedNow() && in_array($request->role, ['moderator', 'admin'])) {
+            abort(403, 'Cannot promote a banned user.');
+        }
+
         $oldRole = $user->role;
 
         DB::transaction(function () use ($user, $request, $oldRole) {

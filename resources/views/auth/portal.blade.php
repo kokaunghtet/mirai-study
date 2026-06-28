@@ -5,6 +5,82 @@
     posts to its real route. Alpine ('portal' in app.js) drives the toggle
     choreography, username suggestions, and live field validation.
 --}}
+@php($banAppeal = session('ban_appeal'))
+
+@if($banAppeal)
+
+{{-- ─────────────── BAN APPEAL ─────────────── --}}
+<div class="mx-auto w-full max-w-[360px]">
+
+    {{-- Ban notice --}}
+    <div class="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 p-5">
+        <div class="flex items-start gap-3">
+            <div class="shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-red-500/20">
+                <i data-lucide="ban" class="h-4 w-4 text-red-400"></i>
+            </div>
+            <div>
+                <p class="mb-1 text-sm font-bold text-red-400">
+                    {{ $banAppeal['ban_type'] === 'temporary' ? 'Account temporarily suspended' : 'Account permanently banned' }}
+                </p>
+                @if (! empty($banAppeal['ban_reason']))
+                    <p class="text-xs leading-relaxed text-red-400/70">{{ $banAppeal['ban_reason'] }}</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    @if ($banAppeal['has_open_appeal'])
+        {{-- Pending appeal --}}
+        <div class="rounded-2xl border border-white/[0.06] bg-surface/60 p-5">
+            <div class="mb-2 flex items-center gap-3">
+                <i data-lucide="clock-4" class="h-5 w-5 shrink-0 text-amber-400"></i>
+                <p class="text-sm font-bold text-content">Appeal under review</p>
+            </div>
+            <p class="text-xs leading-relaxed text-muted">
+                Your appeal has been submitted and is waiting for an admin to review it.
+            </p>
+        </div>
+    @else
+        {{-- Appeal form --}}
+        <div class="rounded-2xl border border-white/[0.06] bg-surface/60 p-5">
+            <h2 class="mb-1 text-sm font-bold text-content">Submit an appeal</h2>
+            <p class="mb-4 text-xs leading-relaxed text-muted">
+                If you believe this action was made in error, explain your situation below.
+            </p>
+
+            @error('message')
+                <div class="mb-3 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+                    {{ $message }}
+                </div>
+            @enderror
+
+            <form method="POST" action="{{ route('appeal.store.guest') }}" data-loading>
+                @csrf
+                <textarea
+                    name="message"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Explain why this restriction should be lifted…"
+                    class="mb-3 w-full resize-none rounded-xl border border-white/[0.06] bg-canvas/40 px-4 py-3 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                >{{ old('message') }}</textarea>
+                <button type="submit" data-loading-text="Submitting…"
+                        class="w-full rounded-xl bg-gradient-to-tr from-accent-from to-accent-to py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    Submit appeal
+                </button>
+            </form>
+        </div>
+    @endif
+
+    <p class="mt-5 text-center text-[11px] text-muted">
+        <a href="{{ route('login.clear-ban') }}" class="font-semibold text-accent hover:underline">
+            Use a different account
+        </a>
+    </p>
+
+</div>
+
+@else
+
 @php($activeMode = in_array(old('form_intent'), ['login', 'register']) ? old('form_intent') : ($mode ?? 'login'))
 
 {{-- Pill toggle: a single highlight slides between the tabs (CSS-driven). --}}
@@ -258,3 +334,5 @@
                 </p>
             </form>
 </div>
+
+@endif

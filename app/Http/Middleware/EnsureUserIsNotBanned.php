@@ -38,12 +38,21 @@ class EnsureUserIsNotBanned
             return $next($request);
         }
 
-        // Banned users may browse read-only — only block write actions
+        // Permanently banned: force logout so they must use the login-page appeal flow
+        if ($user->isBanned()) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login');
+        }
+
+        // Temporarily suspended: allow read-only browsing, block writes
         if ($request->isMethod('GET')) {
             return $next($request);
         }
 
-        // Write action from a banned user — trigger the appeal modal client-side
+        // Write action from a suspended user — trigger the appeal modal client-side
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json(['banned' => true], 403);
         }

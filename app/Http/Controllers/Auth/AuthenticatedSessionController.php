@@ -28,6 +28,19 @@ class AuthenticatedSessionController extends Controller
     {
         $user = $request->authenticateCredentials();
 
+        // Permanently banned: don't authenticate — show appeal on the login page instead
+        if ($user->isBanned()) {
+            $ban = $user->activeBan();
+            $request->session()->put('ban_appeal', [
+                'user_id' => $user->id,
+                'ban_reason' => $ban?->reason,
+                'ban_type' => $ban?->type,
+                'has_open_appeal' => $ban?->hasOpenAppeal() ?? false,
+            ]);
+
+            return redirect()->route('login');
+        }
+
         // Email not verified → make them verify before they get a session.
         if (! $user->hasVerifiedEmail()) {
             return $this->startChallenge($request, $otp, $user, 'email_verification');
