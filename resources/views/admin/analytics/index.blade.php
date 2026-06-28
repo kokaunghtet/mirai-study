@@ -2,7 +2,7 @@
     <x-slot name="title">Analytics — MiraiStudy Admin</x-slot>
 
     <div class="px-4 pb-10" x-data="analyticsPage()">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-7xl mx-auto">
 
             {{-- AJAX fetch error banner --}}
             <div x-show="error"
@@ -106,82 +106,77 @@
 
             </div>
 
-            {{-- Chart A: User Registrations (full width) --}}
-            <div class="mb-8">
-                <div class="rounded-2xl border border-line bg-surface shadow-sm p-5 relative"
+            {{-- Charts: 3-column compact row --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+                {{-- Chart A: User Registrations --}}
+                <div class="rounded-xl border border-line bg-surface shadow-sm p-3 relative"
                      :class="loading ? 'opacity-50 pointer-events-none' : ''">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center z-10">
-                        <i data-lucide="loader-2" class="h-6 w-6 text-accent animate-spin"></i>
+                        <i data-lucide="loader-2" class="h-5 w-5 text-accent animate-spin"></i>
                     </div>
-                    <h2 class="text-sm font-bold text-content mb-4">User Registrations</h2>
-                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
-                        <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
-                        <p class="font-bold text-content">No data for this period</p>
-                        <p>Try a wider date range or check back once users are active.</p>
+                    <h2 class="text-xs font-bold text-content mb-3">User Registrations</h2>
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-1.5 px-3 py-8 text-center text-xs text-muted">
+                        <i data-lucide="bar-chart-2" class="h-5 w-5 text-muted"></i>
+                        <p class="font-bold text-content">No data</p>
                     </div>
-                    <div class="h-64 md:h-80">
+                    <div class="h-48">
                         <canvas id="chart-registrations" class="w-full"></canvas>
                     </div>
                 </div>
-            </div>
 
-            {{-- Chart row B: side-by-side --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-
-                {{-- Chart B: Exam Content (left) --}}
-                <div class="rounded-2xl border border-line bg-surface shadow-sm p-5 relative"
+                {{-- Chart B: Exam Content --}}
+                <div class="rounded-xl border border-line bg-surface shadow-sm p-3 relative"
                      :class="loading ? 'opacity-50 pointer-events-none' : ''">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center z-10">
-                        <i data-lucide="loader-2" class="h-6 w-6 text-accent animate-spin"></i>
+                        <i data-lucide="loader-2" class="h-5 w-5 text-accent animate-spin"></i>
                     </div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <h2 class="text-sm font-bold text-content">Exam Content</h2>
-                        <div class="flex items-center gap-3 text-xs text-muted">
-                            <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:rgba(var(--accent),0.85)"></span>
+                    <div class="flex items-center gap-3 mb-3">
+                        <h2 class="text-xs font-bold text-content">Exam Content</h2>
+                        <div class="flex items-center gap-2 text-[10px] text-muted ml-auto">
+                            <span class="flex items-center gap-1">
+                                <span class="inline-block h-2 w-2 rounded-full" style="background:rgba(var(--accent),0.85)"></span>
                                 Papers
                             </span>
-                            <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:rgba(var(--accent),0.4)"></span>
-                                Questions
+                            <span class="flex items-center gap-1">
+                                <span class="inline-block h-2 w-2 rounded-full" style="background:rgba(var(--accent),0.4)"></span>
+                                Qs
                             </span>
                         </div>
                     </div>
-                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
-                        <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
-                        <p class="font-bold text-content">No data for this period</p>
-                        <p>Try a wider date range or check back once users are active.</p>
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-1.5 px-3 py-8 text-center text-xs text-muted">
+                        <i data-lucide="bar-chart-2" class="h-5 w-5 text-muted"></i>
+                        <p class="font-bold text-content">No data</p>
                     </div>
-                    <div class="h-64">
+                    <div class="h-48">
                         <canvas id="chart-exam-content" class="w-full"></canvas>
                     </div>
                 </div>
 
-                {{-- Chart C: Quiz Performance (right) --}}
-                <div class="rounded-2xl border border-line bg-surface shadow-sm p-5 relative"
+                {{-- Chart C: Quiz Performance --}}
+                <div class="rounded-xl border border-line bg-surface shadow-sm p-3 relative"
                      :class="loading ? 'opacity-50 pointer-events-none' : ''">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center z-10">
-                        <i data-lucide="loader-2" class="h-6 w-6 text-accent animate-spin"></i>
+                        <i data-lucide="loader-2" class="h-5 w-5 text-accent animate-spin"></i>
                     </div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <h2 class="text-sm font-bold text-content">Quiz Performance</h2>
-                        <div class="flex items-center gap-3 text-xs text-muted">
-                            <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:rgb(var(--accent))"></span>
+                    <div class="flex items-center gap-3 mb-3">
+                        <h2 class="text-xs font-bold text-content">Quiz Performance</h2>
+                        <div class="flex items-center gap-2 text-[10px] text-muted ml-auto">
+                            <span class="flex items-center gap-1">
+                                <span class="inline-block h-2 w-2 rounded-full" style="background:rgb(var(--accent))"></span>
                                 Attempts
                             </span>
-                            <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-3 w-3 rounded-full border-2 border-dashed" style="border-color:rgb(var(--muted))"></span>
-                                Pass Rate
+                            <span class="flex items-center gap-1">
+                                <span class="inline-block h-2 w-2 rounded-full border border-dashed" style="border-color:rgb(var(--muted))"></span>
+                                Rate
                             </span>
                         </div>
                     </div>
-                    <div x-show="!chartsReady" class="flex flex-col items-center gap-2 px-5 py-12 text-center text-sm text-muted">
-                        <i data-lucide="bar-chart-2" class="h-6 w-6 text-muted"></i>
-                        <p class="font-bold text-content">No data for this period</p>
-                        <p>Try a wider date range or check back once users are active.</p>
+                    <div x-show="!chartsReady" class="flex flex-col items-center gap-1.5 px-3 py-8 text-center text-xs text-muted">
+                        <i data-lucide="bar-chart-2" class="h-5 w-5 text-muted"></i>
+                        <p class="font-bold text-content">No data</p>
                     </div>
-                    <div class="h-64">
+                    <div class="h-48">
                         <canvas id="chart-quiz-performance" class="w-full"></canvas>
                     </div>
                 </div>
@@ -284,8 +279,8 @@
                                 backgroundColor: accent.replace('rgb(', 'rgba(').replace(')', ', 0.08)'),
                                 fill: true,
                                 tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 5,
+                                pointRadius: 2,
+                                pointHoverRadius: 4,
                             }]
                         },
                         options: {
@@ -306,8 +301,8 @@
                                 }
                             },
                             scales: {
-                                x: { ticks: { color: muted, font: { size: 11 } }, grid: { color: line } },
-                                y: { beginAtZero: true, ticks: { color: muted, font: { size: 11 }, precision: 0 }, grid: { color: line } }
+                                x: { ticks: { color: muted, font: { size: 10 } }, grid: { color: line } },
+                                y: { beginAtZero: true, ticks: { color: muted, font: { size: 10 }, precision: 0 }, grid: { color: line } }
                             }
                         }
                     }
@@ -325,15 +320,15 @@
                                     label: 'Papers',
                                     data: data.papers,
                                     backgroundColor: accent.replace('rgb(', 'rgba(').replace(')', ', 0.85)'),
-                                    barPercentage: 0.8,
-                                    categoryPercentage: 0.7,
+                                    barPercentage: 0.75,
+                                    categoryPercentage: 0.65,
                                 },
                                 {
                                     label: 'Questions',
                                     data: data.questions,
                                     backgroundColor: accent.replace('rgb(', 'rgba(').replace(')', ', 0.4)'),
-                                    barPercentage: 0.8,
-                                    categoryPercentage: 0.7,
+                                    barPercentage: 0.75,
+                                    categoryPercentage: 0.65,
                                 }
                             ]
                         },
@@ -352,8 +347,8 @@
                                 }
                             },
                             scales: {
-                                x: { ticks: { color: muted, font: { size: 11 } }, grid: { color: line } },
-                                y: { beginAtZero: true, ticks: { color: muted, font: { size: 11 }, precision: 0 }, grid: { color: line } }
+                                x: { ticks: { color: muted, font: { size: 10 } }, grid: { color: line } },
+                                y: { beginAtZero: true, ticks: { color: muted, font: { size: 10 }, precision: 0 }, grid: { color: line } }
                             }
                         }
                     }
@@ -380,7 +375,7 @@
                                     data: data.passRates,
                                     borderColor: muted,
                                     borderDash: [4, 4],
-                                    pointRadius: 3,
+                                    pointRadius: 2,
                                     fill: false,
                                     yAxisID: 'yPassRate',
                                 }
@@ -401,18 +396,18 @@
                                 }
                             },
                             scales: {
-                                x: { ticks: { color: muted, font: { size: 11 } }, grid: { color: line } },
+                                x: { ticks: { color: muted, font: { size: 10 } }, grid: { color: line } },
                                 yAttempts: {
                                     beginAtZero: true,
                                     position: 'left',
-                                    ticks: { color: muted, font: { size: 11 }, precision: 0 },
+                                    ticks: { color: muted, font: { size: 10 }, precision: 0 },
                                     grid: { color: line }
                                 },
                                 yPassRate: {
                                     beginAtZero: true,
                                     max: 100,
                                     position: 'right',
-                                    ticks: { color: muted, font: { size: 11 }, callback: v => v + '%' },
+                                    ticks: { color: muted, font: { size: 10 }, callback: v => v + '%' },
                                     grid: { drawOnChartArea: false }
                                 }
                             }
