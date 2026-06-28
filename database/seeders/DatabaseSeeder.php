@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             N1QuestionSeeder::class,
             N2QuestionSeeder::class,
             N3QuestionSeeder::class,
-           N4QuestionSeeder::class,
-           N5QuestionSeeder::class,
+            N4QuestionSeeder::class,
+            N5QuestionSeeder::class,
             QuizSeeder::class,
         ]);
     }

@@ -18,7 +18,7 @@
             </header>
 
             {{-- Stat Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
 
                 {{-- Users --}}
                 <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
@@ -83,6 +83,20 @@
                     </div>
                 </div>
 
+                {{-- Appeals --}}
+                <div class="rounded-2xl border border-line p-5 shadow-sm {{ $stats['pending_appeals'] > 0 ? 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-900/40' : 'bg-surface' }}">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider {{ $stats['pending_appeals'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted' }}">Appeals</span>
+                        <i data-lucide="shield-check" class="h-4 w-4 {{ $stats['pending_appeals'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted' }}"></i>
+                    </div>
+                    <div class="text-3xl font-bold {{ $stats['pending_appeals'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-content' }}">
+                        {{ number_format($stats['pending_appeals']) }}
+                    </div>
+                    <div class="mt-2 text-xs {{ $stats['pending_appeals'] > 0 ? 'text-red-500 dark:text-red-500' : 'text-muted' }}">
+                        pending review
+                    </div>
+                </div>
+
                 {{-- Content --}}
                 <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
                     <div class="flex items-center justify-between mb-3">
@@ -105,7 +119,7 @@
             </div>
 
             {{-- Quick Nav --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
                 <a href="{{ route('admin.users') }}"
                    class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
                     <i data-lucide="users" class="h-4 w-4 text-accent shrink-0"></i>
@@ -130,6 +144,16 @@
                    class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
                     <i data-lucide="brain" class="h-4 w-4 text-accent shrink-0"></i>
                     Questions
+                </a>
+                <a href="{{ route('admin.appeals') }}"
+                   class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                    <i data-lucide="shield-check" class="h-4 w-4 text-accent shrink-0"></i>
+                    Appeals
+                    @if ($stats['pending_appeals'] > 0)
+                        <span class="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                            {{ $stats['pending_appeals'] }}
+                        </span>
+                    @endif
                 </a>
             </div>
 
@@ -192,7 +216,7 @@
                     @else
                         <ul class="divide-y divide-line">
                             @foreach ($recent_reports as $report)
-                                <li class="px-5 py-3" x-data="{ resolved: false }" x-show="!resolved" x-transition>
+                                <li class="px-5 py-3">
                                     <div class="flex items-center justify-between gap-2 mb-0.5">
                                         <span class="text-xs font-semibold text-content">
                                             {{ '@' . ($report->reporter?->username ?? 'deleted') }}
@@ -201,17 +225,13 @@
                                             {{ $report->target_type }}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-muted truncate">{{ Str::limit($report->reason, 60) }}</p>
+                                    <p class="text-xs text-muted truncate">{{ Str::limit($report->reason ?? $report->category, 60) }}</p>
                                     <div class="mt-2 flex items-center gap-2">
                                         <p class="flex-1 text-[10px] text-muted">{{ $report->created_at->diffForHumans() }}</p>
-                                        <button @click="resolveReport({{ $report->id }}, 'reviewed', $el); resolved = true"
-                                                class="rounded-lg bg-green-100 px-2 py-1 text-[10px] font-semibold text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 transition-colors">
-                                            Reviewed
-                                        </button>
-                                        <button @click="resolveReport({{ $report->id }}, 'dismissed', $el); resolved = true"
-                                                class="rounded-lg bg-surface-muted px-2 py-1 text-[10px] font-semibold text-muted hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors">
-                                            Dismiss
-                                        </button>
+                                        <a href="{{ route('admin.reports') }}"
+                                           class="rounded-lg bg-accent/10 px-2 py-1 text-[10px] font-semibold text-accent hover:bg-accent/20 transition-colors">
+                                            Review →
+                                        </a>
                                     </div>
                                 </li>
                             @endforeach
@@ -220,6 +240,52 @@
                 </section>
 
             </div>
+
+            {{-- Pending Appeals --}}
+            @if ($stats['pending_appeals'] > 0)
+            <section class="mt-6 rounded-2xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20 shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-red-200 dark:border-red-900/40">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="h-4 w-4 text-red-600 dark:text-red-400"></i>
+                        <h2 class="text-sm font-bold text-red-700 dark:text-red-400">Pending Appeals</h2>
+                        <span class="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{{ $stats['pending_appeals'] }}</span>
+                    </div>
+                    <a href="{{ route('admin.appeals') }}" class="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">
+                        Review all
+                    </a>
+                </div>
+                @if ($recent_appeals->isEmpty())
+                    <div class="px-5 py-6 text-center text-sm text-muted">No recent appeals.</div>
+                @else
+                    <ul class="divide-y divide-red-200 dark:divide-red-900/30">
+                        @foreach ($recent_appeals as $appeal)
+                            <li class="px-5 py-3">
+                                <div class="flex items-center justify-between gap-2 mb-0.5">
+                                    <span class="text-xs font-semibold text-content">
+                                        {{ '@' . ($appeal->user?->username ?? 'deleted') }}
+                                    </span>
+                                    <span @class([
+                                        'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                                        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' => $appeal->ban?->type === 'permanent',
+                                        'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' => $appeal->ban?->type === 'temporary',
+                                    ])>
+                                        {{ ucfirst($appeal->ban?->type ?? 'ban') }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-muted truncate italic">"{{ Str::limit($appeal->message, 70) }}"</p>
+                                <div class="mt-1.5 flex items-center gap-2">
+                                    <p class="flex-1 text-[10px] text-muted">{{ $appeal->created_at->diffForHumans() }}</p>
+                                    <a href="{{ route('admin.appeals') }}"
+                                       class="rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-1 text-[10px] font-semibold text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors">
+                                        Review →
+                                    </a>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+            @endif
 
             {{-- System Health --}}
             <section class="mt-6 rounded-2xl border border-line bg-surface shadow-sm overflow-hidden">

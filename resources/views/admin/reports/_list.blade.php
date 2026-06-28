@@ -25,6 +25,22 @@
     @endforeach
 </div>
 
+@php
+$categoryLabels = [
+    'spam'           => 'Spam',
+    'harassment'     => 'Harassment',
+    'misinformation' => 'Misinformation',
+    'inappropriate'  => 'Inappropriate',
+    'other'          => 'Other',
+];
+$actionLabels = [
+    'removed_content' => ['label' => 'Removed', 'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+    'temp_banned'     => ['label' => 'Temp banned', 'class' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'],
+    'perm_banned'     => ['label' => 'Banned', 'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+    'none'            => ['label' => 'No action', 'class' => 'bg-surface-muted text-muted border border-line'],
+];
+@endphp
+
 @if ($reports->isEmpty())
     <div class="rounded-2xl border border-line bg-surface px-6 py-12 text-center">
         <i data-lucide="check-circle" class="mx-auto mb-3 h-8 w-8 text-green-500"></i>
@@ -37,7 +53,7 @@
             <thead>
                 <tr class="border-b border-line bg-surface-muted">
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Reporter</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Type</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-muted">Target</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden md:table-cell">Category / Detail</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden sm:table-cell">Reported</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-muted hidden lg:table-cell">Reviewed by</th>
@@ -45,15 +61,6 @@
                     <th class="px-4 py-3 text-right text-xs font-semibold text-muted">Actions</th>
                 </tr>
             </thead>
-            @php
-                $categoryLabels = [
-                    'spam'           => 'Spam',
-                    'harassment'     => 'Harassment',
-                    'misinformation' => 'Misinformation',
-                    'inappropriate'  => 'Inappropriate',
-                    'other'          => 'Other',
-                ];
-            @endphp
             <tbody class="divide-y divide-line">
                 @foreach ($reports as $report)
                     <tr class="hover:bg-surface-muted transition-colors" id="report-row-{{ $report->id }}">
@@ -63,11 +70,20 @@
                             {{ '@' . ($report->reporter?->username ?? 'deleted') }}
                         </td>
 
-                        {{-- Target type --}}
+                        {{-- Target type + link --}}
                         <td class="px-4 py-3">
                             <span class="rounded-full border border-line bg-surface-muted px-2 py-0.5 text-[10px] font-semibold text-muted capitalize">
                                 {{ $report->target_type }}
                             </span>
+                            @if ($report->target_type === 'user')
+                                @php $targetUser = \App\Models\User::find($report->target_id); @endphp
+                                @if ($targetUser)
+                                    <a href="{{ route('profile.show', $targetUser->username) }}"
+                                       class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[80px]">
+                                        {{ '@'.$targetUser->username }}
+                                    </a>
+                                @endif
+                            @endif
                         </td>
 
                         {{-- Category / Detail --}}
@@ -85,9 +101,15 @@
                             {{ $report->created_at->diffForHumans() }}
                         </td>
 
-                        {{-- Reviewed by --}}
+                        {{-- Reviewed by + action taken --}}
                         <td class="px-4 py-3 text-xs text-muted hidden lg:table-cell">
-                            {{ $report->reviewer?->username ?? '—' }}
+                            <div>{{ $report->reviewer?->username ?? '—' }}</div>
+                            @if ($report->action_taken && isset($actionLabels[$report->action_taken]))
+                                @php $al = $actionLabels[$report->action_taken]; @endphp
+                                <span class="mt-0.5 inline-block rounded-full px-1.5 py-0.5 text-[9px] font-bold {{ $al['class'] }}">
+                                    {{ $al['label'] }}
+                                </span>
+                            @endif
                         </td>
 
                         {{-- Status badge --}}
@@ -107,20 +129,102 @@
                         {{-- Actions --}}
                         <td class="px-4 py-3 text-right">
                             @if ($report->status === 'pending')
-                                <div id="report-actions-{{ $report->id }}" class="flex items-center justify-end gap-1.5">
-                                    <button
-                                        onclick="resolveReport({{ $report->id }}, 'resolved')"
-                                        class="rounded-lg bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50">
-                                        Resolve
-                                    </button>
-                                    <button
-                                        onclick="resolveReport({{ $report->id }}, 'rejected')"
-                                        class="rounded-lg border border-line bg-surface-muted px-2.5 py-1 text-xs font-semibold text-muted transition-colors hover:bg-surface">
-                                        Reject
-                                    </button>
+                                <div id="report-actions-{{ $report->id }}"
+                                     x-data="reportActionMenu({{ $report->id }}, '{{ $report->target_type }}')">
+
+                                    {{-- Compact action menu --}}
+                                    <div class="flex items-center justify-end gap-1 flex-wrap">
+
+                                        {{-- Remove content (not for user reports) --}}
+                                        @if ($report->target_type !== 'user')
+                                            <button
+                                                @click="act('remove_content')"
+                                                :disabled="loading"
+                                                class="rounded-lg bg-orange-100 px-2 py-1 text-[10px] font-semibold text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 disabled:opacity-50">
+                                                Remove
+                                            </button>
+                                        @endif
+
+                                        {{-- Temp ban (hidden for mod if target is mod/admin — enforced server-side too) --}}
+                                        <button
+                                            @click="openBanForm('temp')"
+                                            :disabled="loading"
+                                            class="rounded-lg bg-amber-100 px-2 py-1 text-[10px] font-semibold text-amber-700 transition-colors hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400 disabled:opacity-50">
+                                            Temp ban
+                                        </button>
+
+                                        {{-- Permanent ban --}}
+                                        <button
+                                            @click="openBanForm('perm')"
+                                            :disabled="loading"
+                                            class="rounded-lg bg-red-100 px-2 py-1 text-[10px] font-semibold text-red-700 transition-colors hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 disabled:opacity-50">
+                                            Perm ban
+                                        </button>
+
+                                        {{-- Reject --}}
+                                        <button
+                                            @click="act('reject')"
+                                            :disabled="loading"
+                                            class="rounded-lg border border-line bg-surface-muted px-2 py-1 text-[10px] font-semibold text-muted transition-colors hover:bg-surface disabled:opacity-50">
+                                            Reject
+                                        </button>
+                                    </div>
+
+                                    {{-- Temp-ban popover --}}
+                                    <div x-show="showBanForm && banType === 'temp'" x-cloak
+                                         class="mt-2 rounded-xl border border-line bg-surface p-3 text-left shadow-lg min-w-[200px]">
+                                        <p class="text-[10px] font-bold text-content mb-2">Temporary ban duration</p>
+                                        <div class="flex flex-wrap gap-1.5 mb-2">
+                                            @foreach ([1 => '1d', 3 => '3d', 7 => '7d', 30 => '30d'] as $days => $lbl)
+                                                <button type="button"
+                                                        @click="duration = {{ $days }}"
+                                                        :class="duration === {{ $days }} ? 'bg-accent text-white' : 'border border-line bg-surface-muted text-muted hover:text-content'"
+                                                        class="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-colors">
+                                                    {{ $lbl }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <label class="block text-[10px] text-muted mb-1">Reason <span class="text-muted/60">(optional)</span></label>
+                                        <input type="text" x-model="reason" maxlength="200"
+                                               placeholder="Brief reason…"
+                                               class="w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20 mb-2">
+                                        <div class="flex gap-1.5">
+                                            <button @click="act('temp_ban')" :disabled="!duration || loading"
+                                                    class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400 transition-colors">
+                                                Confirm
+                                            </button>
+                                            <button @click="showBanForm = false"
+                                                    class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Perm-ban reason popover --}}
+                                    <div x-show="showBanForm && banType === 'perm'" x-cloak
+                                         class="mt-2 rounded-xl border border-line bg-surface p-3 text-left shadow-lg min-w-[200px]">
+                                        <p class="text-[10px] font-bold text-content mb-2">Permanent ban</p>
+                                        <label class="block text-[10px] text-muted mb-1">Reason <span class="text-muted/60">(optional)</span></label>
+                                        <input type="text" x-model="reason" maxlength="200"
+                                               placeholder="Brief reason…"
+                                               class="w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20 mb-2">
+                                        <div class="flex gap-1.5">
+                                            <button @click="act('perm_ban')" :disabled="loading"
+                                                    class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
+                                                Confirm ban
+                                            </button>
+                                            <button @click="showBanForm = false"
+                                                    class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Error toast --}}
+                                    <p x-show="errorMsg" x-cloak class="mt-1 text-[10px] text-red-500" x-text="errorMsg"></p>
                                 </div>
                             @else
-                                <span class="text-xs text-muted">—</span>
+                                <span id="report-actions-{{ $report->id }}" class="text-xs text-muted">—</span>
                             @endif
                         </td>
 
@@ -137,4 +241,3 @@
         </div>
     @endif
 @endif
-

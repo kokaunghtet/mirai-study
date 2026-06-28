@@ -84,6 +84,16 @@ class User extends Authenticatable
         return $this->hasMany(Report::class, 'reporter_id');
     }
 
+    public function bans()
+    {
+        return $this->hasMany(UserBan::class);
+    }
+
+    public function appeals()
+    {
+        return $this->hasMany(Appeal::class);
+    }
+
     public function likedPosts()
     {
         return $this->belongsToMany(Post::class, 'post_likes');
@@ -131,5 +141,56 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /** Permanent ban (status=banned, no expiry). */
+    public function isBanned(): bool
+    {
+        return $this->status === 'banned';
+    }
+
+    /** Active temporary ban (status=suspended, not yet expired). */
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
+    /**
+     * True if the user is currently banned or suspended.
+     * Lazily lifts expired temp bans as a side-effect so no scheduler is needed.
+     */
+    public function isBannedNow(): bool
+    {
+        if ($this->status === 'banned') {
+            return true;
+        }
+
+        if ($this->status === 'suspended') {
+            $active = $this->bans()->active()->latest()->first();
+
+            if ($active === null || $active->isExpired()) {
+                // Auto-lift: ban expired or orphaned suspended status
+                if ($active) {
+                    $active->update(['lifted_at' => now()]);
+                }
+                $this->update(['status' => 'active']);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /** The currently active UserBan row (null if not banned). */
+    public function activeBan(): ?UserBan
+    {
+        if (! $this->isBanned() && ! $this->isSuspended()) {
+            return null;
+        }
+
+        return $this->bans()->active()->with(['bannedBy', 'report'])->latest()->first();
     }
 }

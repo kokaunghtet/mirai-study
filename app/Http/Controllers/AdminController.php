@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\Appeal;
+use App\Models\Comment;
 use App\Models\ExamPaper;
 use App\Models\Post;
 use App\Models\Question;
 use App\Models\QuizAttempt;
 use App\Models\Report;
 use App\Models\User;
+use App\Models\UserBan;
+use App\Notifications\AppealApprovedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
@@ -22,29 +25,30 @@ class AdminController extends Controller
     {
         $stats = Cache::remember('admin_stats', 300, function () {
             return [
-                'total_users'      => User::count(),
-                'active_users'     => User::where('status', 'active')->count(),
-                'banned_users'     => User::where('status', 'banned')->count(),
-                'total_posts'      => Post::count(),
-                'posts_today'      => Post::whereDate('created_at', today())->count(),
-                'pending_reports'  => Report::where('status', 'pending')->count(),
-                'total_papers'     => ExamPaper::count(),
-                'total_questions'  => Question::count(),
+                'total_users' => User::count(),
+                'active_users' => User::where('status', 'active')->count(),
+                'banned_users' => User::where('status', 'banned')->count(),
+                'total_posts' => Post::count(),
+                'posts_today' => Post::whereDate('created_at', today())->count(),
+                'pending_reports' => Report::where('status', 'pending')->count(),
+                'pending_appeals' => Appeal::where('status', 'pending')->count(),
+                'total_papers' => ExamPaper::count(),
+                'total_questions' => Question::count(),
             ];
         });
 
         $trends = Cache::remember('admin_trends', 300, function () {
             $now = now();
-            $last7  = $now->copy()->subDays(7);
-            $prev7  = $now->copy()->subDays(14);
+            $last7 = $now->copy()->subDays(7);
+            $prev7 = $now->copy()->subDays(14);
 
             return [
-                'users'     => User::where('created_at', '>=', $last7)->count() - User::whereBetween('created_at', [$prev7, $last7])->count(),
-                'posts'     => Post::where('created_at', '>=', $last7)->count() - Post::whereBetween('created_at', [$prev7, $last7])->count(),
-                'reports'   => Report::where('created_at', '>=', $last7)->count() - Report::whereBetween('created_at', [$prev7, $last7])->count(),
-                'papers'    => ExamPaper::where('created_at', '>=', $last7)->count() - ExamPaper::whereBetween('created_at', [$prev7, $last7])->count(),
+                'users' => User::where('created_at', '>=', $last7)->count() - User::whereBetween('created_at', [$prev7, $last7])->count(),
+                'posts' => Post::where('created_at', '>=', $last7)->count() - Post::whereBetween('created_at', [$prev7, $last7])->count(),
+                'reports' => Report::where('created_at', '>=', $last7)->count() - Report::whereBetween('created_at', [$prev7, $last7])->count(),
+                'papers' => ExamPaper::where('created_at', '>=', $last7)->count() - ExamPaper::whereBetween('created_at', [$prev7, $last7])->count(),
                 'questions' => Question::where('created_at', '>=', $last7)->count() - Question::whereBetween('created_at', [$prev7, $last7])->count(),
-                'attempts'  => QuizAttempt::where('completed_at', '>=', $last7)->count() - QuizAttempt::whereBetween('completed_at', [$prev7, $last7])->count(),
+                'attempts' => QuizAttempt::where('completed_at', '>=', $last7)->count() - QuizAttempt::whereBetween('completed_at', [$prev7, $last7])->count(),
             ];
         });
 
@@ -55,21 +59,27 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
 
+        $recent_appeals = Appeal::with(['user', 'ban'])
+            ->where('status', 'pending')
+            ->latest()
+            ->limit(3)
+            ->get();
+
         $activityItems = ActivityLog::with('user')
             ->latest()
             ->limit(10)
             ->get();
 
         $health = [
-            'queue_size'     => DB::table('jobs')->count(),
-            'failed_jobs'    => DB::table('failed_jobs')->count(),
-            'storage_used'   => Cache::remember('admin_storage_used', 3600, fn () => $this->getStorageUsed()),
-            'last_deploy'    => file_exists(base_path('DEPLOY_TIME'))
+            'queue_size' => DB::table('jobs')->count(),
+            'failed_jobs' => DB::table('failed_jobs')->count(),
+            'storage_used' => Cache::remember('admin_storage_used', 3600, fn () => $this->getStorageUsed()),
+            'last_deploy' => file_exists(base_path('DEPLOY_TIME'))
                 ? Carbon::createFromTimestamp(filemtime(base_path('DEPLOY_TIME')))->diffForHumans()
                 : null,
         ];
 
-        return view('admin.dashboard', compact('stats', 'trends', 'recent_users', 'recent_reports', 'activityItems', 'health'));
+        return view('admin.dashboard', compact('stats', 'trends', 'recent_users', 'recent_reports', 'recent_appeals', 'activityItems', 'health'));
     }
 
     private function getStorageUsed(): string
@@ -79,6 +89,7 @@ class AdminController extends Controller
             foreach (Storage::disk('public')->allFiles() as $file) {
                 $bytes += Storage::disk('public')->size($file);
             }
+
             return $this->humanFileSize($bytes);
         } catch (\Throwable) {
             return '—';
@@ -93,6 +104,7 @@ class AdminController extends Controller
             $bytes /= 1024;
             $i++;
         }
+
         return round($bytes, 1).' '.$units[$i];
     }
 
@@ -143,12 +155,12 @@ class AdminController extends Controller
 
         if ($request->status === 'banned') {
             ActivityLog::create([
-                'user_id'      => auth()->id(),
-                'action'       => 'user_banned',
+                'user_id' => auth()->id(),
+                'action' => 'user_banned',
                 'subject_type' => 'User',
-                'subject_id'   => $user->id,
-                'properties'   => ['username' => $user->username],
-                'created_at'   => now(),
+                'subject_id' => $user->id,
+                'properties' => ['username' => $user->username],
+                'created_at' => now(),
             ]);
         }
 
@@ -213,30 +225,234 @@ class AdminController extends Controller
 
     public function updateReport(Request $request, Report $report)
     {
-        if ($report->status !== 'pending') {
+        if ($report->status !== Report::STATUS_PENDING) {
             abort(422, 'This report has already been processed.');
         }
 
-        $request->validate(['status' => 'required|in:reviewed,resolved,rejected']);
-
-        $report->update([
-            'status' => $request->status,
-            'reviewed_by' => auth()->id(),
+        $request->validate([
+            'action' => 'required|in:remove_content,temp_ban,perm_ban,reject',
+            'duration' => 'required_if:action,temp_ban|nullable|integer|min:1|max:365',
+            'reason' => 'nullable|string|max:1000',
         ]);
 
-        ActivityLog::create([
-            'user_id'      => auth()->id(),
-            'action'       => 'report_resolved',
-            'subject_type' => 'Report',
-            'subject_id'   => $report->id,
-            'properties'   => ['outcome' => $request->status],
-            'created_at'   => now(),
+        $action = $request->action;
+        $reviewer = auth()->user();
+        $isModerator = $reviewer->isModerator();
+
+        // remove_content only valid for post/comment targets
+        if ($action === 'remove_content' && $report->target_type === 'user') {
+            abort(422, 'Cannot remove content for a user report.');
+        }
+
+        // Resolve the target user for ban/content actions
+        $targetUser = null;
+        if ($action !== 'reject') {
+            if ($report->target_type === 'user') {
+                $targetUser = User::find($report->target_id);
+            } elseif (in_array($action, ['temp_ban', 'perm_ban'], true)) {
+                // Ban the author of the reported post/comment
+                $target = match ($report->target_type) {
+                    'post' => Post::withTrashed()->find($report->target_id),
+                    'comment' => Comment::withTrashed()->find($report->target_id),
+                    default => null,
+                };
+                $targetUser = $target?->user;
+            }
+        }
+
+        // Permission matrix for ban actions
+        if (in_array($action, ['temp_ban', 'perm_ban'], true) && $targetUser) {
+            if ($targetUser->isAdmin()) {
+                abort(403, 'Cannot ban an admin.');
+            }
+            if ($isModerator && $targetUser->isModerator()) {
+                abort(403, 'Moderators cannot ban other moderators.');
+            }
+            if ($targetUser->id === $reviewer->id) {
+                abort(403, 'Cannot ban yourself.');
+            }
+        }
+
+        DB::transaction(function () use ($report, $request, $action, $reviewer, $targetUser) {
+            $actionTaken = Report::ACTION_NONE;
+
+            if ($action === 'remove_content') {
+                match ($report->target_type) {
+                    'post' => Post::find($report->target_id)?->delete(),
+                    'comment' => Comment::find($report->target_id)?->delete(),
+                    default => null,
+                };
+                $actionTaken = Report::ACTION_REMOVED_CONTENT;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'content_removed',
+                    'subject_type' => ucfirst($report->target_type),
+                    'subject_id' => $report->target_id,
+                    'properties' => ['report_id' => $report->id],
+                    'created_at' => now(),
+                ]);
+
+            } elseif ($action === 'temp_ban' && $targetUser) {
+                $expiresAt = now()->addDays((int) $request->duration);
+
+                UserBan::create([
+                    'user_id' => $targetUser->id,
+                    'type' => 'temporary',
+                    'reason' => $request->reason,
+                    'report_id' => $report->id,
+                    'banned_by' => $reviewer->id,
+                    'expires_at' => $expiresAt,
+                ]);
+                $targetUser->update(['status' => 'suspended']);
+                $actionTaken = Report::ACTION_TEMP_BANNED;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'user_temp_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $targetUser->id,
+                    'properties' => [
+                        'username' => $targetUser->username,
+                        'days' => $request->duration,
+                        'report_id' => $report->id,
+                    ],
+                    'created_at' => now(),
+                ]);
+
+            } elseif ($action === 'perm_ban' && $targetUser) {
+                UserBan::create([
+                    'user_id' => $targetUser->id,
+                    'type' => 'permanent',
+                    'reason' => $request->reason,
+                    'report_id' => $report->id,
+                    'banned_by' => $reviewer->id,
+                    'expires_at' => null,
+                ]);
+                $targetUser->update(['status' => 'banned']);
+                $actionTaken = Report::ACTION_PERM_BANNED;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'user_perm_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $targetUser->id,
+                    'properties' => [
+                        'username' => $targetUser->username,
+                        'report_id' => $report->id,
+                    ],
+                    'created_at' => now(),
+                ]);
+            }
+
+            $report->update([
+                'status' => $action === 'reject' ? Report::STATUS_REJECTED : Report::STATUS_RESOLVED,
+                'reviewed_by' => $reviewer->id,
+                'action_taken' => $actionTaken,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => $reviewer->id,
+                'action' => 'report_resolved',
+                'subject_type' => 'Report',
+                'subject_id' => $report->id,
+                'properties' => ['outcome' => $report->status, 'action' => $action],
+                'created_at' => now(),
+            ]);
+
+            Cache::forget('admin_stats');
+            Cache::forget('admin_trends');
+        });
+
+        $report->refresh();
+
+        return response()->json([
+            'status' => $report->status,
+            'action_taken' => $report->action_taken,
         ]);
+    }
 
-        Cache::forget('admin_stats');
-        Cache::forget('admin_trends');
+    // ---- Appeals (admin-only) ----
 
-        return response()->json(['status' => $report->status]);
+    public function appeals(Request $request)
+    {
+        $query = Appeal::with(['user', 'ban.bannedBy', 'ban.report', 'reviewer']);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'pending');
+        }
+
+        $appeals = $query->latest()->paginate(20)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.appeals._list', compact('appeals'))->render(),
+            ]);
+        }
+
+        return view('admin.appeals.index', compact('appeals'));
+    }
+
+    public function updateAppeal(Request $request, Appeal $appeal)
+    {
+        if ($appeal->status !== 'pending') {
+            abort(422, 'This appeal has already been reviewed.');
+        }
+
+        $request->validate(['action' => 'required|in:approve,reject']);
+
+        $action = $request->action;
+
+        DB::transaction(function () use ($appeal, $action) {
+            $appeal->update([
+                'status' => $action === 'approve' ? 'approved' : 'rejected',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
+
+            if ($action === 'approve') {
+                // Lift the ban
+                $ban = $appeal->ban;
+                $user = $appeal->user;
+
+                $ban->update([
+                    'lifted_at' => now(),
+                    'lifted_by' => auth()->id(),
+                ]);
+
+                $user->update(['status' => 'active']);
+
+                $user->notify(new AppealApprovedNotification($appeal));
+
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'appeal_approved',
+                    'subject_type' => 'User',
+                    'subject_id' => $user->id,
+                    'properties' => [
+                        'username' => $user->username,
+                        'appeal_id' => $appeal->id,
+                        'ban_id' => $ban->id,
+                    ],
+                    'created_at' => now(),
+                ]);
+            } else {
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'appeal_rejected',
+                    'subject_type' => 'Appeal',
+                    'subject_id' => $appeal->id,
+                    'properties' => ['user_id' => $appeal->user_id],
+                    'created_at' => now(),
+                ]);
+            }
+
+            Cache::forget('admin_stats');
+        });
+
+        return response()->json(['status' => $appeal->fresh()->status]);
     }
 
     public function analytics()
@@ -248,8 +464,8 @@ class AdminController extends Controller
     {
         $request->validate([
             'range' => 'sometimes|in:7d,30d,90d,custom',
-            'from'  => 'required_if:range,custom|nullable|date|before_or_equal:today',
-            'to'    => 'required_if:range,custom|nullable|date|after_or_equal:from|before_or_equal:today',
+            'from' => 'required_if:range,custom|nullable|date|before_or_equal:today',
+            'to' => 'required_if:range,custom|nullable|date|after_or_equal:from|before_or_equal:today',
         ]);
 
         $range = $request->input('range', '30d');
@@ -268,7 +484,7 @@ class AdminController extends Controller
         } else {
             $end = Carbon::now('UTC');
             $start = match ($range) {
-                '7d'  => Carbon::now('UTC')->subDays(6)->startOfDay(),
+                '7d' => Carbon::now('UTC')->subDays(6)->startOfDay(),
                 '90d' => Carbon::now('UTC')->subDays(89)->startOfDay(),
                 default => Carbon::now('UTC')->subDays(29)->startOfDay(), // 30d
             };

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentLikeController;
@@ -9,11 +10,11 @@ use App\Http\Controllers\ExamPaperController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TimerController;
 use Illuminate\Support\Facades\Route;
@@ -47,7 +48,16 @@ Route::get('/users/{user:username}/following', [ProfileController::class, 'follo
 // Authenticated routes — must be logged in
 // -------------------------------------------------------
 
+// Ban screen — accessible while authenticated (banned users keep their session for appeal access)
+Route::get('/banned', fn () => redirect()->route('appeal.create'))->middleware('auth')->name('banned');
+
+// Appeal form — accessible to authenticated banned/suspended users only
 Route::middleware('auth')->group(function () {
+    Route::get('/appeal', [AppealController::class, 'create'])->name('appeal.create');
+    Route::post('/appeal', [AppealController::class, 'store'])->name('appeal.store');
+});
+
+Route::middleware(['auth', 'not-banned'])->group(function () {
 
     // --- Profile ---
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -135,11 +145,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::patch('/users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
     Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('users.status');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
+    // Appeals — admin only
+    Route::get('/appeals', [AdminController::class, 'appeals'])->name('appeals');
+    Route::patch('/appeals/{appeal}', [AdminController::class, 'updateAppeal'])->name('appeals.update');
 
     // Analytics
-    Route::get('/analytics',      [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
     Route::get('/analytics/data', [AdminController::class, 'analyticsData'])->name('analytics.data');
 
     // Exam paper management — admin only
@@ -151,6 +162,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
     Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+});
+
+// Reports + content moderation — admin or moderator
+Route::middleware(['auth', 'admin-or-mod'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
 });
 
 // Exam papers + questions — admin or moderator (index, edit, update, history)

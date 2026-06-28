@@ -206,15 +206,15 @@ class ExamPaperController extends Controller
 
         return response()->json(
             $revisions->values()->map(fn ($r, $i) => [
-                'id'              => $r->id,
-                'is_latest'       => $i === 0,
-                'is_initial'      => $i === $total - 1,
-                'action'          => $r->action,
-                'editor'          => [
+                'id' => $r->id,
+                'is_latest' => $i === 0,
+                'is_initial' => $i === $total - 1,
+                'action' => $r->action,
+                'editor' => [
                     'display_name' => $r->editor->display_name,
-                    'initial'      => strtoupper(substr($r->editor->display_name, 0, 1)),
+                    'initial' => strtoupper(substr($r->editor->display_name, 0, 1)),
                 ],
-                'created_at'      => $r->created_at->diffForHumans(),
+                'created_at' => $r->created_at->diffForHumans(),
                 'created_at_full' => $r->created_at->format('M j, Y · g:i A'),
             ])
         );

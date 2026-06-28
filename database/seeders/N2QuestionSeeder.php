@@ -21,18 +21,20 @@ class N2QuestionSeeder extends Seeder
 
         if (! $level) {
             $this->command?->warn('N2QuestionSeeder: JLPT not found — run ExamSeeder first. Skipped.');
+
             return;
         }
 
         $banks = [
-            'kanji'   => base_path('knowledge/jlpt/N2kanji.txt'),
-            'vocab'   => base_path('knowledge/jlpt/N2vocabulary.txt'),
+            'kanji' => base_path('knowledge/jlpt/N2kanji.txt'),
+            'vocab' => base_path('knowledge/jlpt/N2vocabulary.txt'),
             'grammar' => base_path('knowledge/jlpt/N2grammar.txt'),
         ];
 
         foreach ($banks as $section => $path) {
             if (! is_file($path)) {
                 $this->command?->warn("N2QuestionSeeder: {$path} missing — skipped {$section}.");
+
                 continue;
             }
 
@@ -44,14 +46,14 @@ class N2QuestionSeeder extends Seeder
             foreach ($questions as $q) {
                 Question::create([
                     'category_id' => $category->id,
-                    'level_id'    => $level->id,
-                    'section'     => $section,
-                    'text'        => $q['text'],
-                    'option_a'    => $q['a'],
-                    'option_b'    => $q['b'],
-                    'option_c'    => $q['c'],
-                    'option_d'    => $q['d'],
-                    'answer'      => $q['answer'],
+                    'level_id' => $level->id,
+                    'section' => $section,
+                    'text' => $q['text'],
+                    'option_a' => $q['a'],
+                    'option_b' => $q['b'],
+                    'option_c' => $q['c'],
+                    'option_d' => $q['d'],
+                    'answer' => $q['answer'],
                 ]);
             }
 
@@ -66,7 +68,7 @@ class N2QuestionSeeder extends Seeder
     {
         // 1. Normalize all line breaks to standard \n
         $raw = preg_replace('/\R/u', "\n", $raw);
-        
+
         // 2. Remove all those long dashed lines so they don't break our matching
         $raw = preg_replace('/-{3,}/u', '', $raw);
 
@@ -77,12 +79,12 @@ class N2QuestionSeeder extends Seeder
         // 4. Match every question block safely using the /u modifier at the end
         // FIXED: Added 'u' modifier here to prevent character corruption
         $pattern = '/(?:\b|\s)(\d+)\.\s*(.+?)(correct\s+answer\s*[:\-]\s*[A-Da-d\s]+)/isu';
-        
+
         $out = [];
         if (preg_match_all($pattern, $raw, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
-                $body = $match[2]; 
-                $footer = $match[3]; 
+                $body = $match[2];
+                $footer = $match[3];
 
                 // Extract Correct Answer letter safely
                 if (preg_match('/correct\s+answer\s*[:\-]\s*([A-Da-d])/i', $footer, $ansMatch)) {
@@ -98,28 +100,36 @@ class N2QuestionSeeder extends Seeder
                 $patternD = '/(?:\b|\s)\(?[dえ][:\)]\s*/ui';
 
                 $partsA = preg_split($patternA, $body, 2) ?: [];
-                if (count($partsA) < 2) continue;
+                if (count($partsA) < 2) {
+                    continue;
+                }
                 $text = $partsA[0];
 
                 $partsB = preg_split($patternB, $partsA[1], 2) ?: [];
-                if (count($partsB) < 2) continue;
+                if (count($partsB) < 2) {
+                    continue;
+                }
                 $a = $partsB[0];
 
                 $partsC = preg_split($patternC, $partsB[1], 2) ?: [];
-                if (count($partsC) < 2) continue;
+                if (count($partsC) < 2) {
+                    continue;
+                }
                 $b = $partsC[0];
 
                 $partsD = preg_split($patternD, $partsC[1], 2) ?: [];
-                if (count($partsD) < 2) continue;
+                if (count($partsD) < 2) {
+                    continue;
+                }
                 $c = $partsD[0];
                 $d = $partsD[1];
 
                 $out[] = [
-                    'text'   => $this->clean($text),
-                    'a'      => $this->clean($a),
-                    'b'      => $this->clean($b),
-                    'c'      => $this->clean($c),
-                    'd'      => $this->clean($d),
+                    'text' => $this->clean($text),
+                    'a' => $this->clean($a),
+                    'b' => $this->clean($b),
+                    'c' => $this->clean($c),
+                    'd' => $this->clean($d),
                     'answer' => $answer,
                 ];
             }

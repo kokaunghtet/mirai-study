@@ -105,6 +105,19 @@
                                     Follow
                                 </button>
                             @endauth
+
+                            {{-- Report this user (logged-in, non-own profile) --}}
+                            @auth
+                                @if (! $isOwnProfile)
+                                    <button type="button"
+                                            title="Report this user"
+                                            onclick="window.dispatchEvent(new CustomEvent('open-report', { detail: { type: 'user', id: {{ $user->id }} } }))"
+                                            class="shrink-0 flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[12px] font-semibold text-muted hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all active:scale-95">
+                                        <i data-lucide="flag" class="w-3.5 h-3.5"></i>
+                                        <span>Report</span>
+                                    </button>
+                                @endif
+                            @endauth
                         @endif
                     </div>
 

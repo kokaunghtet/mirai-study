@@ -151,6 +151,13 @@
                                 <i data-lucide="flag" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.reports*') ? '' : 'text-muted' }}"></i>
                                 <span>Reports</span>
                             </a>
+                            <a href="{{ route('admin.appeals') }}"
+                               @click="sidebarOpen = false"
+                               title="Appeals"
+                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.appeals*') ? 'active' : 'text-muted' }}">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.appeals*') ? '' : 'text-muted' }}"></i>
+                                <span>Appeals</span>
+                            </a>
                             <a href="{{ route('admin.analytics') }}"
                                @click="sidebarOpen = false"
                                title="Analytics"
@@ -159,6 +166,22 @@
                                 <span>Analytics</span>
                             </a>
                         </div>
+                    </div>
+                @endif
+            @endauth
+
+            {{-- Moderation (moderators only; admins see this under their Dashboard sub-nav) --}}
+            @auth
+                @if (auth()->user()->isModerator())
+                    <div>
+                        <a href="{{ route('admin.reports') }}"
+                           @click="sidebarOpen = false"
+                           title="Moderation"
+                           class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.reports*') ? 'active' : 'text-muted' }}"
+                           :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                            <i data-lucide="shield" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.reports*') ? '' : 'text-muted' }}"></i>
+                            <span x-show="!sidebarCollapsed">Moderation</span>
+                        </a>
                     </div>
                 @endif
             @endauth
@@ -405,6 +428,9 @@
 
     {{-- Report Modal --}}
     @include('components.report-modal')
+
+    {{-- Appeal Modal (shown when banned user attempts a restricted action) --}}
+    @include('components.appeal-modal')
 
     {{-- Auth Modal for guests --}}
     @guest
