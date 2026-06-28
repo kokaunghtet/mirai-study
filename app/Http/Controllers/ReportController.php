@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,6 +37,26 @@ class ReportController extends Controller
         // Block self-reports
         if ($data['target_type'] === 'user' && (int) $data['target_id'] === auth()->id()) {
             return response()->json(['error' => 'self'], 422);
+        }
+
+        // Block reporting admin accounts
+        if ($data['target_type'] === 'user') {
+            $target = User::find($data['target_id']);
+            if ($target && $target->isAdmin()) {
+                return response()->json(['error' => 'admin'], 422);
+            }
+        }
+
+        // Block reporting admin content (posts/comments)
+        if (in_array($data['target_type'], ['post', 'comment'], true)) {
+            $table = $data['target_type'] === 'post' ? 'posts' : 'comments';
+            $ownerId = DB::table($table)->where('id', $data['target_id'])->value('user_id');
+            if ($ownerId) {
+                $owner = User::find($ownerId);
+                if ($owner && $owner->isAdmin()) {
+                    return response()->json(['error' => 'admin'], 422);
+                }
+            }
         }
 
         $exists = Report::where('reporter_id', auth()->id())

@@ -130,7 +130,7 @@
                     <i data-lucide="flag" class="h-4 w-4 text-accent shrink-0"></i>
                     Reports
                     @if ($stats['pending_reports'] > 0)
-                        <span class="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        <span class="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[10px] font-bold text-white">
                             {{ $stats['pending_reports'] }}
                         </span>
                     @endif
@@ -150,7 +150,7 @@
                     <i data-lucide="shield-check" class="h-4 w-4 text-accent shrink-0"></i>
                     Appeals
                     @if ($stats['pending_appeals'] > 0)
-                        <span class="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        <span class="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                             {{ $stats['pending_appeals'] }}
                         </span>
                     @endif

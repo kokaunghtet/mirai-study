@@ -58,6 +58,19 @@
             </button>
         </div>
 
+        {{-- Admin target state --}}
+        <div x-show="state === 'admin'" class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="shield-check" class="w-5 h-5 text-accent shrink-0"></i>
+                <h2 class="font-bold text-content">Cannot report admin</h2>
+            </div>
+            <p class="text-sm text-muted mb-5">Admin accounts cannot be reported. If you have a concern, please contact support directly.</p>
+            <button @click="close()" type="button"
+                    class="w-full py-2 rounded-lg border border-line text-sm font-medium text-content hover:bg-surface-muted transition">
+                Close
+            </button>
+        </div>
+
         {{-- Main form --}}
         <div x-show="state === 'idle' || state === 'submitting'">
 

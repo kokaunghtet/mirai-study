@@ -60,6 +60,7 @@
                                 </span>
                             </div>
                             {{-- More menu: Delete own / Report others' --}}
+                            @if (auth()->id() === $comment->user_id || ! $comment->user->isAdmin())
                             @auth
                                 <div class="relative shrink-0" x-data="{ open: false }">
                                     <button @click="open = !open" @click.outside="open = false"
@@ -91,6 +92,7 @@
                                     </div>
                                 </div>
                             @endauth
+                            @endif
                         </div>
                         <p class="text-sm text-content">{{ $comment->content }}</p>
                     </div>
@@ -123,6 +125,7 @@
                                                 </span>
                                             </div>
                                             {{-- More menu: Delete own / Report others' --}}
+                                            @if (auth()->id() === $reply->user_id || ! $reply->user->isAdmin())
                                             @auth
                                                 <div class="relative shrink-0" x-data="{ open: false }">
                                                     <button @click="open = !open" @click.outside="open = false"
@@ -154,6 +157,7 @@
                                                     </div>
                                                 </div>
                                             @endauth
+                                            @endif
                                         </div>
                                         <p class="text-xs text-content">{{ $reply->content }}</p>
                                     </div>

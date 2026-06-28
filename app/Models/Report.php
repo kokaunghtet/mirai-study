@@ -20,6 +20,10 @@ class Report extends Model
 
     const ACTION_PERM_BANNED = 'perm_banned';
 
+    const ACTION_TEMP_BANNED_REMOVED = 'temp_banned_removed';
+
+    const ACTION_PERM_BANNED_REMOVED = 'perm_banned_removed';
+
     const ACTION_NONE = 'none';
 
     protected $fillable = [

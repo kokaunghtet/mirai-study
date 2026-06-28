@@ -37,6 +37,8 @@ $actionLabels = [
     'removed_content' => ['label' => 'Removed', 'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
     'temp_banned'     => ['label' => 'Temp banned', 'class' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'],
     'perm_banned'     => ['label' => 'Banned', 'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+    'temp_banned_removed' => ['label' => 'Temp banned + Removed', 'class' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'],
+    'perm_banned_removed' => ['label' => 'Perm banned + Removed', 'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
     'none'            => ['label' => 'No action', 'class' => 'bg-surface-muted text-muted border border-line'],
 ];
 @endphp
@@ -82,6 +84,42 @@ $actionLabels = [
                                        class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[80px]">
                                         {{ '@'.$targetUser->username }}
                                     </a>
+                                @else
+                                    <span class="block mt-0.5 text-[10px] text-muted italic">Deleted</span>
+                                @endif
+                            @elseif ($report->target_type === 'post')
+                                @php $targetPost = \App\Models\Post::withTrashed()->find($report->target_id); @endphp
+                                @if ($targetPost)
+                                    <a href="{{ route('posts.show', $targetPost) }}"
+                                       class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[120px]">
+                                        {{ Str::limit($targetPost->title ?: Str::limit($targetPost->content, 30), 25) }}
+                                    </a>
+                                    @if ($targetPost->trashed())
+                                        <span class="text-[9px] text-red-500 font-semibold">Deleted</span>
+                                    @endif
+                                @else
+                                    <span class="block mt-0.5 text-[10px] text-muted italic">Deleted</span>
+                                @endif
+                            @elseif ($report->target_type === 'comment')
+                                @php $targetComment = \App\Models\Comment::withTrashed()->find($report->target_id); @endphp
+                                @if ($targetComment)
+                                    @php $parentPost = \App\Models\Post::withTrashed()->find($targetComment->post_id); @endphp
+                                    @if ($parentPost && ! $parentPost->trashed())
+                                        <a href="{{ route('posts.show', $parentPost) }}"
+                                           class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[120px]">
+                                            {{ Str::limit($targetComment->content, 30) }}
+                                        </a>
+                                    @else
+                                        <span class="block mt-0.5 text-[10px] text-muted truncate max-w-[120px]">
+                                            {{ Str::limit($targetComment->content, 30) }}
+                                        </span>
+                                        <span class="text-[9px] text-muted italic">Post deleted</span>
+                                    @endif
+                                    @if ($targetComment->trashed())
+                                        <span class="text-[9px] text-red-500 font-semibold">Deleted</span>
+                                    @endif
+                                @else
+                                    <span class="block mt-0.5 text-[10px] text-muted italic">Deleted</span>
                                 @endif
                             @endif
                         </td>
@@ -132,42 +170,76 @@ $actionLabels = [
                                 <div id="report-actions-{{ $report->id }}"
                                      x-data="reportActionMenu({{ $report->id }}, '{{ $report->target_type }}')">
 
-                                    {{-- Compact action menu --}}
-                                    <div class="flex items-center justify-end gap-1 flex-wrap">
-
-                                        {{-- Remove content (not for user reports) --}}
-                                        @if ($report->target_type !== 'user')
-                                            <button
-                                                @click="act('remove_content')"
+                                    {{-- Dropdown trigger --}}
+                                    <div @click.outside="open = false" @keydown.escape.window="open = false">
+                                        <button @click="toggle($event)"
                                                 :disabled="loading"
-                                                class="rounded-lg bg-orange-100 px-2 py-1 text-[10px] font-semibold text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 disabled:opacity-50">
-                                                Remove
+                                                class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-[11px] font-semibold text-content transition-colors hover:bg-surface-muted disabled:opacity-50">
+                                            Actions
+                                            <i data-lucide="chevron-down" class="h-3 w-3 transition-transform" :class="open && 'rotate-180'"></i>
+                                        </button>
+
+                                        {{-- Dropdown menu (fixed to escape overflow-hidden) --}}
+                                        <div x-show="open" x-cloak
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="opacity-0 scale-95"
+                                             x-transition:enter-end="opacity-100 scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="opacity-100 scale-100"
+                                             x-transition:leave-end="opacity-0 scale-95"
+                                             :style="'position:fixed; left:' + dropX + 'px; top:' + dropY + 'px;'"
+                                             class="z-50 w-48 origin-top-right rounded-xl border border-line bg-surface py-1.5 shadow-lg">
+
+                                            {{-- Remove content --}}
+                                            @if ($report->target_type !== 'user')
+                                                <button @click="act('remove_content'); open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-content hover:bg-surface-muted transition-colors">
+                                                    <i data-lucide="trash-2" class="h-3.5 w-3.5 text-orange-500"></i>
+                                                    Remove content
+                                                </button>
+                                            @endif
+
+                                            {{-- Temp ban --}}
+                                            <button @click="openBanForm('temp'); open = false"
+                                                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-content hover:bg-surface-muted transition-colors">
+                                                <i data-lucide="clock" class="h-3.5 w-3.5 text-amber-500"></i>
+                                                Temp ban
                                             </button>
-                                        @endif
 
-                                        {{-- Temp ban (hidden for mod if target is mod/admin — enforced server-side too) --}}
-                                        <button
-                                            @click="openBanForm('temp')"
-                                            :disabled="loading"
-                                            class="rounded-lg bg-amber-100 px-2 py-1 text-[10px] font-semibold text-amber-700 transition-colors hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400 disabled:opacity-50">
-                                            Temp ban
-                                        </button>
+                                            {{-- Temp ban & remove --}}
+                                            @if ($report->target_type !== 'user')
+                                                <button @click="openBanForm('temp_remove'); open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-content hover:bg-surface-muted transition-colors">
+                                                    <i data-lucide="clock-arrow-up" class="h-3.5 w-3.5 text-amber-500"></i>
+                                                    Temp ban &amp; remove
+                                                </button>
+                                            @endif
 
-                                        {{-- Permanent ban --}}
-                                        <button
-                                            @click="openBanForm('perm')"
-                                            :disabled="loading"
-                                            class="rounded-lg bg-red-100 px-2 py-1 text-[10px] font-semibold text-red-700 transition-colors hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 disabled:opacity-50">
-                                            Perm ban
-                                        </button>
+                                            {{-- Perm ban --}}
+                                            <button @click="openBanForm('perm'); open = false"
+                                                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-content hover:bg-surface-muted transition-colors">
+                                                <i data-lucide="ban" class="h-3.5 w-3.5 text-red-500"></i>
+                                                Perm ban
+                                            </button>
 
-                                        {{-- Reject --}}
-                                        <button
-                                            @click="act('reject')"
-                                            :disabled="loading"
-                                            class="rounded-lg border border-line bg-surface-muted px-2 py-1 text-[10px] font-semibold text-muted transition-colors hover:bg-surface disabled:opacity-50">
-                                            Reject
-                                        </button>
+                                            {{-- Perm ban & remove --}}
+                                            @if ($report->target_type !== 'user')
+                                                <button @click="openBanForm('perm_remove'); open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-content hover:bg-surface-muted transition-colors">
+                                                    <i data-lucide="shield-ban" class="h-3.5 w-3.5 text-red-500"></i>
+                                                    Perm ban &amp; remove
+                                                </button>
+                                            @endif
+
+                                            <div class="my-1 border-t border-line"></div>
+
+                                            {{-- Reject --}}
+                                            <button @click="act('reject'); open = false"
+                                                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-muted hover:bg-surface-muted hover:text-content transition-colors">
+                                                <i data-lucide="x-circle" class="h-3.5 w-3.5"></i>
+                                                Reject report
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {{-- Temp-ban popover --}}
@@ -200,6 +272,36 @@ $actionLabels = [
                                         </div>
                                     </div>
 
+                                    {{-- Temp-ban & remove popover --}}
+                                    <div x-show="showBanForm && banType === 'temp_remove'" x-cloak
+                                         class="mt-2 rounded-xl border border-line bg-surface p-3 text-left shadow-lg min-w-[200px]">
+                                        <p class="text-[10px] font-bold text-content mb-2">Temp ban & remove content</p>
+                                        <div class="flex flex-wrap gap-1.5 mb-2">
+                                            @foreach ([1 => '1d', 3 => '3d', 7 => '7d', 30 => '30d'] as $days => $lbl)
+                                                <button type="button"
+                                                        @click="duration = {{ $days }}"
+                                                        :class="duration === {{ $days }} ? 'bg-accent text-white' : 'border border-line bg-surface-muted text-muted hover:text-content'"
+                                                        class="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-colors">
+                                                    {{ $lbl }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <label class="block text-[10px] text-muted mb-1">Reason <span class="text-muted/60">(optional)</span></label>
+                                        <input type="text" x-model="reason" maxlength="200"
+                                               placeholder="Brief reason…"
+                                               class="w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20 mb-2">
+                                        <div class="flex gap-1.5">
+                                            <button @click="act('temp_ban_remove')" :disabled="!duration || loading"
+                                                    class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400 transition-colors">
+                                                Confirm
+                                            </button>
+                                            <button @click="showBanForm = false"
+                                                    class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {{-- Perm-ban reason popover --}}
                                     <div x-show="showBanForm && banType === 'perm'" x-cloak
                                          class="mt-2 rounded-xl border border-line bg-surface p-3 text-left shadow-lg min-w-[200px]">
@@ -212,6 +314,26 @@ $actionLabels = [
                                             <button @click="act('perm_ban')" :disabled="loading"
                                                     class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
                                                 Confirm ban
+                                            </button>
+                                            <button @click="showBanForm = false"
+                                                    class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Perm-ban & remove popover --}}
+                                    <div x-show="showBanForm && banType === 'perm_remove'" x-cloak
+                                         class="mt-2 rounded-xl border border-line bg-surface p-3 text-left shadow-lg min-w-[200px]">
+                                        <p class="text-[10px] font-bold text-content mb-2">Perm ban & remove content</p>
+                                        <label class="block text-[10px] text-muted mb-1">Reason <span class="text-muted/60">(optional)</span></label>
+                                        <input type="text" x-model="reason" maxlength="200"
+                                               placeholder="Brief reason…"
+                                               class="w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20 mb-2">
+                                        <div class="flex gap-1.5">
+                                            <button @click="act('perm_ban_remove')" :disabled="loading"
+                                                    class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
+                                                Confirm ban &amp; remove
                                             </button>
                                             <button @click="showBanForm = false"
                                                     class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">

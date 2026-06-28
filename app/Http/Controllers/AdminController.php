@@ -230,8 +230,8 @@ class AdminController extends Controller
         }
 
         $request->validate([
-            'action' => 'required|in:remove_content,temp_ban,perm_ban,reject',
-            'duration' => 'required_if:action,temp_ban|nullable|integer|min:1|max:365',
+            'action' => 'required|in:remove_content,temp_ban,perm_ban,temp_ban_remove,perm_ban_remove,reject',
+            'duration' => 'required_if:action,temp_ban,temp_ban_remove|nullable|integer|min:1|max:365',
             'reason' => 'nullable|string|max:1000',
         ]);
 
@@ -240,7 +240,7 @@ class AdminController extends Controller
         $isModerator = $reviewer->isModerator();
 
         // remove_content only valid for post/comment targets
-        if ($action === 'remove_content' && $report->target_type === 'user') {
+        if (in_array($action, ['remove_content', 'temp_ban_remove', 'perm_ban_remove'], true) && $report->target_type === 'user') {
             abort(422, 'Cannot remove content for a user report.');
         }
 
@@ -249,7 +249,7 @@ class AdminController extends Controller
         if ($action !== 'reject') {
             if ($report->target_type === 'user') {
                 $targetUser = User::find($report->target_id);
-            } elseif (in_array($action, ['temp_ban', 'perm_ban'], true)) {
+            } elseif (in_array($action, ['temp_ban', 'perm_ban', 'temp_ban_remove', 'perm_ban_remove'], true)) {
                 // Ban the author of the reported post/comment
                 $target = match ($report->target_type) {
                     'post' => Post::withTrashed()->find($report->target_id),
@@ -261,7 +261,7 @@ class AdminController extends Controller
         }
 
         // Permission matrix for ban actions
-        if (in_array($action, ['temp_ban', 'perm_ban'], true) && $targetUser) {
+        if (in_array($action, ['temp_ban', 'perm_ban', 'temp_ban_remove', 'perm_ban_remove'], true) && $targetUser) {
             if ($targetUser->isAdmin()) {
                 abort(403, 'Cannot ban an admin.');
             }
@@ -331,6 +331,89 @@ class AdminController extends Controller
                 ]);
                 $targetUser->update(['status' => 'banned']);
                 $actionTaken = Report::ACTION_PERM_BANNED;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'user_perm_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $targetUser->id,
+                    'properties' => [
+                        'username' => $targetUser->username,
+                        'report_id' => $report->id,
+                    ],
+                    'created_at' => now(),
+                ]);
+            } elseif ($action === 'temp_ban_remove' && $targetUser) {
+                // Remove content
+                match ($report->target_type) {
+                    'post' => Post::find($report->target_id)?->delete(),
+                    'comment' => Comment::find($report->target_id)?->delete(),
+                    default => null,
+                };
+
+                // Temp ban the author
+                $expiresAt = now()->addDays((int) $request->duration);
+
+                UserBan::create([
+                    'user_id' => $targetUser->id,
+                    'type' => 'temporary',
+                    'reason' => $request->reason,
+                    'report_id' => $report->id,
+                    'banned_by' => $reviewer->id,
+                    'expires_at' => $expiresAt,
+                ]);
+                $targetUser->update(['status' => 'suspended']);
+                $actionTaken = Report::ACTION_TEMP_BANNED_REMOVED;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'content_removed',
+                    'subject_type' => ucfirst($report->target_type),
+                    'subject_id' => $report->target_id,
+                    'properties' => ['report_id' => $report->id],
+                    'created_at' => now(),
+                ]);
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'user_temp_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $targetUser->id,
+                    'properties' => [
+                        'username' => $targetUser->username,
+                        'days' => $request->duration,
+                        'report_id' => $report->id,
+                    ],
+                    'created_at' => now(),
+                ]);
+            } elseif ($action === 'perm_ban_remove' && $targetUser) {
+                // Remove content
+                match ($report->target_type) {
+                    'post' => Post::find($report->target_id)?->delete(),
+                    'comment' => Comment::find($report->target_id)?->delete(),
+                    default => null,
+                };
+
+                // Perm ban the author
+                UserBan::create([
+                    'user_id' => $targetUser->id,
+                    'type' => 'permanent',
+                    'reason' => $request->reason,
+                    'report_id' => $report->id,
+                    'banned_by' => $reviewer->id,
+                    'expires_at' => null,
+                ]);
+                $targetUser->update(['status' => 'banned']);
+                $actionTaken = Report::ACTION_PERM_BANNED_REMOVED;
+
+                ActivityLog::create([
+                    'user_id' => $reviewer->id,
+                    'action' => 'content_removed',
+                    'subject_type' => ucfirst($report->target_type),
+                    'subject_id' => $report->target_id,
+                    'properties' => ['report_id' => $report->id],
+                    'created_at' => now(),
+                ]);
 
                 ActivityLog::create([
                     'user_id' => $reviewer->id,

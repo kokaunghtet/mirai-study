@@ -87,6 +87,7 @@
             @endif
 
             {{-- More menu --}}
+            @if (auth()->id() === $post->user_id || (auth()->check() && ! $post->user->isAdmin()))
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open" @click.outside="open = false"
                         class="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-surface-muted transition-colors"
@@ -113,7 +114,7 @@
                                 Delete
                             </button>
                         </form>
-                    @elseif(auth()->check())
+                    @else
                         <button type="button"
                                 @click="$dispatch('open-report', { type: 'post', id: {{ $post->id }} }); open = false"
                                 class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
@@ -123,6 +124,7 @@
 
                 </div>{{-- ← always closed, regardless of @if branch --}}
             </div>
+            @endif
 
         </div>
     </header>

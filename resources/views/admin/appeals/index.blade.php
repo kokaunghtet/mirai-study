@@ -11,7 +11,7 @@
                         Appeals
                         @php $pending = \App\Models\Appeal::where('status','pending')->count(); @endphp
                         @if ($pending > 0)
-                            <span class="ml-2 rounded-full bg-red-500 px-2 py-0.5 text-sm font-bold text-white align-middle">
+                            <span class="ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white align-middle">
                                 {{ $pending }}
                             </span>
                         @endif

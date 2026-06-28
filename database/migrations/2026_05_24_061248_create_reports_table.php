@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('reason')->nullable();
             $table->enum('status', ['pending', 'reviewed', 'resolved', 'rejected'])->default('pending');
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->enum('action_taken', ['removed_content', 'temp_banned', 'perm_banned', 'temp_banned_removed', 'perm_banned_removed', 'none'])->nullable();
             $table->timestamps();
             $table->index('reporter_id');
             $table->index('status');

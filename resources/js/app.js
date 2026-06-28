@@ -102,6 +102,8 @@ import {
     PieChart,
     Ban,
     Clock4,
+    ClockArrowUp,
+    XCircle,
 } from "lucide";
 
 const icons = {
@@ -184,13 +186,15 @@ const icons = {
     PieChart,
     Ban,
     Clock4,
+    ClockArrowUp,
+    XCircle,
 };
 
 Alpine.plugin(collapse);
 window.Alpine = Alpine;
 
 // ── Global fetch interceptor: banned-user 403 → appeal modal ──
-;(function () {
+(function () {
     const _orig = window.fetch;
     window.fetch = async function (...args) {
         const res = await _orig.apply(this, args);
@@ -1263,6 +1267,15 @@ Alpine.data("reportModal", () => ({
             });
             if (res.status === 409) {
                 this.state = "duplicate";
+                return;
+            }
+            if (res.status === 422) {
+                const err = await res.json().catch(() => ({}));
+                if (err.error === "admin") {
+                    this.state = "admin";
+                    return;
+                }
+                this.state = "error";
                 return;
             }
             if (!res.ok) {
