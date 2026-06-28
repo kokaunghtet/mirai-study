@@ -172,10 +172,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 
-// Reports + content moderation — admin or moderator
+// Reports + content moderation + direct mod actions — admin or moderator
 Route::middleware(['auth', 'admin-or-mod'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
+    Route::post('/users/{user}/ban', [AdminController::class, 'banUserDirect'])->name('users.ban');
 });
 
 // Exam papers + questions — admin or moderator (index, edit, update, history)

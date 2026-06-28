@@ -82,6 +82,18 @@
                                                     Delete
                                                 </button>
                                             </form>
+                                        @elseif (auth()->user()->isAdmin() || auth()->user()->isModerator())
+                                            <form method="POST"
+                                                  action="{{ route('comments.destroy', $comment) }}"
+                                                  data-confirm="Remove this comment?"
+                                                  data-loading>
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                    Remove
+                                                </button>
+                                            </form>
                                         @else
                                             <button type="button"
                                                     @click="$dispatch('open-report', { type: 'comment', id: {{ $comment->id }} }); open = false"
@@ -145,6 +157,18 @@
                                                                 <button type="submit"
                                                                         class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
                                                                     Delete
+                                                                </button>
+                                                            </form>
+                                                        @elseif (auth()->user()->isAdmin() || auth()->user()->isModerator())
+                                                            <form method="POST"
+                                                                  action="{{ route('comments.destroy', $reply) }}"
+                                                                  data-confirm="Remove this reply?"
+                                                                  data-loading>
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                        class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 transition">
+                                                                    Remove
                                                                 </button>
                                                             </form>
                                                         @else

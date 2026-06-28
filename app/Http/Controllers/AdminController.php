@@ -484,6 +484,74 @@ class AdminController extends Controller
         ]);
     }
 
+    // ---- Direct mod actions (admin-or-mod) ----
+
+    public function banUserDirect(Request $request, User $user)
+    {
+        $request->validate([
+            'type' => 'required|in:temp,perm',
+            'duration' => 'required_if:type,temp|nullable|integer|min:1|max:365',
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        $actor = auth()->user();
+
+        if ($user->id === $actor->id) {
+            abort(403, 'Cannot ban yourself.');
+        }
+        if ($user->isAdmin()) {
+            abort(403, 'Cannot ban an admin.');
+        }
+        if ($actor->isModerator() && $user->isModerator()) {
+            abort(403, 'Moderators cannot ban other moderators.');
+        }
+
+        DB::transaction(function () use ($request, $user, $actor) {
+            if ($request->type === 'temp') {
+                UserBan::create([
+                    'user_id' => $user->id,
+                    'type' => 'temporary',
+                    'reason' => $request->reason,
+                    'banned_by' => $actor->id,
+                    'expires_at' => now()->addDays((int) $request->duration),
+                ]);
+                $user->update(['status' => 'suspended']);
+
+                ActivityLog::create([
+                    'user_id' => $actor->id,
+                    'action' => 'user_temp_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $user->id,
+                    'properties' => ['username' => $user->username, 'days' => $request->duration],
+                    'created_at' => now(),
+                ]);
+            } else {
+                UserBan::create([
+                    'user_id' => $user->id,
+                    'type' => 'permanent',
+                    'reason' => $request->reason,
+                    'banned_by' => $actor->id,
+                    'expires_at' => null,
+                ]);
+                $user->update(['status' => 'banned']);
+
+                ActivityLog::create([
+                    'user_id' => $actor->id,
+                    'action' => 'user_perm_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $user->id,
+                    'properties' => ['username' => $user->username],
+                    'created_at' => now(),
+                ]);
+            }
+        });
+
+        Cache::forget('admin_stats');
+        Cache::forget('admin_trends');
+
+        return response()->json(['success' => true]);
+    }
+
     // ---- Appeals (admin-only) ----
 
     public function appeals(Request $request)

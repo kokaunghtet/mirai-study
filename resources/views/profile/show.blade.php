@@ -108,7 +108,128 @@
                                 @endauth
 
                                 @auth
-                                    @if (! $user->isAdmin())
+                                    @if (auth()->user()->isAdmin() || auth()->user()->isModerator())
+                                        @if (! $user->isAdmin() && ! (auth()->user()->isModerator() && $user->isModerator()) && ! $user->isBannedNow())
+                                        <div x-data="{
+                                                open: false,
+                                                form: null,
+                                                duration: null,
+                                                reason: '',
+                                                loading: false,
+                                                errorMsg: '',
+                                                openForm(type) { this.form = type; this.open = false; this.duration = null; this.reason = ''; this.errorMsg = ''; },
+                                                async ban() {
+                                                    if (this.loading) return;
+                                                    this.loading = true;
+                                                    this.errorMsg = '';
+                                                    try {
+                                                        const body = { type: this.form, reason: this.reason };
+                                                        if (this.form === 'temp') body.duration = this.duration;
+                                                        const res = await fetch('{{ route('admin.users.ban', $user) }}', {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                                'Content-Type': 'application/json',
+                                                                'Accept': 'application/json',
+                                                            },
+                                                            body: JSON.stringify(body),
+                                                        });
+                                                        if (!res.ok) {
+                                                            const err = await res.json().catch(() => ({}));
+                                                            this.errorMsg = err.message || 'Action failed.';
+                                                            return;
+                                                        }
+                                                        window.location.reload();
+                                                    } catch (e) {
+                                                        this.errorMsg = 'Network error.';
+                                                    } finally {
+                                                        this.loading = false;
+                                                    }
+                                                }
+                                             }" class="relative shrink-0">
+
+                                            {{-- Single wrapper captures outside-clicks for the whole component --}}
+                                            <div @click.outside="open = false; form = null"
+                                                 @keydown.escape.window="open = false; form = null">
+
+                                                {{-- Trigger --}}
+                                                <button @click="form ? form = null : open = !open"
+                                                        type="button"
+                                                        class="flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[12px] font-semibold text-red-600 hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/20 dark:hover:bg-red-950/40 transition-all active:scale-95">
+                                                    <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                                                    <span>Mod</span>
+                                                    <i data-lucide="chevron-down" class="w-3 h-3" :class="(open || form) && 'rotate-180'" style="transition:transform 0.15s"></i>
+                                                </button>
+
+                                                {{-- Dropdown --}}
+                                                <div x-show="open" x-cloak
+                                                     class="absolute right-0 top-9 z-50 w-36 overflow-hidden rounded-xl border border-line bg-surface py-1 text-[13px] font-semibold shadow-lg">
+                                                    <button @click="openForm('temp')"
+                                                            class="flex w-full items-center gap-2 px-3 py-2 text-left text-amber-600 hover:bg-surface-muted transition-colors">
+                                                        <i data-lucide="clock" class="h-3.5 w-3.5"></i>
+                                                        Temp ban
+                                                    </button>
+                                                    <button @click="openForm('perm')"
+                                                            class="flex w-full items-center gap-2 px-3 py-2 text-left text-red-600 hover:bg-surface-muted transition-colors">
+                                                        <i data-lucide="ban" class="h-3.5 w-3.5"></i>
+                                                        Perm ban
+                                                    </button>
+                                                </div>
+
+                                                {{-- Temp ban form --}}
+                                                <div x-show="form === 'temp'" x-cloak
+                                                     class="absolute right-0 top-9 z-50 w-56 rounded-xl border border-line bg-surface p-3 shadow-lg">
+                                                    <p class="mb-2 text-[11px] font-bold text-content">Temp ban duration</p>
+                                                    <div class="mb-2 flex flex-wrap gap-1.5">
+                                                        @foreach ([1 => '1d', 3 => '3d', 7 => '7d', 30 => '30d'] as $days => $lbl)
+                                                            <button type="button"
+                                                                    @click="duration = {{ $days }}"
+                                                                    :class="duration === {{ $days }} ? 'bg-accent text-white' : 'border border-line bg-surface-muted text-muted hover:text-content'"
+                                                                    class="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-colors">
+                                                                {{ $lbl }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                    <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
+                                                    <input type="text" x-model="reason" maxlength="200" placeholder="Brief reason…"
+                                                           class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
+                                                    <p x-show="errorMsg" x-text="errorMsg" x-cloak class="mb-1 text-[10px] text-red-500"></p>
+                                                    <div class="flex gap-1.5">
+                                                        <button @click="ban()" :disabled="!duration || loading"
+                                                                class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400 transition-colors">
+                                                            Confirm
+                                                        </button>
+                                                        <button @click="form = null" type="button"
+                                                                class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Perm ban form --}}
+                                                <div x-show="form === 'perm'" x-cloak
+                                                     class="absolute right-0 top-9 z-50 w-56 rounded-xl border border-line bg-surface p-3 shadow-lg">
+                                                    <p class="mb-2 text-[11px] font-bold text-content">Permanent ban</p>
+                                                    <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
+                                                    <input type="text" x-model="reason" maxlength="200" placeholder="Brief reason…"
+                                                           class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
+                                                    <p x-show="errorMsg" x-text="errorMsg" x-cloak class="mb-1 text-[10px] text-red-500"></p>
+                                                    <div class="flex gap-1.5">
+                                                        <button @click="ban()" :disabled="loading"
+                                                                class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
+                                                            Confirm
+                                                        </button>
+                                                        <button @click="form = null" type="button"
+                                                                class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>{{-- end @click.outside wrapper --}}
+                                        </div>
+                                        @endif
+                                    @elseif (! $user->isAdmin())
                                         <button type="button"
                                                 title="Report this user"
                                                 onclick="window.dispatchEvent(new CustomEvent('open-report', { detail: { type: 'user', id: {{ $user->id }} } }))"
