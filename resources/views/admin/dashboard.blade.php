@@ -248,7 +248,7 @@
                     <div class="flex items-center gap-2">
                         <i data-lucide="shield-alert" class="h-4 w-4 text-red-600 dark:text-red-400"></i>
                         <h2 class="text-sm font-bold text-red-700 dark:text-red-400">Pending Appeals</h2>
-                        <span class="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{{ $stats['pending_appeals'] }}</span>
+                        <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{{ $stats['pending_appeals'] }}</span>
                     </div>
                     <a href="{{ route('admin.appeals') }}" class="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">
                         Review all

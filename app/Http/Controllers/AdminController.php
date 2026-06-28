@@ -214,6 +214,31 @@ class AdminController extends Controller
 
         $reports = $query->latest()->paginate(20)->withQueryString();
 
+        // Pre-load targets to avoid N+1 queries in the view
+        $postIds = $reports->where('target_type', 'post')->pluck('target_id')->unique();
+        $commentIds = $reports->where('target_type', 'comment')->pluck('target_id')->unique();
+        $userIds = $reports->where('target_type', 'user')->pluck('target_id')->unique();
+
+        $postsMap = Post::withTrashed()->whereIn('id', $postIds)->get()->keyBy('id');
+        $commentsMap = Comment::withTrashed()->whereIn('id', $commentIds)->get()->keyBy('id');
+        $usersMap = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        // Also pre-load parent posts for comments
+        $commentParentIds = $commentsMap->pluck('post_id')->filter()->unique();
+        $commentParentPosts = Post::withTrashed()->whereIn('id', $commentParentIds)->get()->keyBy('id');
+
+        foreach ($reports as $report) {
+            $report->target_model = match ($report->target_type) {
+                'post' => $postsMap->get($report->target_id),
+                'comment' => $commentsMap->get($report->target_id),
+                'user' => $usersMap->get($report->target_id),
+                default => null,
+            };
+            if ($report->target_type === 'comment' && $report->target_model) {
+                $report->target_parent_post = $commentParentPosts->get($report->target_model->post_id);
+            }
+        }
+
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('admin.reports._list', compact('reports'))->render(),
@@ -278,8 +303,8 @@ class AdminController extends Controller
 
             if ($action === 'remove_content') {
                 match ($report->target_type) {
-                    'post' => Post::find($report->target_id)?->delete(),
-                    'comment' => Comment::find($report->target_id)?->delete(),
+                    'post' => Post::withTrashed()->find($report->target_id)?->delete(),
+                    'comment' => Comment::withTrashed()->find($report->target_id)?->delete(),
                     default => null,
                 };
                 $actionTaken = Report::ACTION_REMOVED_CONTENT;
@@ -346,8 +371,8 @@ class AdminController extends Controller
             } elseif ($action === 'temp_ban_remove' && $targetUser) {
                 // Remove content
                 match ($report->target_type) {
-                    'post' => Post::find($report->target_id)?->delete(),
-                    'comment' => Comment::find($report->target_id)?->delete(),
+                    'post' => Post::withTrashed()->find($report->target_id)?->delete(),
+                    'comment' => Comment::withTrashed()->find($report->target_id)?->delete(),
                     default => null,
                 };
 
@@ -389,8 +414,8 @@ class AdminController extends Controller
             } elseif ($action === 'perm_ban_remove' && $targetUser) {
                 // Remove content
                 match ($report->target_type) {
-                    'post' => Post::find($report->target_id)?->delete(),
-                    'comment' => Comment::find($report->target_id)?->delete(),
+                    'post' => Post::withTrashed()->find($report->target_id)?->delete(),
+                    'comment' => Comment::withTrashed()->find($report->target_id)?->delete(),
                     default => null,
                 };
 

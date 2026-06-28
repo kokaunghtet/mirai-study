@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appeal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AppealController extends Controller
 {
@@ -68,6 +69,8 @@ class AppealController extends Controller
             'message' => $request->message,
             'status' => 'pending',
         ]);
+
+        Cache::forget('admin_stats');
 
         return $request->expectsJson()
             ? response()->json(['success' => true])

@@ -78,7 +78,7 @@ $actionLabels = [
                                 {{ $report->target_type }}
                             </span>
                             @if ($report->target_type === 'user')
-                                @php $targetUser = \App\Models\User::find($report->target_id); @endphp
+                                @php $targetUser = $report->target_model; @endphp
                                 @if ($targetUser)
                                     <a href="{{ route('profile.show', $targetUser->username) }}"
                                        class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[80px]">
@@ -88,7 +88,7 @@ $actionLabels = [
                                     <span class="block mt-0.5 text-[10px] text-muted italic">Deleted</span>
                                 @endif
                             @elseif ($report->target_type === 'post')
-                                @php $targetPost = \App\Models\Post::withTrashed()->find($report->target_id); @endphp
+                                @php $targetPost = $report->target_model; @endphp
                                 @if ($targetPost)
                                     <a href="{{ route('posts.show', $targetPost) }}"
                                        class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[120px]">
@@ -101,9 +101,9 @@ $actionLabels = [
                                     <span class="block mt-0.5 text-[10px] text-muted italic">Deleted</span>
                                 @endif
                             @elseif ($report->target_type === 'comment')
-                                @php $targetComment = \App\Models\Comment::withTrashed()->find($report->target_id); @endphp
+                                @php $targetComment = $report->target_model; @endphp
                                 @if ($targetComment)
-                                    @php $parentPost = \App\Models\Post::withTrashed()->find($targetComment->post_id); @endphp
+                                    @php $parentPost = $report->target_parent_post; @endphp
                                     @if ($parentPost && ! $parentPost->trashed())
                                         <a href="{{ route('posts.show', $parentPost) }}"
                                            class="block mt-0.5 text-[10px] text-accent hover:underline truncate max-w-[120px]">
@@ -171,7 +171,7 @@ $actionLabels = [
                                      x-data="reportActionMenu({{ $report->id }}, '{{ $report->target_type }}')">
 
                                     {{-- Dropdown trigger --}}
-                                    <div @click.outside="open = false" @keydown.escape.window="open = false">
+                                    <div @click.outside="open = false" @keydown.escape.window="open = false" @scroll.window="open = false">
                                         <button @click="toggle($event)"
                                                 :disabled="loading"
                                                 class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-[11px] font-semibold text-content transition-colors hover:bg-surface-muted disabled:opacity-50">
