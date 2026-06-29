@@ -43,6 +43,18 @@ class GoogleController extends Controller
 
         $user = $this->findOrCreateUser($googleUser);
 
+        if ($user->isBannedNow()) {
+            $ban = $user->activeBan();
+            request()->session()->put('ban_appeal', [
+                'user_id' => $user->id,
+                'ban_reason' => $ban?->reason,
+                'ban_type' => $ban?->type,
+                'has_open_appeal' => $ban?->hasOpenAppeal() ?? false,
+            ]);
+
+            return redirect()->route('login');
+        }
+
         Auth::login($user, remember: true);
         request()->session()->regenerate();
 

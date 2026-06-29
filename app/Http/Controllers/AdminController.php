@@ -154,6 +154,16 @@ class AdminController extends Controller
         $user->update(['status' => $request->status]);
 
         if ($request->status === 'banned') {
+            // Ensure a UserBan record exists so storeGuest can find it via activeBan().
+            if (! $user->bans()->active()->exists()) {
+                UserBan::create([
+                    'user_id' => $user->id,
+                    'banned_by' => auth()->id(),
+                    'type' => 'permanent',
+                    'reason' => null,
+                ]);
+            }
+
             ActivityLog::create([
                 'user_id' => auth()->id(),
                 'action' => 'user_banned',

@@ -38,11 +38,20 @@ class EnsureUserIsNotBanned
             return $next($request);
         }
 
-        // Permanently banned: force logout so they must use the login-page appeal flow
+        // Permanently banned: force logout so they must use the login-page appeal flow.
+        // Stash ban_appeal AFTER regenerating so it survives the session invalidation.
         if ($user->isBanned()) {
+            $ban = $user->activeBan();
+            $banAppealData = [
+                'user_id' => $user->id,
+                'ban_reason' => $ban?->reason,
+                'ban_type' => $ban?->type,
+                'has_open_appeal' => $ban?->hasOpenAppeal() ?? false,
+            ];
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+            $request->session()->put('ban_appeal', $banAppealData);
 
             return redirect()->route('login');
         }

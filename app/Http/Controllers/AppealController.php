@@ -96,7 +96,7 @@ class AppealController extends Controller
 
         $user = User::find($banAppeal['user_id']);
 
-        if (! $user || ! $user->isBanned()) {
+        if (! $user || ! $user->isBannedNow()) {
             session()->forget('ban_appeal');
 
             return redirect()->route('login');

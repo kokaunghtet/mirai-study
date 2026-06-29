@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Login-page appeal flow — no auth required (banned users are not logged in)
-Route::post('/appeal/guest', [AppealController::class, 'storeGuest'])->name('appeal.store.guest')->middleware('throttle:3,60');
+Route::post('/appeal/guest', [AppealController::class, 'storeGuest'])->name('appeal.store.guest')->middleware('throttle:5,60');
 Route::post('/login/clear-ban', function () {
     session()->forget('ban_appeal');
 
