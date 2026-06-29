@@ -43,7 +43,7 @@ class GoogleController extends Controller
 
         $user = $this->findOrCreateUser($googleUser);
 
-        if ($user->isBannedNow()) {
+        if ($user->isBanned()) {
             $ban = $user->activeBan();
             request()->session()->put('ban_appeal', [
                 'user_id' => $user->id,
