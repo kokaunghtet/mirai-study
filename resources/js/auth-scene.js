@@ -23,7 +23,10 @@ function initAuthScene() {
     let stars = [];
     let flies = [];
     let leaves = [];
+    let leafSprites = [];
     let glowSprite = null;
+
+    const LEAF_SPRITE_SIZE = 22; // px — sprites pre-rendered at this size, scaled per leaf
     let moonSprite = null;
     let moonData = null;
 
@@ -111,7 +114,7 @@ function initAuthScene() {
             tiltSpeed: rand(-0.018, 0.018),
             size:      rand(9, 20),
             alpha:     rand(0.72, 0.96),
-            color:     LEAF_COLORS[Math.floor(Math.random() * LEAF_COLORS.length)],
+            colorIdx:  Math.floor(Math.random() * LEAF_COLORS.length),
             swayPhase: Math.random() * Math.PI * 2,
             swayAmp:   rand(0.4, 1.1),
         };
@@ -164,70 +167,90 @@ function initAuthScene() {
         }
     }
 
-    // Draw a single realistic leaf centered at (0,0) pointing upward.
-    // Caller sets ctx transform (translate + rotate + scale for 3-D tilt).
-    function drawLeafShape(size, color) {
+    // Draws a leaf centered at (0,0) onto the given 2D context — used for both
+    // offscreen sprite baking and (if needed) direct canvas drawing.
+    function drawLeafShape(c, size, color) {
         // Body: pointed tip → wide belly → base notch
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(0, -size);
-        ctx.bezierCurveTo( size * 0.54, -size * 0.56,  size * 0.88,  size * 0.09,  size * 0.09,  size * 0.53);
-        ctx.lineTo(0,  size * 0.64);
-        ctx.lineTo(-size * 0.09,  size * 0.53);
-        ctx.bezierCurveTo(-size * 0.88,  size * 0.09, -size * 0.54, -size * 0.56, 0, -size);
-        ctx.fill();
+        c.fillStyle = color;
+        c.beginPath();
+        c.moveTo(0, -size);
+        c.bezierCurveTo( size * 0.54, -size * 0.56,  size * 0.88,  size * 0.09,  size * 0.09,  size * 0.53);
+        c.lineTo(0,  size * 0.64);
+        c.lineTo(-size * 0.09,  size * 0.53);
+        c.bezierCurveTo(-size * 0.88,  size * 0.09, -size * 0.54, -size * 0.56, 0, -size);
+        c.fill();
 
         // Specular highlight (upper-left lobe)
-        ctx.fillStyle = 'rgba(255,255,255,0.14)';
-        ctx.beginPath();
-        ctx.moveTo(0, -size);
-        ctx.bezierCurveTo( size * 0.22, -size * 0.54,  size * 0.28, -size * 0.04, 0,  size * 0.26);
-        ctx.bezierCurveTo(-size * 0.16, -size * 0.06, -size * 0.12, -size * 0.50, 0, -size);
-        ctx.fill();
+        c.fillStyle = 'rgba(255,255,255,0.14)';
+        c.beginPath();
+        c.moveTo(0, -size);
+        c.bezierCurveTo( size * 0.22, -size * 0.54,  size * 0.28, -size * 0.04, 0,  size * 0.26);
+        c.bezierCurveTo(-size * 0.16, -size * 0.06, -size * 0.12, -size * 0.50, 0, -size);
+        c.fill();
 
         // Midrib vein
-        ctx.strokeStyle = 'rgba(0,0,0,0.20)';
-        ctx.lineWidth   = size * 0.058;
-        ctx.lineCap     = 'round';
-        ctx.beginPath();
-        ctx.moveTo(0, -size * 0.86);
-        ctx.lineTo(0,  size * 0.56);
-        ctx.stroke();
+        c.strokeStyle = 'rgba(0,0,0,0.20)';
+        c.lineWidth   = size * 0.058;
+        c.lineCap     = 'round';
+        c.beginPath();
+        c.moveTo(0, -size * 0.86);
+        c.lineTo(0,  size * 0.56);
+        c.stroke();
 
         // 3 pairs of side veins (curved, fanning outward)
-        ctx.lineWidth   = size * 0.030;
-        ctx.strokeStyle = 'rgba(0,0,0,0.13)';
+        c.lineWidth   = size * 0.030;
+        c.strokeStyle = 'rgba(0,0,0,0.13)';
         for (let i = 0; i < 3; i++) {
-            const nt  = (i + 1) / 4.2;
-            const vy  = -size + size * 1.45 * nt;
-            const vx  = size * (0.56 - nt * 0.14);
-            const ey  = vy + size * 0.24;
-            ctx.beginPath();
-            ctx.moveTo(0, vy);
-            ctx.quadraticCurveTo( vx * 0.45, vy + size * 0.09,  vx, ey);
-            ctx.moveTo(0, vy);
-            ctx.quadraticCurveTo(-vx * 0.45, vy + size * 0.09, -vx, ey);
-            ctx.stroke();
+            const nt = (i + 1) / 4.2;
+            const vy = -size + size * 1.45 * nt;
+            const vx = size * (0.56 - nt * 0.14);
+            const ey = vy + size * 0.24;
+            c.beginPath();
+            c.moveTo(0, vy);
+            c.quadraticCurveTo( vx * 0.45, vy + size * 0.09,  vx, ey);
+            c.moveTo(0, vy);
+            c.quadraticCurveTo(-vx * 0.45, vy + size * 0.09, -vx, ey);
+            c.stroke();
         }
 
         // Short stem
-        ctx.strokeStyle = 'rgba(0,0,0,0.28)';
-        ctx.lineWidth   = size * 0.065;
-        ctx.beginPath();
-        ctx.moveTo(0, size * 0.62);
-        ctx.lineTo(0, size * 0.88);
-        ctx.stroke();
+        c.strokeStyle = 'rgba(0,0,0,0.28)';
+        c.lineWidth   = size * 0.065;
+        c.beginPath();
+        c.moveTo(0, size * 0.62);
+        c.lineTo(0, size * 0.88);
+        c.stroke();
     }
 
+    // Pre-bake one offscreen sprite per color at LEAF_SPRITE_SIZE.
+    // Called once at init — sprites don't depend on W/H.
+    function buildLeafSprites() {
+        const s = LEAF_SPRITE_SIZE;
+        leafSprites = LEAF_COLORS.map(color => {
+            const oc = document.createElement('canvas');
+            oc.width  = s * 2;
+            oc.height = s * 2;
+            const og  = oc.getContext('2d');
+            og.translate(s, s); // leaf origin at canvas centre
+            drawLeafShape(og, s, color);
+            return oc;
+        });
+    }
+
+    // 40 drawImage calls instead of 280 path/stroke calls.
     function drawLeaves(t, ease) {
-        if (ease < 0.01) return;
+        if (ease < 0.01 || !leafSprites.length) return;
+        const SD = LEAF_SPRITE_SIZE * 2; // sprite canvas dimension
         for (const lf of leaves) {
+            const scaleXY = lf.size / LEAF_SPRITE_SIZE;
+            const sw = SD * scaleXY * Math.abs(Math.cos(lf.tilt));
+            if (sw < 0.5) continue; // edge-on — invisible, skip drawImage
+            const sh = SD * scaleXY;
             ctx.save();
             ctx.globalAlpha = lf.alpha * ease;
             ctx.translate(lf.x, lf.y);
             ctx.rotate(lf.rot);
-            ctx.scale(Math.cos(lf.tilt), 1);  // 3-D tumble: shrinks to line at 90°
-            drawLeafShape(lf.size, lf.color);
+            ctx.drawImage(leafSprites[lf.colorIdx], -sw / 2, -sh / 2, sw, sh);
             ctx.restore();
         }
         ctx.globalAlpha = 1;
@@ -557,6 +580,7 @@ function initAuthScene() {
     });
 
     makeGlowSprite();
+    buildLeafSprites();
     resize();
 
     if (reduceMotion) {
