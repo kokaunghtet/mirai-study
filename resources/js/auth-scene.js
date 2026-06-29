@@ -4,7 +4,8 @@
  | Loaded only on the guest auth portal (components/portal-layout.blade.php).
  | Vanilla <canvas>, no dependencies. Draws (back→front): twinkling stars,
  | moon/sun transition, additive-glow fireflies that steer away from the cursor,
- | and layered bezier-blade grass swaying with traveling wind gusts.
+ | realistic tumbling leaves (day mode, also cursor-interactive), and layered
+ | bezier-blade grass swaying with traveling wind gusts.
  |
  | Supports day/night toggle with cinematic cross-fade transition.
  | Respects prefers-reduced-motion (renders one calm static frame) and pauses
@@ -21,6 +22,7 @@ function initAuthScene() {
     let blades = [];   // grass, grouped by depth layer
     let stars = [];
     let flies = [];
+    let leaves = [];
     let glowSprite = null;
     let moonSprite = null;
     let moonData = null;
@@ -87,6 +89,150 @@ function initAuthScene() {
         moonSprite = mc;
     }
 
+    // ── Leaf system ──
+    const LEAF_DODGE_R = 115;
+    const LEAF_COLORS = [
+        '#c0392b', '#e74c3c',  // crimson / rose
+        '#e67e22', '#d35400',  // burnt orange
+        '#f39c12', '#e8b84b',  // amber
+        '#8e9b3a', '#52b788',  // olive / sage (fresh)
+        '#7d5a3c', '#a0714f',  // brown
+    ];
+
+    function spawnLeaf(randomY) {
+        return {
+            x:         Math.random() * (W + 120) - 60,
+            y:         randomY ? Math.random() * H : rand(-35, -5),
+            vx:        rand(-0.35, 0.38),
+            vy:        rand(0.55, 1.25),
+            rot:       Math.random() * Math.PI * 2,
+            rotSpeed:  rand(-0.024, 0.024),
+            tilt:      Math.random() * Math.PI * 2,  // 3-D tumble angle
+            tiltSpeed: rand(-0.018, 0.018),
+            size:      rand(9, 20),
+            alpha:     rand(0.72, 0.96),
+            color:     LEAF_COLORS[Math.floor(Math.random() * LEAF_COLORS.length)],
+            swayPhase: Math.random() * Math.PI * 2,
+            swayAmp:   rand(0.4, 1.1),
+        };
+    }
+
+    function buildLeaves() {
+        const count = Math.min(40, Math.round(W / 36));
+        leaves = Array.from({ length: count }, () => spawnLeaf(true));
+    }
+
+    function updateLeaves(t, dtf) {
+        for (const lf of leaves) {
+            // Wind sway
+            lf.vx += lf.swayAmp * 0.008 * Math.sin(t * 0.0009 + lf.swayPhase) * dtf;
+
+            // Gravity — face-on leaf catches more air → floats more
+            const face = Math.abs(Math.cos(lf.tilt));
+            lf.vy += (0.011 + face * 0.009) * dtf;
+
+            // Cursor dodge + flutter (same force model as fireflies)
+            if (pointer.active) {
+                const dx = lf.x - pointer.x, dy = lf.y - pointer.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < LEAF_DODGE_R * LEAF_DODGE_R) {
+                    const d = Math.sqrt(d2) || 1;
+                    const force = (1 - d / LEAF_DODGE_R) * 2.4;
+                    lf.vx += (dx / d) * force;
+                    lf.vy += (dy / d) * force * 0.55;
+                    lf.rotSpeed  += rand(-0.045, 0.045);
+                    lf.tiltSpeed += rand(-0.035, 0.035);
+                }
+            }
+
+            // Air drag: face-on = more resistance
+            lf.vx *= 0.976 - face * 0.007;
+            lf.vy *= 0.981 - face * 0.005;
+
+            // Speed cap
+            const sp = Math.hypot(lf.vx, lf.vy);
+            if (sp > 4.2) { lf.vx = lf.vx / sp * 4.2; lf.vy = lf.vy / sp * 4.2; }
+
+            lf.x        += lf.vx        * dtf;
+            lf.y        += lf.vy        * dtf;
+            lf.rot      += lf.rotSpeed  * dtf;
+            lf.tilt     += lf.tiltSpeed * dtf;
+
+            if (lf.y > H + 55 || lf.x < -110 || lf.x > W + 110) {
+                Object.assign(lf, spawnLeaf(false));
+            }
+        }
+    }
+
+    // Draw a single realistic leaf centered at (0,0) pointing upward.
+    // Caller sets ctx transform (translate + rotate + scale for 3-D tilt).
+    function drawLeafShape(size, color) {
+        // Body: pointed tip → wide belly → base notch
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(0, -size);
+        ctx.bezierCurveTo( size * 0.54, -size * 0.56,  size * 0.88,  size * 0.09,  size * 0.09,  size * 0.53);
+        ctx.lineTo(0,  size * 0.64);
+        ctx.lineTo(-size * 0.09,  size * 0.53);
+        ctx.bezierCurveTo(-size * 0.88,  size * 0.09, -size * 0.54, -size * 0.56, 0, -size);
+        ctx.fill();
+
+        // Specular highlight (upper-left lobe)
+        ctx.fillStyle = 'rgba(255,255,255,0.14)';
+        ctx.beginPath();
+        ctx.moveTo(0, -size);
+        ctx.bezierCurveTo( size * 0.22, -size * 0.54,  size * 0.28, -size * 0.04, 0,  size * 0.26);
+        ctx.bezierCurveTo(-size * 0.16, -size * 0.06, -size * 0.12, -size * 0.50, 0, -size);
+        ctx.fill();
+
+        // Midrib vein
+        ctx.strokeStyle = 'rgba(0,0,0,0.20)';
+        ctx.lineWidth   = size * 0.058;
+        ctx.lineCap     = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.86);
+        ctx.lineTo(0,  size * 0.56);
+        ctx.stroke();
+
+        // 3 pairs of side veins (curved, fanning outward)
+        ctx.lineWidth   = size * 0.030;
+        ctx.strokeStyle = 'rgba(0,0,0,0.13)';
+        for (let i = 0; i < 3; i++) {
+            const nt  = (i + 1) / 4.2;
+            const vy  = -size + size * 1.45 * nt;
+            const vx  = size * (0.56 - nt * 0.14);
+            const ey  = vy + size * 0.24;
+            ctx.beginPath();
+            ctx.moveTo(0, vy);
+            ctx.quadraticCurveTo( vx * 0.45, vy + size * 0.09,  vx, ey);
+            ctx.moveTo(0, vy);
+            ctx.quadraticCurveTo(-vx * 0.45, vy + size * 0.09, -vx, ey);
+            ctx.stroke();
+        }
+
+        // Short stem
+        ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+        ctx.lineWidth   = size * 0.065;
+        ctx.beginPath();
+        ctx.moveTo(0, size * 0.62);
+        ctx.lineTo(0, size * 0.88);
+        ctx.stroke();
+    }
+
+    function drawLeaves(t, ease) {
+        if (ease < 0.01) return;
+        for (const lf of leaves) {
+            ctx.save();
+            ctx.globalAlpha = lf.alpha * ease;
+            ctx.translate(lf.x, lf.y);
+            ctx.rotate(lf.rot);
+            ctx.scale(Math.cos(lf.tilt), 1);  // 3-D tumble: shrinks to line at 90°
+            drawLeafShape(lf.size, lf.color);
+            ctx.restore();
+        }
+        ctx.globalAlpha = 1;
+    }
+
     // ── Build scene ──
     function buildScene() {
         // Grass
@@ -137,6 +283,7 @@ function initAuthScene() {
         }
 
         buildMoon();
+        buildLeaves();
     }
 
     // Pre-rendered radial glow sprite (drawn additively for bloom).
@@ -348,6 +495,8 @@ function initAuthScene() {
         drawSun(t, ease);
         if (!reduceMotion && ease < 1) updateFlies(t, dtf);
         drawFlies(t, ease);
+        if (!reduceMotion) updateLeaves(t, dtf);
+        drawLeaves(t, ease);
         drawGrass(t, ease);
     }
 
