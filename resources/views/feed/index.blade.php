@@ -150,6 +150,20 @@
 
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+            // ── Initial skeleton on first load ───────────────────────
+            @if ($posts->isNotEmpty())
+            (function () {
+                const initialHTML = container.innerHTML;
+                container.innerHTML = '';
+                showSkeletons();
+                sleep(1000).then(() => {
+                    removeSkeletons();
+                    container.innerHTML = initialHTML;
+                    window.renderIcons(container);
+                });
+            })();
+            @endif
+
             // ── Shared fetch helper ──────────────────────────────────
             async function fetchPage(page, signal = null) {
                 const response = await fetch(buildUrl(page), {

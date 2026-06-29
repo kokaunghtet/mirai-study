@@ -100,7 +100,7 @@
            class="fixed top-0 left-0 z-50 h-full bg-surface border-r border-line flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
 
         {{-- Logo --}}
-        <div class="h-16 flex justify-between items-center border-b border-line shrink-0 px-4 gap-2">
+        <div class="h-16 flex items-center border-b border-line shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">
             {{-- Logo link — hidden when collapsed --}}
             <div>
                 <a href="{{ route('feed.index') }}" x-show="!sidebarCollapsed" class="flex items-center gap-2.5 flex-1 min-w-0" @click="sidebarOpen = false">
@@ -110,13 +110,17 @@
 
             {{-- Collapse / expand toggle — desktop only --}}
             <button @click="toggleCollapse()"
-                    :class="sidebarCollapsed ? 'mx-auto' : 'shrink-0'"
-                    class="hidden lg:flex items-center justify-center w-7 h-7 rounded-md text-muted hover:text-muted hover:bg-surface-muted transition-colors"
+                    :class="sidebarCollapsed ? 'w-full h-full p-3' : 'shrink-0 w-7 h-7'"
+                    class="hidden lg:flex items-center justify-center rounded-md text-muted hover:bg-surface-muted transition-colors"
                     :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-                {{-- Chevron left (collapse) --}}
                 <i data-lucide="chevron-left" x-show="!sidebarCollapsed" class="w-4 h-4"></i>
-                {{-- Chevron right (expand) --}}
-                <i data-lucide="chevron-right" x-show="sidebarCollapsed" class="w-4 h-4"></i>
+                
+                <div x-show="sidebarCollapsed" class="w-full h-full bg-gradient-to-tr from-accent-from to-accent-to"
+                    role="img" aria-label="MiraiStudy Logo"
+                    style="
+                    -webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
+                            mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;">
+                </div>
             </button>
         </div>
 

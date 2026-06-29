@@ -317,7 +317,6 @@
         </div>
 
         <div id="scroll-sentinel"></div>
-        <x-leaf-loader id="loading-indicator" style="display:none;" />
     </div>
 
     @push('scripts')
@@ -325,16 +324,9 @@
         (function () {
             const container = document.getElementById('posts-container');
             const sentinel  = document.getElementById('scroll-sentinel');
-            const loader    = document.getElementById('loading-indicator');
-
-            // The loader holds an animated leaf SVG + a text span; update only the
-            // span so we never wipe the leaf. Empty msg = leaf-only (normal loading).
-            const loaderText = loader.querySelector('[data-loader-text]');
-            const setLoaderText = (msg = '') => {
-                if (!loaderText) return;
-                loaderText.textContent = msg;
-                loaderText.classList.toggle('hidden', msg === '');
-            };
+            const SKELETON = `<div class="post-skeleton relative rounded-2xl bg-surface border border-line shadow-sm animate-pulse"><div class="flex items-center justify-between px-4 py-3.5"><div class="flex items-center gap-2.5"><div class="h-[38px] w-[38px] shrink-0 rounded-full bg-surface-muted"></div><div class="space-y-1.5"><div class="h-3 w-24 rounded-md bg-surface-muted"></div><div class="h-2.5 w-16 rounded-md bg-surface-muted"></div></div></div><div class="h-7 w-20 rounded-lg bg-surface-muted"></div></div><div class="px-4 pb-3 space-y-2.5"><div class="h-3 w-full rounded-md bg-surface-muted"></div><div class="h-3 w-4/5 rounded-md bg-surface-muted"></div><div class="h-3 w-3/5 rounded-md bg-surface-muted"></div></div><div class="flex items-center justify-between px-3.5 py-3 border-t border-line"><div class="flex items-center gap-2"><div class="h-7 w-14 rounded-lg bg-surface-muted"></div><div class="h-7 w-14 rounded-lg bg-surface-muted"></div></div><div class="flex items-center gap-2"><div class="h-7 w-8 rounded-lg bg-surface-muted"></div><div class="h-7 w-8 rounded-lg bg-surface-muted"></div></div></div></div>`;
+            const showSkeletons = (n = 3) => container.insertAdjacentHTML('beforeend', SKELETON.repeat(n));
+            const removeSkeletons = () => container.querySelectorAll('.post-skeleton').forEach(el => el.remove());
 
             // Per-user + per-tab keys prevent cross-profile conflicts
             const SCROLL_KEY = 'profile_scroll_{{ $user->username }}_{{ $tab }}';
@@ -345,6 +337,20 @@
             let hasMore     = true;
 
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            // ── Initial skeleton on first load ───────────────────────
+            @if ($posts->isNotEmpty())
+            (function () {
+                const initialHTML = container.innerHTML;
+                container.innerHTML = '';
+                showSkeletons();
+                sleep(1000).then(() => {
+                    removeSkeletons();
+                    container.innerHTML = initialHTML;
+                    window.renderIcons(container);
+                });
+            })();
+            @endif
 
             async function fetchPage(page) {
                 const url = new URL(window.location.href);
@@ -361,14 +367,15 @@
 
                 isFetching  = true;
                 let success = false;
-                loader.style.display = 'block';
                 currentPage++;
+                showSkeletons();
 
                 try {
                     const [data] = await Promise.all([
                         fetchPage(currentPage),
                         sleep(1000)
                     ]);
+                    removeSkeletons();
                     window.appendWithIcons(container, data.html);
                     success = true;
 
@@ -379,16 +386,10 @@
                     }
                 } catch (err) {
                     currentPage--;
+                    removeSkeletons();
                     console.error('Failed to load:', err);
-                    setLoaderText('Failed to load. Scroll to retry.');
-                    loader.style.display = 'block';
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                        setLoaderText('');
-                    }, 3000);
                 } finally {
                     isFetching = false;
-                    if (success) loader.style.display = 'none';
                 }
             }
 
@@ -416,8 +417,6 @@
                 sessionStorage.removeItem(SCROLL_KEY);
                 sessionStorage.removeItem(PAGE_KEY);
 
-                loader.style.display = 'block';
-                setLoaderText('Restoring your place...');
 
                 for (let page = 2; page <= savedPage; page++) {
                     try {
@@ -435,8 +434,6 @@
                     }
                 }
 
-                loader.style.display = 'none';
-                setLoaderText('');
 
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {

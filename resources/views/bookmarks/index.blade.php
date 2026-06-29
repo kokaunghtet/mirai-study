@@ -75,7 +75,7 @@
 
             let currentPage = 1;
             let isFetching  = false;
-            let hasMore     = true;
+            let hasMore     = {{ $posts->hasMorePages() ? 'true' : 'false' }};
 
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -87,6 +87,20 @@
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 return response.json();
             }
+
+            // ── Initial skeleton on first load ───────────────────────
+            @if ($posts->isNotEmpty())
+            (function () {
+                const initialHTML = container.innerHTML;
+                container.innerHTML = '';
+                showSkeletons();
+                sleep(1000).then(() => {
+                    removeSkeletons();
+                    container.innerHTML = initialHTML;
+                    window.renderIcons(container);
+                });
+            })();
+            @endif
 
             // ── Infinite scroll ──────────────────────────────────────
             async function loadMore() {
