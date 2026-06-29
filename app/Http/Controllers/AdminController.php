@@ -669,13 +669,8 @@ class AdminController extends Controller
             Cache::forget('admin_stats');
         });
 
-        // Send notification after transaction commits so SMTP failure can't roll back the ban lift.
         if ($notifyUser) {
-            try {
-                $notifyUser->notify(new AppealApprovedNotification($appeal));
-            } catch (\Throwable) {
-                // Mail failure is non-fatal; ban is already lifted.
-            }
+            $notifyUser->notify(new AppealApprovedNotification($appeal));
         }
 
         return response()->json(['status' => $appeal->fresh()->status]);
