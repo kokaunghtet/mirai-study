@@ -177,6 +177,7 @@ Route::middleware(['auth', 'admin-or-mod'])->prefix('admin')->name('admin.')->gr
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::patch('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
     Route::post('/users/{user}/ban', [AdminController::class, 'banUserDirect'])->name('users.ban');
+    Route::get('/mod-actions', [AdminController::class, 'modActions'])->name('mod-actions');
 });
 
 // Exam papers + questions — admin or moderator (index, edit, update, history)

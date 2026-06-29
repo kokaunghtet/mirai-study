@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -314,7 +315,24 @@ class PostController extends Controller
     {
         $this->authorize('delete', $post);
 
-        $post->delete(); // soft delete
+        $actorId = auth()->id();
+        $isStaff = $actorId !== $post->user_id;
+
+        $post->delete();
+
+        if ($isStaff) {
+            ActivityLog::create([
+                'user_id' => $actorId,
+                'action' => 'content_removed',
+                'subject_type' => 'Post',
+                'subject_id' => $post->id,
+                'properties' => [
+                    'username' => $post->user?->username,
+                    'reason' => 'Direct removal by staff',
+                ],
+                'created_at' => now(),
+            ]);
+        }
 
         return redirect()->route('feed.index')
             ->with('success', 'Post deleted.');

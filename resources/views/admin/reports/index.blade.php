@@ -18,11 +18,20 @@
                     </h1>
                     <p class="mt-1 text-sm text-muted">Review and moderate reported content and users.</p>
                 </div>
-                <a href="{{ route('admin.dashboard') }}"
-                   class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-line bg-surface px-4 py-2 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
-                    <i data-lucide="arrow-left" class="h-4 w-4"></i>
-                    Dashboard
-                </a>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="{{ route('admin.mod-actions') }}"
+                       class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-4 py-2 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                        <i data-lucide="shield-alert" class="h-4 w-4"></i>
+                        Mod Actions
+                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-4 py-2 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                            Dashboard
+                        </a>
+                    @endif
+                </div>
             </header>
 
             <div id="admin-filter-results">

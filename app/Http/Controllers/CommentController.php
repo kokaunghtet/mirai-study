@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Services\NotificationService;
@@ -92,8 +93,25 @@ class CommentController extends Controller
     {
         $this->authorize('delete', $comment);
 
+        $actorId = auth()->id();
+        $isStaff = $actorId !== $comment->user_id;
         $post = $comment->post;
+
         $comment->delete();
+
+        if ($isStaff) {
+            ActivityLog::create([
+                'user_id' => $actorId,
+                'action' => 'content_removed',
+                'subject_type' => 'Comment',
+                'subject_id' => $comment->id,
+                'properties' => [
+                    'username' => $comment->user?->username,
+                    'reason' => 'Direct removal by staff',
+                ],
+                'created_at' => now(),
+            ]);
+        }
 
         // AJAX (feed drawer): return the refreshed comments partial.
         if ($request->expectsJson() || $request->ajax()) {

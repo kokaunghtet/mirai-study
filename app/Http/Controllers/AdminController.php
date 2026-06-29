@@ -484,6 +484,32 @@ class AdminController extends Controller
         ]);
     }
 
+    // ---- Mod action log (admin-or-mod) ----
+
+    public function modActions(Request $request)
+    {
+        $modActionTypes = ['content_removed', 'user_temp_banned', 'user_perm_banned'];
+
+        $query = ActivityLog::with('user')->whereIn('action', $modActionTypes);
+
+        if ($request->filled('action')) {
+            $query->where('action', $request->input('action'));
+        }
+
+        $logs = $query->latest('created_at')->paginate(30)->withQueryString();
+
+        // Pre-load targets to avoid N+1 in view
+        $postIds = $logs->where('subject_type', 'Post')->pluck('subject_id');
+        $commentIds = $logs->where('subject_type', 'Comment')->pluck('subject_id');
+        $userIds = $logs->where('subject_type', 'User')->pluck('subject_id');
+
+        $postsMap = Post::withTrashed()->whereIn('id', $postIds)->get()->keyBy('id');
+        $commentsMap = Comment::withTrashed()->whereIn('id', $commentIds)->get()->keyBy('id');
+        $usersMap = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        return view('admin.mod-actions.index', compact('logs', 'postsMap', 'commentsMap', 'usersMap'));
+    }
+
     // ---- Direct mod actions (admin-or-mod) ----
 
     public function banUserDirect(Request $request, User $user)
@@ -585,7 +611,9 @@ class AdminController extends Controller
 
         $action = $request->action;
 
-        DB::transaction(function () use ($appeal, $action) {
+        $notifyUser = null;
+
+        DB::transaction(function () use ($appeal, $action, &$notifyUser) {
             $appeal->update([
                 'status' => $action === 'approve' ? 'approved' : 'rejected',
                 'reviewed_by' => auth()->id(),
@@ -593,7 +621,6 @@ class AdminController extends Controller
             ]);
 
             if ($action === 'approve') {
-                // Lift the ban
                 $ban = $appeal->ban;
                 $user = $appeal->user;
 
@@ -603,8 +630,6 @@ class AdminController extends Controller
                 ]);
 
                 $user->update(['status' => 'active']);
-
-                $user->notify(new AppealApprovedNotification($appeal));
 
                 ActivityLog::create([
                     'user_id' => auth()->id(),
@@ -618,6 +643,8 @@ class AdminController extends Controller
                     ],
                     'created_at' => now(),
                 ]);
+
+                $notifyUser = $user;
             } else {
                 ActivityLog::create([
                     'user_id' => auth()->id(),
@@ -631,6 +658,15 @@ class AdminController extends Controller
 
             Cache::forget('admin_stats');
         });
+
+        // Send notification after transaction commits so SMTP failure can't roll back the ban lift.
+        if ($notifyUser) {
+            try {
+                $notifyUser->notify(new AppealApprovedNotification($appeal));
+            } catch (\Throwable) {
+                // Mail failure is non-fatal; ban is already lifted.
+            }
+        }
 
         return response()->json(['status' => $appeal->fresh()->status]);
     }
