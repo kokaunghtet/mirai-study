@@ -58,7 +58,7 @@ class GoogleController extends Controller
         Auth::login($user, remember: true);
         request()->session()->regenerate();
 
-        return redirect()->intended(route('feed.index'));
+        return redirect()->intended(route('feed.index'))->with('success', "Welcome, {$user->display_name}!");
     }
 
     /**

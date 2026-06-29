@@ -137,10 +137,6 @@
                 </div>
 
                 <div class="pt-1 flex items-center justify-end gap-3">
-                    @if (session('success'))
-                        <p x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2500)"
-                           x-transition class="text-xs font-semibold text-green-600">✓ Saved</p>
-                    @endif
                     <button type="submit" data-loading-text="Saving…"
                             :disabled="!canSave"
                             class="rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-[13px] font-bold text-white hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
@@ -216,8 +212,9 @@
 
                     <div class="pt-1 flex items-center justify-end gap-3">
                         @if (session('status') === 'password-updated')
-                            <p x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2500)"
-                               x-transition class="text-xs font-semibold text-green-600">✓ Password updated</p>
+                            @push('scripts')
+                            <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: 'Password updated.', type: 'success' });</script>
+                            @endpush
                         @endif
                         <button type="submit" data-loading-text="Updating…"
                                 class="rounded-lg bg-gradient-to-tr from-accent-from to-accent-to px-5 py-2.5 text-[13px] font-bold text-white hover:opacity-90 transition-all active:scale-95">

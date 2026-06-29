@@ -78,17 +78,15 @@
                 </p>
 
                 @if (session('success'))
-                    <div class="mb-4 rounded-xl border border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-950/20 px-4 py-3 text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
-                        <i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i>
-                        {{ session('success') }}
-                    </div>
+                    @push('scripts')
+                    <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('success')), type: 'success' });</script>
+                    @endpush
                 @endif
 
                 @if (session('error'))
-                    <div class="mb-4 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20 px-4 py-3 text-sm text-red-700 dark:text-red-400 flex items-center gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
-                        {{ session('error') }}
-                    </div>
+                    @push('scripts')
+                    <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('error')), type: 'error' });</script>
+                    @endpush
                 @endif
 
                 <form method="POST" action="{{ route('appeal.store') }}">

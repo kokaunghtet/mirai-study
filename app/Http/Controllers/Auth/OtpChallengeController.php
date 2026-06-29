@@ -92,7 +92,7 @@ class OtpChallengeController extends Controller
             default => route('feed.index', absolute: false),
         };
 
-        return redirect()->intended($default);
+        return redirect()->intended($default)->with('success', "Welcome, {$user->display_name}!");
     }
 
     /**

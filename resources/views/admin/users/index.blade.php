@@ -4,25 +4,16 @@
     <div class="px-4 pb-10" x-data="adminFilter()">
         <div class="max-w-5xl mx-auto">
 
-            {{-- Flash messages --}}
             @if (session('success'))
-                <div x-data="{ show: true }"
-                     x-init="setTimeout(() => show = false, 3000)"
-                     x-show="show"
-                     x-transition.opacity
-                     class="mb-4 rounded-lg bg-accent/10 border border-accent/30 px-4 py-3 text-sm font-semibold text-accent">
-                    {{ session('success') }}
-                </div>
+                @push('scripts')
+                <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('success')), type: 'success' });</script>
+                @endpush
             @endif
 
             @if (session('error'))
-                <div x-data="{ show: true }"
-                     x-init="setTimeout(() => show = false, 3000)"
-                     x-show="show"
-                     x-transition.opacity
-                     class="mb-4 rounded-lg bg-red-100 border border-red-300 px-4 py-3 text-sm font-semibold text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
-                    {{ session('error') }}
-                </div>
+                @push('scripts')
+                <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('error')), type: 'error' });</script>
+                @endpush
             @endif
 
             {{-- Header --}}

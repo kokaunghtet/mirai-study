@@ -35,13 +35,9 @@
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-muted"
-                >{{ __('Saved.') }}</p>
+                @push('scripts')
+                <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: 'Password updated.', type: 'success' });</script>
+                @endpush
             @endif
         </div>
     </form>

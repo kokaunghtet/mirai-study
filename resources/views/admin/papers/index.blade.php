@@ -19,11 +19,10 @@
                 @endif
             </header>
 
-            {{-- Flash --}}
             @if (session('success'))
-                <div class="mb-4 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm font-medium text-content">
-                    {{ session('success') }}
-                </div>
+                @push('scripts')
+                <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('success')), type: 'success' });</script>
+                @endpush
             @endif
 
             <div id="admin-filter-results">

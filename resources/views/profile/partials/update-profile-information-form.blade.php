@@ -39,9 +39,9 @@
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
+                        @push('scripts')
+                        <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: 'A new verification link has been sent to your email address.', type: 'success' });</script>
+                        @endpush
                     @endif
                 </div>
             @endif
@@ -51,13 +51,9 @@
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-muted"
-                >{{ __('Saved.') }}</p>
+                @push('scripts')
+                <script>(function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: 'Profile updated.', type: 'success' });</script>
+                @endpush
             @endif
         </div>
     </form>

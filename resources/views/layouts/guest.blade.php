@@ -22,5 +22,9 @@
                 {{ $slot }}
             </div>
         </div>
+
+    @include('components.snackbar')
+
+    @stack('scripts')
     </body>
 </html>

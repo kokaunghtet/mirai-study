@@ -398,21 +398,21 @@
     ═══════════════════════════════════════════════ --}}
     <div class="min-h-screen pt-14 lg:pt-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
 
-        {{-- Flash Messages --}}
+        {{-- Flash Messages via Snackbar --}}
         @if (session('success'))
-            <div class="max-w-6xl mx-auto px-4 pt-6 lg:pt-6">
-                <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
-                    {{ session('success') }}
-                </div>
-            </div>
+            @push('scripts')
+            <script>
+                (function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('success')), type: 'success' });
+            </script>
+            @endpush
         @endif
 
         @if (session('error'))
-            <div class="max-w-6xl mx-auto px-4 pt-4">
-                <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm">
-                    {{ session('error') }}
-                </div>
-            </div>
+            @push('scripts')
+            <script>
+                (function(d) { window._snackbarComponent ? window._snackbarComponent.show(d) : window._snackbarQueue.push(d); })({ message: @json(session('error')), type: 'error' });
+            </script>
+            @endpush
         @endif
 
         {{-- Page Content — widens to use the freed space when the nav
@@ -422,6 +422,9 @@
             {{ $slot }}
         </main>
     </div>
+
+    {{-- Snackbar --}}
+    @include('components.snackbar')
 
     {{-- Confirm Modal --}}
     @include('components.confirm-modal')
