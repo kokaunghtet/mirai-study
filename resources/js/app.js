@@ -104,6 +104,8 @@ import {
     Clock4,
     ClockArrowUp,
     XCircle,
+    ArrowUp,
+    ArrowDown,
 } from "lucide";
 
 const icons = {
@@ -188,6 +190,8 @@ const icons = {
     Clock4,
     ClockArrowUp,
     XCircle,
+    ArrowUp,
+    ArrowDown,
 };
 
 Alpine.plugin(collapse);

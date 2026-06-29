@@ -153,6 +153,8 @@
                             </template>
                         </div>
 
+                        {{-- toolbar + papers: icons re-rendered after each reactive change --}}
+                        <div x-effect="questions; answers; combined; sortDir; $nextTick(() => window.renderIcons($el))">
                         {{-- toolbar: AM/PM filter (when parts exist) + session filter
                              (ITPEC: April/October · JLPT: July/December) + year sort --}}
                         <div class="papers-toolbar" x-show="!loading && papers.length">
@@ -174,12 +176,12 @@
                                 </template>
                             </div>
                             <button class="sort-btn" @click="toggleSort()" title="Toggle year order">
-                                Year <span class="sort-arrow" x-text="sortDir === 'asc' ? '▲' : '▼'"></span>
+                                Year
+                                <i data-lucide="arrow-up" class="sort-arrow h-4 w-4" x-show="sortDir === 'asc'"></i>
+                                <i data-lucide="arrow-down" class="sort-arrow h-4 w-4" x-show="sortDir !== 'asc'"></i>
                             </button>
                         </div>
 
-                        {{-- papers (icons re-rendered after each reactive change) --}}
-                        <div x-effect="questions; answers; combined; $nextTick(() => window.renderIcons($el))">
                             <div x-show="loading" class="papers"><div class="empty">Loading…</div></div>
 
                             <template x-if="!loading">
