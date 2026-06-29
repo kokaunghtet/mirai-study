@@ -27,20 +27,20 @@
                         <i data-lucide="users" class="h-4 w-4 text-muted"></i>
                     </div>
                     <div class="text-3xl font-bold text-content">{{ number_format($stats['total_users']) }}</div>
-                    <div class="mt-2 flex items-center gap-3 text-xs text-muted">
-                        <span class="flex items-center gap-1">
+                    <div class="mt-2 space-y-1 text-xs text-muted">
+                        <div class="flex items-center gap-1">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-500"></span>
                             {{ number_format($stats['active_users']) }} active
-                        </span>
-                        <span class="flex items-center gap-1">
+                        </div>
+                        <div class="flex items-center gap-1">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-500"></span>
                             {{ number_format($stats['banned_users']) }} banned
-                        </span>
+                        </div>
                         @if ($trends['users'] !== 0)
-                            <span class="flex items-center gap-0.5 {{ $trends['users'] > 0 ? 'text-green-600' : 'text-red-600' }}">
+                            <div class="flex items-center gap-0.5 {{ $trends['users'] > 0 ? 'text-green-600' : 'text-red-600' }}">
                                 <i data-lucide="{{ $trends['users'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
                                 {{ $trends['users'] > 0 ? '+' : '' }}{{ $trends['users'] }} this week
-                            </span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -52,13 +52,13 @@
                         <i data-lucide="file-text" class="h-4 w-4 text-muted"></i>
                     </div>
                     <div class="text-3xl font-bold text-content">{{ number_format($stats['total_posts']) }}</div>
-                    <div class="mt-2 flex items-center gap-3 text-xs text-muted">
-                        <span>+{{ number_format($stats['posts_today']) }} today</span>
+                    <div class="mt-2 space-y-1 text-xs text-muted">
+                        <div>+{{ number_format($stats['posts_today']) }} today</div>
                         @if ($trends['posts'] !== 0)
-                            <span class="flex items-center gap-0.5 {{ $trends['posts'] > 0 ? 'text-green-600' : 'text-red-600' }}">
+                            <div class="flex items-center gap-0.5 {{ $trends['posts'] > 0 ? 'text-green-600' : 'text-red-600' }}">
                                 <i data-lucide="{{ $trends['posts'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
                                 {{ $trends['posts'] > 0 ? '+' : '' }}{{ $trends['posts'] }} this week
-                            </span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -72,13 +72,13 @@
                     <div class="text-3xl font-bold {{ $stats['pending_reports'] > 0 ? 'text-accent' : 'text-content' }}">
                         {{ number_format($stats['pending_reports']) }}
                     </div>
-                    <div class="mt-2 flex items-center gap-3 text-xs {{ $stats['pending_reports'] > 0 ? 'text-accent/80' : 'text-muted' }}">
-                        <span>pending review</span>
+                    <div class="mt-2 space-y-1 text-xs {{ $stats['pending_reports'] > 0 ? 'text-accent/80' : 'text-muted' }}">
+                        <div>pending review</div>
                         @if ($trends['reports'] !== 0)
-                            <span class="flex items-center gap-0.5 {{ $trends['reports'] > 0 ? 'text-red-600' : 'text-green-600' }}">
+                            <div class="flex items-center gap-0.5 {{ $trends['reports'] > 0 ? 'text-red-600' : 'text-green-600' }}">
                                 <i data-lucide="{{ $trends['reports'] > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
                                 {{ $trends['reports'] > 0 ? '+' : '' }}{{ $trends['reports'] }} this week
-                            </span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -92,8 +92,8 @@
                     <div class="text-3xl font-bold {{ $stats['pending_appeals'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-content' }}">
                         {{ number_format($stats['pending_appeals']) }}
                     </div>
-                    <div class="mt-2 text-xs {{ $stats['pending_appeals'] > 0 ? 'text-red-500 dark:text-red-500' : 'text-muted' }}">
-                        pending review
+                    <div class="mt-2 space-y-1 text-xs {{ $stats['pending_appeals'] > 0 ? 'text-red-500 dark:text-red-500' : 'text-muted' }}">
+                        <div>pending review</div>
                     </div>
                 </div>
 
@@ -104,14 +104,14 @@
                         <i data-lucide="book-open" class="h-4 w-4 text-muted"></i>
                     </div>
                     <div class="text-3xl font-bold text-content">{{ number_format($stats['total_papers']) }}</div>
-                    <div class="mt-2 flex items-center gap-3 text-xs text-muted">
-                        <span>papers · {{ number_format($stats['total_questions']) }} questions</span>
+                    <div class="mt-2 space-y-1 text-xs text-muted">
+                        <div>papers · {{ number_format($stats['total_questions']) }} questions</div>
                         @php $contentDelta = $trends['papers'] + $trends['questions']; @endphp
                         @if ($contentDelta !== 0)
-                            <span class="flex items-center gap-0.5 {{ $contentDelta > 0 ? 'text-green-600' : 'text-red-600' }}">
+                            <div class="flex items-center gap-0.5 {{ $contentDelta > 0 ? 'text-green-600' : 'text-red-600' }}">
                                 <i data-lucide="{{ $contentDelta > 0 ? 'trending-up' : 'trending-down' }}" class="h-3 w-3"></i>
                                 {{ $contentDelta > 0 ? '+' : '' }}{{ $contentDelta }} this week
-                            </span>
+                            </div>
                         @endif
                     </div>
                 </div>

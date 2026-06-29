@@ -67,7 +67,7 @@ class AdminController extends Controller
 
         $activityItems = ActivityLog::with('user')
             ->latest()
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         $health = [
