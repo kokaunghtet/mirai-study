@@ -2,12 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\ActivityLog;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
-use App\Models\UserBan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +14,9 @@ class ReportSystemTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $moderator;
+
     private User $user;
 
     protected function setUp(): void

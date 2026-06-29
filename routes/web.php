@@ -23,7 +23,10 @@ use Illuminate\Support\Facades\Route;
 // Public routes — guests and auth users
 // -------------------------------------------------------
 
-Route::get('/', fn () => redirect()->route('feed.index'));
+Route::get('/', fn () => auth()->check()
+    ? redirect()->route('feed.index')
+    : view('welcome')
+)->name('home');
 
 // Feed
 Route::get('/feed', [PostController::class, 'index'])->name('feed.index');

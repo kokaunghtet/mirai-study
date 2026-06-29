@@ -106,6 +106,19 @@ import {
     XCircle,
     ArrowUp,
     ArrowDown,
+    Rocket,
+    GraduationCap,
+    Star,
+    Heart,
+    Smartphone,
+    Calendar,
+    Box,
+    Navigation,
+    Code,
+    Monitor,
+    Globe,
+    PlayCircle,
+    GitBranchPlus,
 } from "lucide";
 
 const icons = {
@@ -192,6 +205,19 @@ const icons = {
     XCircle,
     ArrowUp,
     ArrowDown,
+    Rocket,
+    GraduationCap,
+    Star,
+    Heart,
+    Smartphone,
+    Calendar,
+    Box,
+    Navigation,
+    Code,
+    Monitor,
+    Globe,
+    PlayCircle,
+    GitBranchPlus,
 };
 
 Alpine.plugin(collapse);
