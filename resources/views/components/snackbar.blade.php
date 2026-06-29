@@ -11,13 +11,13 @@
      class="fixed top-6 right-6 z-[70] flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg ring-1 max-w-sm w-[calc(100%-3rem)]"
      :class="{
          'bg-surface ring-line text-content': type === 'info',
-         'bg-green-50 dark:bg-green-900 ring-green-200 dark:ring-green-800 text-green-800 dark:text-green-200': type === 'success',
+         'bg-accent/70 dark:bg-accent/70 ring-accent/90 text-white': type === 'success',
          'bg-red-50 dark:bg-red-900 ring-red-200 dark:ring-red-800 text-red-800 dark:text-red-200': type === 'error',
          'bg-amber-50 dark:bg-amber-900 ring-amber-200 dark:ring-amber-800 text-amber-800 dark:text-amber-200': type === 'warning',
      }">
     {{-- Icon --}}
     <div class="shrink-0" x-show="type === 'success'">
-        <svg class="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     </div>
     <div class="shrink-0" x-show="type === 'error'">
         <svg class="h-5 w-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
@@ -35,8 +35,9 @@
     {{-- Dismiss --}}
     <button type="button"
             @click="hide()"
-            class="shrink-0 -mr-1 rounded-md p-1 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-        <svg class="h-4 w-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            class="shrink-0 -mr-1 rounded-md p-1 transition-colors"
+            :class="type === 'success' ? 'hover:bg-white/20' : 'hover:bg-black/5 dark:hover:bg-white/10'">
+        <svg class="h-4 w-4" :class="type === 'success' ? 'opacity-80' : 'opacity-60'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
 </div>
 
