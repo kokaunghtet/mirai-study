@@ -256,3 +256,31 @@
 
     /* slow, don't stop — still signals activity */
 }
+
+/* ── Subtle grid background (site-wide) ────────────────────────────── */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    background-image:
+        linear-gradient(to right, rgb(var(--accent) / 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(var(--accent) / 0.12) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -9;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgb(var(--canvas) / 0.85) 100%);
+}
+
+.dark body::before {
+    background-image:
+        linear-gradient(to right, rgb(var(--accent) / 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(var(--accent) / 0.06) 1px, transparent 1px);
+}
