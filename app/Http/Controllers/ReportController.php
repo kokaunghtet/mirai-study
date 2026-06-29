@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
@@ -72,6 +73,8 @@ class ReportController extends Controller
         }
 
         Report::create(array_merge($data, ['reporter_id' => auth()->id()]));
+
+        Cache::forget('admin_stats');
 
         return response()->json(['ok' => true]);
     }
