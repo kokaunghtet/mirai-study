@@ -21,6 +21,8 @@ function initAuthScene() {
     let stars = [];
     let flies = [];
     let glowSprite = null;
+    let moonSprite = null;
+    let moonData = null;
 
     // Pointer in CSS pixels; inactive until the user actually moves.
     const pointer = { x: -9999, y: -9999, active: false };
@@ -34,6 +36,34 @@ function initAuthScene() {
     ];
 
     const rand = (a, b) => a + Math.random() * (b - a);
+
+    function buildMoon() {
+        const r = Math.max(24, Math.min(44, W * 0.033));
+        moonData = { x: W * 0.78, y: H * 0.14, r };
+
+        const size = Math.ceil((r + 12) * 2);
+        const mc = document.createElement('canvas');
+        mc.width = mc.height = size;
+        const mg = mc.getContext('2d');
+        const cx = size / 2, cy = size / 2;
+
+        const grad = mg.createRadialGradient(cx - r * 0.22, cy - r * 0.22, r * 0.08, cx, cy, r);
+        grad.addColorStop(0,   '#fffef4');
+        grad.addColorStop(0.5, '#f6e9cf');
+        grad.addColorStop(1,   '#ddc898');
+        mg.fillStyle = grad;
+        mg.beginPath();
+        mg.arc(cx, cy, r, 0, Math.PI * 2);
+        mg.fill();
+
+        // Crescent cut
+        mg.globalCompositeOperation = 'destination-out';
+        mg.beginPath();
+        mg.arc(cx + r * 0.42, cy - r * 0.04, r * 0.82, 0, Math.PI * 2);
+        mg.fill();
+
+        moonSprite = mc;
+    }
 
     function buildScene() {
         // Grass
@@ -82,6 +112,8 @@ function initAuthScene() {
                 pulsePhase: Math.random() * Math.PI * 2,
             });
         }
+
+        buildMoon();
     }
 
     // Pre-rendered radial glow sprite (drawn additively for bloom).
@@ -160,6 +192,31 @@ function initAuthScene() {
         ctx.globalAlpha = 1;
     }
 
+    function drawMoon(t) {
+        if (!moonData || !moonSprite) return;
+        const { x, y, r } = moonData;
+        const pulse = 0.88 + 0.12 * Math.sin(t * 0.00035);
+
+        // Atmospheric halo (additive so it blends into the sky glow)
+        ctx.globalCompositeOperation = 'lighter';
+        const haloR = r * 4.5;
+        const halo = ctx.createRadialGradient(x, y, r * 0.2, x, y, haloR);
+        halo.addColorStop(0,    `rgba(255,248,210,${0.15 * pulse})`);
+        halo.addColorStop(0.35, `rgba(220,205,165,${0.06 * pulse})`);
+        halo.addColorStop(1,    'rgba(170,160,120,0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(x, y, haloR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Crescent sprite
+        const half = moonSprite.width / 2;
+        ctx.globalAlpha = 0.90 + 0.08 * pulse;
+        ctx.drawImage(moonSprite, x - half, y - half);
+        ctx.globalAlpha = 1;
+    }
+
     const DODGE_R = 130; // px radius the cursor pushes fireflies
     function updateFlies(t, dtf) {
         for (const f of flies) {
@@ -215,6 +272,7 @@ function initAuthScene() {
     function renderFrame(t, dtf) {
         ctx.clearRect(0, 0, W, H);
         drawStars(t);
+        drawMoon(t);
         if (!reduceMotion) updateFlies(t, dtf);
         drawFlies(t);
         drawGrass(t);
