@@ -3,9 +3,10 @@
  | ---------------------------------------------------------------
  | Loaded only on the guest auth portal (components/portal-layout.blade.php).
  | Vanilla <canvas>, no dependencies. Draws (back→front): twinkling stars,
- | additive-glow fireflies that steer away from the cursor, and layered
- | bezier-blade grass swaying with traveling wind gusts.
+ | moon/sun transition, additive-glow fireflies that steer away from the cursor,
+ | and layered bezier-blade grass swaying with traveling wind gusts.
  |
+ | Supports day/night toggle with cinematic cross-fade transition.
  | Respects prefers-reduced-motion (renders one calm static frame) and pauses
  | the loop while the tab is hidden.
  */
@@ -27,6 +28,13 @@ function initAuthScene() {
     // Pointer in CSS pixels; inactive until the user actually moves.
     const pointer = { x: -9999, y: -9999, active: false };
 
+    // ── Day/Night transition state ──
+    let sceneMode = 'dark';          // 'dark' | 'light'
+    let themeTransTimer = null;
+    let transitionT = 0;             // 0 = full dark, 1 = full light
+    const TRANSITION_DURATION = 2500; // ms — matches CSS sky transition
+    let transitionDir = 0;           // +1 going light, -1 going dark, 0 idle
+
     // Grass depth layers: far (cool, short) → near (warm, tall, thick).
     // Roots sit BELOW the viewport (`drop`) so the planting line never shows.
     const LAYERS = [
@@ -37,6 +45,20 @@ function initAuthScene() {
 
     const rand = (a, b) => a + Math.random() * (b - a);
 
+    // ── Helpers ──
+    function smoothstep(t) {
+        return t * t * (3 - 2 * t);
+    }
+
+    function lerpColor(a, b, t) {
+        return [
+            Math.round(a[0] + (b[0] - a[0]) * t),
+            Math.round(a[1] + (b[1] - a[1]) * t),
+            Math.round(a[2] + (b[2] - a[2]) * t),
+        ];
+    }
+
+    // ── Moon ──
     function buildMoon() {
         const r = Math.max(24, Math.min(44, W * 0.033));
         moonData = { x: W * 0.78, y: H * 0.14, r };
@@ -65,6 +87,7 @@ function initAuthScene() {
         moonSprite = mc;
     }
 
+    // ── Build scene ──
     function buildScene() {
         // Grass
         blades = LAYERS.map((L) => {
@@ -154,7 +177,7 @@ function initAuthScene() {
         return (travel + local) * gust;
     }
 
-    function drawGrass(t) {
+    function drawGrass(t, ease) {
         LAYERS.forEach((L, li) => {
             const rootY = H + L.drop; // base sits below the viewport — roots hidden
             const grad = ctx.createLinearGradient(0, rootY - L.hMax, 0, rootY);
@@ -177,14 +200,25 @@ function initAuthScene() {
                 ctx.fill();
             }
         });
+        // Day-mode grass tint overlay
+        if (ease > 0) {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = `rgba(150,255,100,${ease * 0.12})`;
+            for (const L of LAYERS) {
+                const rootY = H + L.drop;
+                ctx.fillRect(0, rootY - L.hMax, W, L.hMax);
+            }
+        }
         ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
     }
 
-    function drawStars(t) {
+    function drawStars(t, ease) {
         ctx.fillStyle = '#fff';
+        const alpha = 1 - ease;
         for (const s of stars) {
             const tw = s.base * (0.6 + 0.4 * Math.sin(t * s.tw + s.ph));
-            ctx.globalAlpha = tw;
+            ctx.globalAlpha = tw * alpha;
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
             ctx.fill();
@@ -192,17 +226,20 @@ function initAuthScene() {
         ctx.globalAlpha = 1;
     }
 
-    function drawMoon(t) {
+    function drawMoon(t, ease) {
         if (!moonData || !moonSprite) return;
-        const { x, y, r } = moonData;
+        const { x, r } = moonData;
+        const yFull = H * 0.14;
+        const y = yFull + (H - yFull + r + 20) * ease; // sinks below horizon
         const pulse = 0.88 + 0.12 * Math.sin(t * 0.00035);
+        const alpha = 1 - ease;
 
         // Atmospheric halo (additive so it blends into the sky glow)
         ctx.globalCompositeOperation = 'lighter';
         const haloR = r * 4.5;
         const halo = ctx.createRadialGradient(x, y, r * 0.2, x, y, haloR);
-        halo.addColorStop(0,    `rgba(255,248,210,${0.15 * pulse})`);
-        halo.addColorStop(0.35, `rgba(220,205,165,${0.06 * pulse})`);
+        halo.addColorStop(0,    `rgba(255,248,210,${0.15 * pulse * alpha})`);
+        halo.addColorStop(0.35, `rgba(220,205,165,${0.06 * pulse * alpha})`);
         halo.addColorStop(1,    'rgba(170,160,120,0)');
         ctx.fillStyle = halo;
         ctx.beginPath();
@@ -212,8 +249,39 @@ function initAuthScene() {
 
         // Crescent sprite
         const half = moonSprite.width / 2;
-        ctx.globalAlpha = 0.90 + 0.08 * pulse;
+        ctx.globalAlpha = (0.90 + 0.08 * pulse) * alpha;
         ctx.drawImage(moonSprite, x - half, y - half);
+        ctx.globalAlpha = 1;
+    }
+
+    function drawSun(t, ease) {
+        if (ease < 0.01 || !moonData) return;
+        const r = moonData.r * 1.15;
+        const x = moonData.x;
+        const yFull = H * 0.14;
+        const y = yFull + (H - yFull + r + 20) * (1 - ease); // rises from below
+
+        // Outer glow — warm at sunrise, bright at noon
+        const glowColor = lerpColor([255,160,60], [255,240,120], ease);
+
+        ctx.globalCompositeOperation = 'lighter';
+        const haloR = r * 5;
+        const halo = ctx.createRadialGradient(x, y, r * 0.3, x, y, haloR);
+        halo.addColorStop(0,    `rgba(${glowColor},${0.28 * ease})`);
+        halo.addColorStop(0.4,  `rgba(${glowColor},${0.10 * ease})`);
+        halo.addColorStop(1,    'rgba(255,200,80,0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath(); ctx.arc(x, y, haloR, 0, Math.PI*2); ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Sun disc
+        const disc = ctx.createRadialGradient(x - r*0.15, y - r*0.15, r*0.05, x, y, r);
+        disc.addColorStop(0, '#fffde0');
+        disc.addColorStop(0.6, '#ffe680');
+        disc.addColorStop(1, '#ffc040');
+        ctx.fillStyle = disc;
+        ctx.globalAlpha = ease;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
         ctx.globalAlpha = 1;
     }
 
@@ -251,11 +319,13 @@ function initAuthScene() {
         }
     }
 
-    function drawFlies(t) {
+    function drawFlies(t, ease) {
+        const alpha = 1 - ease;
+        if (alpha < 0.01) return;
         ctx.globalCompositeOperation = 'lighter';
         for (const f of flies) {
             const pulse = 0.5 + 0.5 * Math.sin(t * f.pulseSpeed + f.pulsePhase);
-            const a = f.baseAlpha * (0.35 + 0.65 * pulse);
+            const a = f.baseAlpha * (0.35 + 0.65 * pulse) * alpha;
             const r = f.size * (3.4 + 1.2 * pulse); // glow radius
             ctx.globalAlpha = a;
             ctx.drawImage(glowSprite, f.x - r, f.y - r, r * 2, r * 2);
@@ -271,11 +341,14 @@ function initAuthScene() {
 
     function renderFrame(t, dtf) {
         ctx.clearRect(0, 0, W, H);
-        drawStars(t);
-        drawMoon(t);
-        if (!reduceMotion) updateFlies(t, dtf);
-        drawFlies(t);
-        drawGrass(t);
+        const ease = smoothstep(transitionT);
+
+        drawStars(t, ease);
+        drawMoon(t, ease);
+        drawSun(t, ease);
+        if (!reduceMotion && ease < 1) updateFlies(t, dtf);
+        drawFlies(t, ease);
+        drawGrass(t, ease);
     }
 
     // Loop with delta time, paused while the tab is hidden.
@@ -286,6 +359,13 @@ function initAuthScene() {
         if (!running) return;
         const dtf = Math.min(2.5, (now - last) / 16.67); // normalize to ~60fps steps
         last = now;
+
+        // Advance transition
+        if (transitionDir !== 0) {
+            transitionT = Math.max(0, Math.min(1, transitionT + transitionDir * (dtf * 16.67 / TRANSITION_DURATION)));
+            if (transitionT <= 0 || transitionT >= 1) transitionDir = 0;
+        }
+
         renderFrame(now, dtf);
         requestAnimationFrame(loop);
     }
@@ -305,6 +385,26 @@ function initAuthScene() {
     window.addEventListener('pointerleave', () => { pointer.active = false; });
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) stop(); else if (!reduceMotion) start();
+    });
+
+    // ── Toggle event wiring ──
+    document.getElementById('scene-toggle')?.addEventListener('click', () => {
+        sceneMode = sceneMode === 'dark' ? 'light' : 'dark';
+        transitionDir = sceneMode === 'light' ? 1 : -1;
+
+        // Sky layers
+        document.getElementById('sky-night').style.opacity = sceneMode === 'light' ? '0' : '1';
+        document.getElementById('sky-day').style.opacity   = sceneMode === 'light' ? '1' : '0';
+
+        // Flip theme tokens with a crossfade window
+        document.documentElement.classList.add('theme-transition');
+        clearTimeout(themeTransTimer);
+        themeTransTimer = setTimeout(() => document.documentElement.classList.remove('theme-transition'), 700);
+        document.documentElement.classList.toggle('dark', sceneMode === 'dark');
+
+        // Icon swap
+        document.getElementById('toggle-icon-sun').classList.toggle('hidden', sceneMode === 'light');
+        document.getElementById('toggle-icon-moon').classList.toggle('hidden', sceneMode === 'dark');
     });
 
     makeGlowSprite();
