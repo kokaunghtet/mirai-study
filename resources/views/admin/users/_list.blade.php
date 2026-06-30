@@ -27,7 +27,7 @@
     @endforeach
 
     {{-- Status chips --}}
-    @foreach (['active' => 'Active', 'banned' => 'Banned'] as $val => $label)
+    @foreach (['active' => 'Active', 'suspended' => 'Suspended', 'banned' => 'Banned'] as $val => $label)
         @php $on = request('status') === $val; @endphp
         <a href="{{ request()->fullUrlWithQuery(['status' => $on ? null : $val, 'page' => null]) }}"
            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors
@@ -102,7 +102,7 @@
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 @if ($user->id === $authId)
-                                    <span class="text-xs text-muted">You</span>
+                                    <span class="text-xs text-muted">-</span>
                                 @else
                                     <button
                                         onclick="toggleUserStatus({{ $user->id }}, '{{ $user->status }}')"
@@ -110,8 +110,8 @@
                                         class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface">
                                         {{ $user->status === 'active' ? 'Ban' : 'Unban' }}
                                     </button>
+                                    @include('admin.partials._role-action-dropdown', ['user' => $user])
                                 @endif
-                                @include('admin.partials._role-action-dropdown', ['user' => $user])
                             </div>
                         </td>
                     </tr>

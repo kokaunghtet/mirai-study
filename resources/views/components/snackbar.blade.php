@@ -11,7 +11,7 @@
      class="fixed top-6 right-6 z-[70] flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg ring-1 max-w-sm w-[calc(100%-3rem)]"
      :class="{
          'bg-surface ring-line text-content': type === 'info',
-         'bg-accent/70 dark:bg-accent/70 ring-accent/90 text-white': type === 'success',
+         'bg-accent/90 dark:bg-accent/90 ring-accent/90 text-white': type === 'success',
          'bg-red-50 dark:bg-red-900 ring-red-200 dark:ring-red-800 text-red-800 dark:text-red-200': type === 'error',
          'bg-amber-50 dark:bg-amber-900 ring-amber-200 dark:ring-amber-800 text-amber-800 dark:text-amber-200': type === 'warning',
      }">

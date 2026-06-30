@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('display_name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('google_id')->nullable()->unique();
+            $table->string('password')->nullable();
             $table->text('bio')->nullable();
             $table->string('profile_image')->nullable();
             $table->enum('role', ['admin', 'moderator', 'user'])->default('user');

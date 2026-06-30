@@ -18,12 +18,14 @@ return new class extends Migration
             $table->unsignedBigInteger('target_id');
             $table->enum('category', ['spam', 'harassment', 'misinformation', 'inappropriate', 'other']);
             $table->text('reason')->nullable();
+            $table->boolean('mod_report')->default(false);
             $table->enum('status', ['pending', 'reviewed', 'resolved', 'rejected'])->default('pending');
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('action_taken', ['removed_content', 'temp_banned', 'perm_banned', 'temp_banned_removed', 'perm_banned_removed', 'none'])->nullable();
             $table->timestamps();
             $table->index('reporter_id');
             $table->index('status');
+            $table->index('mod_report');
         });
     }
 
