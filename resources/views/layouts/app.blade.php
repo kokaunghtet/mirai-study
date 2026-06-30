@@ -71,7 +71,7 @@
     {{-- ═══════════════════════════════════════════════
          Mobile Top Bar (visible on small screens only)
     ═══════════════════════════════════════════════ --}}
-    <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface border-b border-line h-14 flex items-center justify-between px-4">
+    <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface/60 border-b border-line/70 h-14 flex items-center justify-between px-4">
         <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent whitespace-nowrap">
             MiraiStudy
         </a>
@@ -97,7 +97,7 @@
          Sidebar
     ═══════════════════════════════════════════════ --}}
     <aside :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'w-16' : 'w-64']"
-           class="fixed top-0 left-0 z-50 h-full bg-surface border-r border-line flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
+           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
 
         {{-- Logo --}}
         <div class="h-16 flex items-center border-b border-line shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">

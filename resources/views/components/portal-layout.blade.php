@@ -14,7 +14,16 @@
             (function() {
                 var stored = null;
                 try { stored = localStorage.getItem('themeMode'); } catch(e) {}
-                document.documentElement.classList.toggle('dark', stored === 'dark');
+                var isDark = stored === 'dark';
+                document.documentElement.classList.toggle('dark', isDark);
+                // Inject initial sky opacities before first paint so the correct
+                // sky (day vs night) is visible immediately — prevents the dark
+                // night-sky flash for light-mode users while auth-scene.js loads.
+                var s = document.createElement('style');
+                s.textContent = isDark
+                    ? '#sky-night{opacity:1}#sky-day{opacity:0}'
+                    : '#sky-night{opacity:0}#sky-day{opacity:1}';
+                document.head.appendChild(s);
             })();
         </script>
 
@@ -188,7 +197,7 @@
                 radial-gradient(120% 80% at 50% 100%, rgba(201,123,107,0.35) 0%, rgba(201,123,107,0) 45%),
                 linear-gradient(180deg, #140f2a 0%, #241a47 35%, #3a2a58 65%, #5a3a5e 100%);"></div>
         <div id="sky-day" class="fixed inset-0 transition-opacity duration-[2500ms]"
-             style="z-index:-1; opacity:0; background:
+             style="z-index:-1; background:
                 radial-gradient(120% 80% at 50% 100%, rgba(255,220,150,0.4) 0%, rgba(255,220,150,0) 40%),
                 linear-gradient(180deg, #5b9bd5 0%, #87ceeb 40%, #c9e8f5 70%, #fde9c0 100%);"></div>
 

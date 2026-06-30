@@ -326,13 +326,15 @@
         </nav>
 
         <div class="welcome-sidebar-footer">
-            <div class="welcome-theme-toggle-row" id="themeToggleRow">
-                <i data-lucide="moon" id="themeIcon"></i>
-                <span class="theme-label" id="themeLabel">Dark Mode</span>
-                <div class="toggle-track">
-                    <div class="toggle-thumb" id="toggleThumb"></div>
-                </div>
-            </div>
+            <button type="button"
+                    x-data="themeToggle({ persistUrl: '{{ auth()->check() ? route('settings.theme-mode') : '' }}' })"
+                    @click="toggle()"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-white hover:bg-mirai-lime/10 dark:hover:bg-mirai-lime/10 hover:text-mirai-dark dark:hover:text-mirai-lime transition-colors"
+                    :title="dark ? 'Switch to light mode' : 'Switch to dark mode'">
+                <i data-lucide="moon" x-show="!dark" class="w-5 h-5 shrink-0"></i>
+                <i data-lucide="sun" x-show="dark" class="w-5 h-5 shrink-0"></i>
+                <span x-text="dark ? 'Light mode' : 'Dark mode'"></span>
+            </button>
 
             @auth
                 <a href="{{ route('feed.index') }}" class="btn-get-started">
@@ -654,8 +656,8 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center reveal-stagger" id="stats-grid">
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">11</div>
-                    <p class="text-sm text-gray-500 mt-1">Builders</p>
+                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">{{ \App\Models\User::count() }}</div>
+                    <p class="text-sm text-gray-500 mt-1">Users</p>
                 </div>
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
                     <div class="stat-number text-3xl font-extrabold text-mirai-lime">2</div>
@@ -816,50 +818,6 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && sidebarOpen) toggleSidebar(false);
         });
-
-        // Theme toggle
-        var themeRow = document.getElementById('themeToggleRow');
-        var themeIcon = document.getElementById('themeIcon');
-        var themeLabel = document.getElementById('themeLabel');
-        var toggleThumb = document.getElementById('toggleThumb');
-
-        function updateThemeUI(isDark) {
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                themeLabel.textContent = 'Light Mode';
-                toggleThumb.classList.add('dark-thumb');
-                sidebar.classList.remove('nav-hover');
-            } else {
-                document.documentElement.classList.remove('dark');
-                themeLabel.textContent = 'Dark Mode';
-                toggleThumb.classList.remove('dark-thumb');
-            }
-            // Re-insert fresh <i> so Lucide can re-render (Lucide replaces <i> with <svg>,
-            // making the captured themeIcon ref stale after first render)
-            var cur = document.getElementById('themeIcon');
-            if (cur) {
-                var fresh = document.createElement('i');
-                fresh.id = 'themeIcon';
-                fresh.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-                cur.parentNode.replaceChild(fresh, cur);
-                if (window.renderIcons) {
-                    window.renderIcons(document.getElementById('themeToggleRow'));
-                } else if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-            }
-        }
-
-        var isDark = document.documentElement.classList.contains('dark');
-        updateThemeUI(isDark);
-
-        function toggleTheme() {
-            isDark = !isDark;
-            updateThemeUI(isDark);
-            try { localStorage.setItem('themeMode', isDark ? 'dark' : 'light'); } catch (e) {}
-        }
-
-        themeRow.addEventListener('click', toggleTheme);
 
         // Coordinated hover
         var navLinks = document.querySelectorAll('.welcome-sidebar-nav a');
