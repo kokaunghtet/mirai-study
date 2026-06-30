@@ -318,10 +318,17 @@
     <div class="welcome-sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="welcome-sidebar" id="sidebar">
-        <div class="welcome-sidebar-logo" id="sidebarLogo">
+        {{-- <div class="welcome-sidebar-logo" id="sidebarLogo">
             <img src="{{ asset('images/logo.png') }}" alt="MiraiStudy" class="w-12 h-12 object-contain">
             <div class="logo-text">Mirai<span>Study</span></div>
-        </div>
+        </div> --}}
+        {{-- Logo --}}
+        <a href="/" class="mb-7 flex items-center justify-center gap-2.5">
+            <span class="h-9 w-9 bg-gradient-to-br from-mirai-lime to-mirai-dark" role="img" aria-label="MiraiStudy"
+                    style="-webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
+                                    mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;"></span>
+            <span class="bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-2xl font-semibold text-transparent">MiraiStudy</span>
+        </a>
 
         <nav class="welcome-sidebar-nav" id="sidebarNav">
             <a href="{{ route('feed.index') }}"><i data-lucide="home"></i><span>Feed</span><span class="nav-indicator"></span></a>
@@ -379,7 +386,7 @@
                         <i data-lucide="graduation-cap" class="w-5 h-5 icon-spin"></i>
                         <span>Start Learning Free</span>
                     </a>
-                    <a href="https://github.com" target="_blank" class="btn-secondary font-medium px-6 py-3.5 rounded-xl inline-flex items-center gap-2 text-sm sm:text-base">
+                    <a href="https://github.com/kokaunghtet/mirai-study.git" target="_blank" class="btn-secondary font-medium px-6 py-3.5 rounded-xl inline-flex items-center gap-2 text-sm sm:text-base">
                         <i data-lucide="git-branch" class="w-5 h-5"></i>
                         <span>View on GitHub</span>
                     </a>
@@ -615,7 +622,7 @@
         </section>
 
         {{-- TESTIMONIALS --}}
-        <section id="testimonials" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 bg-emerald-50/5 backdrop-blur-sm rounded-3xl mb-8 reveal">
+        <section id="testimonials" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 bg-emerald-50/5 rounded-3xl mb-8 reveal">
             <div class="text-center max-w-xl mx-auto space-y-3 mb-14">
                 <span class="text-emerald-600 text-xs font-semibold tracking-widest uppercase">Testimonials</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
@@ -722,6 +729,36 @@
                     <a href="#" class="btn-dark bg-emerald-700/40 text-white font-semibold px-8 py-3.5 rounded-xl inline-flex items-center gap-2 border border-white/20 text-sm sm:text-base hover:bg-emerald-700/60">
                         <i data-lucide="circle-help" class="w-5 h-5"></i>Learn More
                     </a>
+                </div>
+            </div>
+        </section>
+
+        {{-- BUILDERS --}}
+        <section class="py-16 px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">Builders</h2>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mb-8">The people behind MiraiStudy.</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    @php
+                        $builders = [
+                            'Kaung Htet',
+                            'Zwe Nyi Nyi Naing',
+                            'Aent Zin Ko',
+                            'Soe Yi Naing',
+                            'Arkar Moe Myint',
+                            'Shoon Lae Myint Myat',
+                            'Lynn Latt Khay',
+                            'Su Hanni Thit',
+                            'Ei Thandar Aung',
+                            'Su Ya Da Nar',
+                            'Wutt Yee Thin',
+                        ];
+                    @endphp
+                    @foreach ($builders as $builder)
+                        <span class="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/40 rounded-full px-5 py-2.5 text-sm font-medium text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-800/40 transition-colors">
+                            <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i>{{ $builder }}
+                        </span>
+                    @endforeach
                 </div>
             </div>
         </section>
