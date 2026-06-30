@@ -16,14 +16,14 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'display_name' => 'Admin',
             'email' => 'admin@example.com',
-            'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
+            'password' => Hash::make(config('app.seed_admin_password')),
         ]);
 
         $mod = User::factory()->moderator()->create([
             'username' => 'moderator',
             'display_name' => 'Moderator',
             'email' => 'mod@example.com',
-            'password' => Hash::make(env('MOD_PASSWORD', 'password')),
+            'password' => Hash::make(config('app.seed_mod_password')),
         ]);
 
         User::whereIn('id', [$admin->id, $mod->id])->each(function (User $user) {
