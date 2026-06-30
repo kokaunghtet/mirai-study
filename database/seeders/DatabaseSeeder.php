@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            PostSeeder::class,
             ExamSeeder::class,
             IpQuestionSeeder::class,
             FeQuestionSeeder::class,
@@ -25,7 +24,6 @@ class DatabaseSeeder extends Seeder
             N3QuestionSeeder::class,
             N4QuestionSeeder::class,
             N5QuestionSeeder::class,
-            QuizSeeder::class,
         ]);
     }
 }
