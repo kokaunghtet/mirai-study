@@ -8,10 +8,12 @@ use App\Services\OtpService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RegisteredUserController extends Controller
 {
@@ -44,18 +46,29 @@ class RegisteredUserController extends Controller
             'username.regex' => 'Username may only contain letters and numbers.',
         ]);
 
-        $user = User::create([
-            'username' => $request->username,
-            'display_name' => $request->display_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        // Transaction ensures the user row is rolled back if OTP email delivery fails.
+        try {
+            $user = DB::transaction(function () use ($request, $otp) {
+                $user = User::create([
+                    'username' => $request->username,
+                    'display_name' => $request->display_name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
 
-        event(new Registered($user));
+                event(new Registered($user));
 
-        // Don't sign the user in yet — email must be verified first. Issue a code and
-        // hand off to the shared OTP challenge screen (see OtpChallengeController).
-        $otp->issue($user, 'email_verification');
+                // Don't sign the user in yet — email must be verified first. Issue a code and
+                // hand off to the shared OTP challenge screen (see OtpChallengeController).
+                $otp->issue($user, 'email_verification');
+
+                return $user;
+            });
+        } catch (TransportExceptionInterface) {
+            throw ValidationException::withMessages([
+                'email' => 'Could not send verification email. Please check your email address or try again later.',
+            ]);
+        }
 
         $request->session()->put('otp_challenge', [
             'user_id' => $user->id,

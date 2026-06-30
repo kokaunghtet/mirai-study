@@ -84,6 +84,16 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'trends', 'recent_users', 'recent_reports', 'recent_appeals', 'activityItems', 'health'));
     }
 
+    private function stackedBanExpiry(User $user, int $days): Carbon
+    {
+        $latest = $user->bans()
+            ->active()
+            ->where('type', 'temporary')
+            ->max('expires_at');
+
+        return ($latest ? Carbon::parse($latest) : now())->addDays($days);
+    }
+
     private function getStorageUsed(): string
     {
         try {
@@ -219,35 +229,90 @@ class AdminController extends Controller
 
     public function reports(Request $request)
     {
+        $isMod = auth()->user()->isModerator();
+        $statusFilter = $request->input('status', 'pending');
+        $typeFilter = $request->input('type');
+
+        if ($statusFilter === 'pending') {
+            $query = Report::with('reporter')->where('status', 'pending');
+
+            if ($isMod) {
+                $query->where('mod_report', false);
+            }
+            if ($typeFilter) {
+                $query->where('target_type', $typeFilter);
+            }
+
+            $allPending = $query->oldest()->get();
+            $grouped = $allPending->groupBy(fn ($r) => $r->target_type.':'.$r->target_id);
+
+            $postIds = $allPending->where('target_type', 'post')->pluck('target_id')->unique();
+            $commentIds = $allPending->where('target_type', 'comment')->pluck('target_id')->unique();
+            $userTargetIds = $allPending->where('target_type', 'user')->pluck('target_id')->unique();
+
+            $postsMap = Post::withTrashed()->whereIn('id', $postIds)->get()->keyBy('id');
+            $commentsMap = Comment::withTrashed()->whereIn('id', $commentIds)->get()->keyBy('id');
+            $usersMap = User::whereIn('id', $userTargetIds)->get()->keyBy('id');
+            $commentParentPosts = Post::withTrashed()
+                ->whereIn('id', $commentsMap->pluck('post_id')->filter()->unique())
+                ->get()->keyBy('id');
+
+            $reportGroups = $grouped->map(function ($reports) use ($postsMap, $commentsMap, $usersMap, $commentParentPosts) {
+                $primary = $reports->first();
+                $type = $primary->target_type;
+                $id = $primary->target_id;
+                $targetModel = match ($type) {
+                    'post' => $postsMap->get($id),
+                    'comment' => $commentsMap->get($id),
+                    'user' => $usersMap->get($id),
+                    default => null,
+                };
+
+                return (object) [
+                    'primary_id' => $primary->id,
+                    'target_type' => $type,
+                    'target_id' => $id,
+                    'target_model' => $targetModel,
+                    'target_parent_post' => $type === 'comment' && $targetModel
+                        ? $commentParentPosts->get($targetModel->post_id)
+                        : null,
+                    'reports' => $reports,
+                    'count' => $reports->count(),
+                    'first_reported_at' => $primary->created_at,
+                ];
+            })->sortByDesc('count')->values();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'html' => view('admin.reports._grouped-list', compact('reportGroups'))->render(),
+                ]);
+            }
+
+            return view('admin.reports.index', compact('reportGroups'));
+        }
+
+        // Flat view for resolved / rejected
         $query = Report::with(['reporter', 'reviewer']);
 
-        // Moderators cannot see reports about moderators — admin-only
-        if (auth()->user()->isModerator()) {
+        if ($isMod) {
             $query->where('mod_report', false);
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        } else {
-            $query->where('status', 'pending');
-        }
+        $query->where('status', $statusFilter);
 
-        if ($request->filled('type')) {
-            $query->where('target_type', $request->type);
+        if ($typeFilter) {
+            $query->where('target_type', $typeFilter);
         }
 
         $reports = $query->latest()->paginate(20)->withQueryString();
 
-        // Pre-load targets to avoid N+1 queries in the view
         $postIds = $reports->where('target_type', 'post')->pluck('target_id')->unique();
         $commentIds = $reports->where('target_type', 'comment')->pluck('target_id')->unique();
-        $userIds = $reports->where('target_type', 'user')->pluck('target_id')->unique();
+        $userTargetIds = $reports->where('target_type', 'user')->pluck('target_id')->unique();
 
         $postsMap = Post::withTrashed()->whereIn('id', $postIds)->get()->keyBy('id');
         $commentsMap = Comment::withTrashed()->whereIn('id', $commentIds)->get()->keyBy('id');
-        $usersMap = User::whereIn('id', $userIds)->get()->keyBy('id');
-
-        // Also pre-load parent posts for comments
+        $usersMap = User::whereIn('id', $userTargetIds)->get()->keyBy('id');
         $commentParentIds = $commentsMap->pluck('post_id')->filter()->unique();
         $commentParentPosts = Post::withTrashed()->whereIn('id', $commentParentIds)->get()->keyBy('id');
 
@@ -351,39 +416,43 @@ class AdminController extends Controller
                 ]);
 
             } elseif ($action === 'temp_ban' && $targetUser) {
-                $expiresAt = now()->addDays((int) $request->duration);
-
-                UserBan::create([
-                    'user_id' => $targetUser->id,
-                    'type' => 'temporary',
-                    'reason' => $request->reason,
-                    'report_id' => $report->id,
-                    'banned_by' => $reviewer->id,
-                    'expires_at' => $expiresAt,
-                ]);
-                $targetUser->update(['status' => 'suspended']);
                 $actionTaken = Report::ACTION_TEMP_BANNED;
 
-                ActivityLog::create([
-                    'user_id' => $reviewer->id,
-                    'action' => 'user_temp_banned',
-                    'subject_type' => 'User',
-                    'subject_id' => $targetUser->id,
-                    'properties' => [
-                        'username' => $targetUser->username,
-                        'days' => $request->duration,
-                        'report_id' => $report->id,
-                    ],
-                    'created_at' => now(),
-                ]);
+                if (! $targetUser->bans()->active()->where('type', 'permanent')->exists()) {
+                    $expiresAt = $this->stackedBanExpiry($targetUser, (int) $request->duration);
 
-                NotificationService::send(
-                    recipient: $targetUser,
-                    type: 'temp_ban',
-                    title: 'Your account has been temporarily suspended',
-                    content: 'You have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
-                    sender: $reviewer,
-                );
+                    UserBan::create([
+                        'user_id' => $targetUser->id,
+                        'type' => 'temporary',
+                        'reason' => $request->reason,
+                        'report_id' => $report->id,
+                        'banned_by' => $reviewer->id,
+                        'expires_at' => $expiresAt,
+                    ]);
+                    $targetUser->update(['status' => 'suspended']);
+
+                    ActivityLog::create([
+                        'user_id' => $reviewer->id,
+                        'action' => 'user_temp_banned',
+                        'subject_type' => 'User',
+                        'subject_id' => $targetUser->id,
+                        'properties' => [
+                            'username' => $targetUser->username,
+                            'days' => $request->duration,
+                            'expires_at' => $expiresAt->toDateTimeString(),
+                            'report_id' => $report->id,
+                        ],
+                        'created_at' => now(),
+                    ]);
+
+                    NotificationService::send(
+                        recipient: $targetUser,
+                        type: 'temp_ban',
+                        title: 'Your account has been temporarily suspended',
+                        content: 'You have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
+                        sender: $reviewer,
+                    );
+                }
 
             } elseif ($action === 'perm_ban' && $targetUser) {
                 $ban = UserBan::create([
@@ -412,25 +481,13 @@ class AdminController extends Controller
                     'created_at' => now(),
                 ]);
             } elseif ($action === 'temp_ban_remove' && $targetUser) {
-                // Remove content
+                // Remove content always
                 match ($report->target_type) {
                     'post' => Post::withTrashed()->find($report->target_id)?->delete(),
                     'comment' => Comment::withTrashed()->find($report->target_id)?->delete(),
                     default => null,
                 };
 
-                // Temp ban the author
-                $expiresAt = now()->addDays((int) $request->duration);
-
-                UserBan::create([
-                    'user_id' => $targetUser->id,
-                    'type' => 'temporary',
-                    'reason' => $request->reason,
-                    'report_id' => $report->id,
-                    'banned_by' => $reviewer->id,
-                    'expires_at' => $expiresAt,
-                ]);
-                $targetUser->update(['status' => 'suspended']);
                 $actionTaken = Report::ACTION_TEMP_BANNED_REMOVED;
 
                 ActivityLog::create([
@@ -442,26 +499,42 @@ class AdminController extends Controller
                     'created_at' => now(),
                 ]);
 
-                ActivityLog::create([
-                    'user_id' => $reviewer->id,
-                    'action' => 'user_temp_banned',
-                    'subject_type' => 'User',
-                    'subject_id' => $targetUser->id,
-                    'properties' => [
-                        'username' => $targetUser->username,
-                        'days' => $request->duration,
-                        'report_id' => $report->id,
-                    ],
-                    'created_at' => now(),
-                ]);
+                // Temp ban stacks unless perm ban already active
+                if (! $targetUser->bans()->active()->where('type', 'permanent')->exists()) {
+                    $expiresAt = $this->stackedBanExpiry($targetUser, (int) $request->duration);
 
-                NotificationService::send(
-                    recipient: $targetUser,
-                    type: 'temp_ban',
-                    title: 'Your account has been temporarily suspended',
-                    content: 'Your content was removed and you have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
-                    sender: $reviewer,
-                );
+                    UserBan::create([
+                        'user_id' => $targetUser->id,
+                        'type' => 'temporary',
+                        'reason' => $request->reason,
+                        'report_id' => $report->id,
+                        'banned_by' => $reviewer->id,
+                        'expires_at' => $expiresAt,
+                    ]);
+                    $targetUser->update(['status' => 'suspended']);
+
+                    ActivityLog::create([
+                        'user_id' => $reviewer->id,
+                        'action' => 'user_temp_banned',
+                        'subject_type' => 'User',
+                        'subject_id' => $targetUser->id,
+                        'properties' => [
+                            'username' => $targetUser->username,
+                            'days' => $request->duration,
+                            'expires_at' => $expiresAt->toDateTimeString(),
+                            'report_id' => $report->id,
+                        ],
+                        'created_at' => now(),
+                    ]);
+
+                    NotificationService::send(
+                        recipient: $targetUser,
+                        type: 'temp_ban',
+                        title: 'Your account has been temporarily suspended',
+                        content: 'Your content was removed and you have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
+                        sender: $reviewer,
+                    );
+                }
             } elseif ($action === 'perm_ban_remove' && $targetUser) {
                 // Remove content
                 match ($report->target_type) {
@@ -512,6 +585,19 @@ class AdminController extends Controller
                 'reviewed_by' => $reviewer->id,
                 'action_taken' => $actionTaken,
             ]);
+
+            // Auto-close sibling pending reports on the same target
+            if ($action !== 'reject') {
+                Report::where('target_type', $report->target_type)
+                    ->where('target_id', $report->target_id)
+                    ->where('status', Report::STATUS_PENDING)
+                    ->where('id', '!=', $report->id)
+                    ->update([
+                        'status' => Report::STATUS_RESOLVED,
+                        'reviewed_by' => $reviewer->id,
+                        'action_taken' => $actionTaken,
+                    ]);
+            }
 
             ActivityLog::create([
                 'user_id' => $reviewer->id,
@@ -590,14 +676,20 @@ class AdminController extends Controller
         $notifyBan = null;
         $tempBanNotify = null;
 
+        if ($request->type === 'temp' && $user->bans()->active()->where('type', 'permanent')->exists()) {
+            abort(422, 'User already has an active permanent ban.');
+        }
+
         DB::transaction(function () use ($request, $user, $actor, &$notifyUser, &$notifyBan, &$tempBanNotify) {
             if ($request->type === 'temp') {
+                $expiresAt = $this->stackedBanExpiry($user, (int) $request->duration);
+
                 UserBan::create([
                     'user_id' => $user->id,
                     'type' => 'temporary',
                     'reason' => $request->reason,
                     'banned_by' => $actor->id,
-                    'expires_at' => now()->addDays((int) $request->duration),
+                    'expires_at' => $expiresAt,
                 ]);
                 $user->update(['status' => 'suspended']);
 
@@ -606,7 +698,11 @@ class AdminController extends Controller
                     'action' => 'user_temp_banned',
                     'subject_type' => 'User',
                     'subject_id' => $user->id,
-                    'properties' => ['username' => $user->username, 'days' => $request->duration],
+                    'properties' => [
+                        'username' => $user->username,
+                        'days' => $request->duration,
+                        'expires_at' => $expiresAt->toDateTimeString(),
+                    ],
                     'created_at' => now(),
                 ]);
 

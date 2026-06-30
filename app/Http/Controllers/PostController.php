@@ -31,7 +31,7 @@ class PostController extends Controller
 
         $query = Post::with($with)->withCount(['likes', 'comments', 'bookmarks']);
 
-        $profileUser = null;
+        $profileUsers = collect();
 
         // 1. Search filter
         if ($request->filled('search')) {
@@ -48,8 +48,7 @@ class PostController extends Controller
                     });
             });
 
-            // Top-1 user match for profile card (exact hits rank first)
-            $profileUser = User::withCount([
+            $profileUsers = User::withCount([
                 'posts',
                 'followers' => fn ($q) => $q->where('follows.status', 'accepted'),
                 'following' => fn ($q) => $q->where('follows.status', 'accepted'),
@@ -59,7 +58,8 @@ class PostController extends Controller
                         ->orWhere('display_name', 'like', "%{$escapedSearch}%");
                 })
                 ->orderByRaw('CASE WHEN username = ? THEN 0 WHEN display_name = ? THEN 1 ELSE 2 END', [$search, $search])
-                ->first();
+                ->limit(10)
+                ->get();
         }
 
         // 2. Tag filter
@@ -91,8 +91,8 @@ class PostController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('feed._posts', compact('posts'))->render(),
-                'user_card_html' => $profileUser
-                    ? view('components.user-card', ['user' => $profileUser])->render()
+                'user_card_html' => $profileUsers->isNotEmpty()
+                    ? $profileUsers->map(fn ($u) => view('components.user-card', ['user' => $u])->render())->implode('')
                     : '',
                 'next_page_url' => $posts->nextPageUrl(),
             ]);
@@ -100,7 +100,7 @@ class PostController extends Controller
 
         $tags = Tag::all();
 
-        return view('feed.index', compact('posts', 'tags', 'profileUser'));
+        return view('feed.index', compact('posts', 'tags', 'profileUsers'));
     }
 
     public function create()

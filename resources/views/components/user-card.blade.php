@@ -36,7 +36,9 @@
         </div>
     </div>
 
-    @if (!$isSelf)
+    @if ($isSelf)
+        <span class="shrink-0 rounded-lg border border-line px-4 py-1.5 text-[13px] font-bold text-muted">You</span>
+    @elseif (!$isSelf)
         @auth
             <div x-data="{
                     following: {{ $isFollowing ? 'true' : 'false' }},

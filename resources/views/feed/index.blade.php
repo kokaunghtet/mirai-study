@@ -36,10 +36,10 @@
             </div>
 
             {{-- User profile card (shown when search matches a user) --}}
-            <div id="user-card-container">
-                @if (!empty($profileUser))
+            <div id="user-card-container" class="space-y-[10px]">
+                @foreach ($profileUsers as $profileUser)
                     <x-user-card :user="$profileUser" />
-                @endif
+                @endforeach
             </div>
 
             {{-- Posts --}}

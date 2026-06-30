@@ -35,7 +35,11 @@
             </header>
 
             <div id="admin-filter-results">
-                @include('admin.reports._list', compact('reports'))
+                @if (isset($reportGroups))
+                    @include('admin.reports._grouped-list', compact('reportGroups'))
+                @else
+                    @include('admin.reports._list', compact('reports'))
+                @endif
             </div>
 
         </div>
@@ -43,10 +47,11 @@
 
 @push('scripts')
 <script>
-function reportActionMenu(reportId, targetType) {
+function reportActionMenu(reportId, targetType, groupKey = null) {
     return {
         reportId,
         targetType,
+        groupKey,
         loading: false,
         open: false,
         showBanForm: false,
@@ -103,6 +108,14 @@ function reportActionMenu(reportId, targetType) {
                 }
 
                 const data = await res.json();
+
+                // Grouped view: remove the whole group card
+                if (this.groupKey) {
+                    document.getElementById('group-row-' + this.groupKey)?.remove();
+                    return;
+                }
+
+                // Flat view: update badge + action label in place
                 const badge = document.getElementById('report-badge-' + this.reportId);
                 const actions = document.getElementById('report-actions-' + this.reportId);
 
