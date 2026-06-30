@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendBanNotificationJob;
 use App\Models\ActivityLog;
 use App\Models\Appeal;
 use App\Models\Comment;
@@ -13,6 +14,7 @@ use App\Models\Report;
 use App\Models\User;
 use App\Models\UserBan;
 use App\Notifications\AppealApprovedNotification;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -155,8 +157,9 @@ class AdminController extends Controller
 
         if ($request->status === 'banned') {
             // Ensure a UserBan record exists so storeGuest can find it via activeBan().
-            if (! $user->bans()->active()->exists()) {
-                UserBan::create([
+            $ban = $user->bans()->active()->first();
+            if (! $ban) {
+                $ban = UserBan::create([
                     'user_id' => $user->id,
                     'banned_by' => auth()->id(),
                     'type' => 'permanent',
@@ -172,6 +175,8 @@ class AdminController extends Controller
                 'properties' => ['username' => $user->username],
                 'created_at' => now(),
             ]);
+
+            SendBanNotificationJob::dispatch($user, $ban);
         }
 
         Cache::forget('admin_stats');
@@ -322,7 +327,10 @@ class AdminController extends Controller
             }
         }
 
-        DB::transaction(function () use ($report, $request, $action, $reviewer, $targetUser) {
+        $notifyUser = null;
+        $notifyBan = null;
+
+        DB::transaction(function () use ($report, $request, $action, $reviewer, $targetUser, &$notifyUser, &$notifyBan) {
             $actionTaken = Report::ACTION_NONE;
 
             if ($action === 'remove_content') {
@@ -369,8 +377,16 @@ class AdminController extends Controller
                     'created_at' => now(),
                 ]);
 
+                NotificationService::send(
+                    recipient: $targetUser,
+                    type: 'temp_ban',
+                    title: 'Your account has been temporarily suspended',
+                    content: 'You have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
+                    sender: $reviewer,
+                );
+
             } elseif ($action === 'perm_ban' && $targetUser) {
-                UserBan::create([
+                $ban = UserBan::create([
                     'user_id' => $targetUser->id,
                     'type' => 'permanent',
                     'reason' => $request->reason,
@@ -380,6 +396,9 @@ class AdminController extends Controller
                 ]);
                 $targetUser->update(['status' => 'banned']);
                 $actionTaken = Report::ACTION_PERM_BANNED;
+
+                $notifyUser = $targetUser;
+                $notifyBan = $ban;
 
                 ActivityLog::create([
                     'user_id' => $reviewer->id,
@@ -435,6 +454,14 @@ class AdminController extends Controller
                     ],
                     'created_at' => now(),
                 ]);
+
+                NotificationService::send(
+                    recipient: $targetUser,
+                    type: 'temp_ban',
+                    title: 'Your account has been temporarily suspended',
+                    content: 'Your content was removed and you have been suspended for '.$request->duration.' day(s).'.($request->reason ? ' Reason: '.$request->reason : '').' You may submit an appeal once the suspension period ends.',
+                    sender: $reviewer,
+                );
             } elseif ($action === 'perm_ban_remove' && $targetUser) {
                 // Remove content
                 match ($report->target_type) {
@@ -444,7 +471,7 @@ class AdminController extends Controller
                 };
 
                 // Perm ban the author
-                UserBan::create([
+                $ban = UserBan::create([
                     'user_id' => $targetUser->id,
                     'type' => 'permanent',
                     'reason' => $request->reason,
@@ -454,6 +481,9 @@ class AdminController extends Controller
                 ]);
                 $targetUser->update(['status' => 'banned']);
                 $actionTaken = Report::ACTION_PERM_BANNED_REMOVED;
+
+                $notifyUser = $targetUser;
+                $notifyBan = $ban;
 
                 ActivityLog::create([
                     'user_id' => $reviewer->id,
@@ -495,6 +525,10 @@ class AdminController extends Controller
             Cache::forget('admin_stats');
             Cache::forget('admin_trends');
         });
+
+        if ($notifyUser && $notifyBan) {
+            SendBanNotificationJob::dispatch($notifyUser, $notifyBan);
+        }
 
         $report->refresh();
 
@@ -552,7 +586,11 @@ class AdminController extends Controller
             abort(403, 'Moderators cannot ban other moderators.');
         }
 
-        DB::transaction(function () use ($request, $user, $actor) {
+        $notifyUser = null;
+        $notifyBan = null;
+        $tempBanNotify = null;
+
+        DB::transaction(function () use ($request, $user, $actor, &$notifyUser, &$notifyBan, &$tempBanNotify) {
             if ($request->type === 'temp') {
                 UserBan::create([
                     'user_id' => $user->id,
@@ -571,8 +609,10 @@ class AdminController extends Controller
                     'properties' => ['username' => $user->username, 'days' => $request->duration],
                     'created_at' => now(),
                 ]);
+
+                $tempBanNotify = ['user' => $user, 'days' => (int) $request->duration, 'reason' => $request->reason];
             } else {
-                UserBan::create([
+                $ban = UserBan::create([
                     'user_id' => $user->id,
                     'type' => 'permanent',
                     'reason' => $request->reason,
@@ -589,8 +629,26 @@ class AdminController extends Controller
                     'properties' => ['username' => $user->username],
                     'created_at' => now(),
                 ]);
+
+                $notifyUser = $user;
+                $notifyBan = $ban;
             }
         });
+
+        if ($notifyUser && $notifyBan) {
+            SendBanNotificationJob::dispatch($notifyUser, $notifyBan);
+        }
+
+        if ($tempBanNotify) {
+            $reason = $tempBanNotify['reason'] ? ' Reason: '.$tempBanNotify['reason'] : '';
+            NotificationService::send(
+                recipient: $tempBanNotify['user'],
+                type: 'temp_ban',
+                title: 'Your account has been temporarily suspended',
+                content: 'You have been suspended for '.$tempBanNotify['days'].' day(s).'.$reason.' You may submit an appeal once the suspension period ends.',
+                sender: $actor,
+            );
+        }
 
         Cache::forget('admin_stats');
         Cache::forget('admin_trends');

@@ -17,6 +17,19 @@ class EnsureUserIsNotBanned
         'appeal.create',
         'appeal.store',
         'logout',
+        'profile.edit',
+        'profile.update',
+        'profile.preferences',
+        'profile.username-available',
+        'settings.index',
+        'settings.update',
+        'settings.theme-mode',
+        'settings.two-factor',
+        'notifications.index',
+        'notifications.read',
+        'notifications.read-all',
+        'posts.like',
+        'comments.like',
     ];
 
     public function handle(Request $request, Closure $next): Response

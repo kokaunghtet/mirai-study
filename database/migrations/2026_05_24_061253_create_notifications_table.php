@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sender_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->enum('type', ['like_post', 'comment_post', 'follow_user', 'system', 'report_reviewed']);
+            $table->enum('type', ['like_post', 'comment_post', 'follow_user', 'system', 'report_reviewed', 'temp_ban']);
             $table->string('title');
             $table->text('content');
             $table->string('url')->nullable();

@@ -44,6 +44,7 @@
                     'comment_post'    => ['icon' => 'message-circle', 'color' => 'text-blue-500',  'bg' => 'bg-blue-500/10'],
                     'follow_user'     => ['icon' => 'user-plus',      'color' => 'text-green-500', 'bg' => 'bg-green-500/10'],
                     'report_reviewed' => ['icon' => 'flag',           'color' => 'text-orange-500','bg' => 'bg-orange-500/10'],
+                    'temp_ban'        => ['icon' => 'shield-ban',     'color' => 'text-red-500',   'bg' => 'bg-red-500/10'],
                     default           => ['icon' => 'bell',           'color' => 'text-muted',     'bg' => 'bg-surface-muted'],
                 };
             @endphp
