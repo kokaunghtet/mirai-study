@@ -216,6 +216,11 @@ class AdminController extends Controller
     {
         $query = Report::with(['reporter', 'reviewer']);
 
+        // Moderators cannot see reports about moderators — admin-only
+        if (auth()->user()->isModerator()) {
+            $query->where('mod_report', false);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
@@ -266,6 +271,11 @@ class AdminController extends Controller
     {
         if ($report->status !== Report::STATUS_PENDING) {
             abort(422, 'This report has already been processed.');
+        }
+
+        // Moderators cannot resolve reports about moderators
+        if ($report->mod_report && auth()->user()->isModerator()) {
+            abort(403);
         }
 
         $request->validate([

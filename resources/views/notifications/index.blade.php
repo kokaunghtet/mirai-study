@@ -109,6 +109,17 @@
 
                         @if ($notification->url)
                             <a href="{{ $notification->url }}"
+                               @if (!$notification->isRead())
+                                   @click.prevent="
+                                       fetch('{{ route('notifications.read', $notification) }}', {
+                                           method: 'PATCH',
+                                           headers: {
+                                               'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                               'Accept': 'application/json',
+                                           },
+                                       }).finally(() => window.location.href = $el.href)
+                                   "
+                               @endif
                                class="text-xs font-semibold text-accent hover:text-accent-strong transition-colors leading-none">
                                 View
                             </a>

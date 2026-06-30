@@ -72,7 +72,20 @@ class ReportController extends Controller
             return response()->json(['error' => 'duplicate'], 409);
         }
 
-        Report::create(array_merge($data, ['reporter_id' => auth()->id()]));
+        // Flag if target is a moderator (so only admins can see these reports)
+        $modReport = false;
+        if ($data['target_type'] === 'user') {
+            $modReport = isset($target) && $target->isModerator();
+        } elseif ($data['target_type'] === 'post') {
+            $modReport = isset($target) && $target->user && $target->user->isModerator();
+        } elseif ($data['target_type'] === 'comment') {
+            $modReport = isset($target) && $target->user && $target->user->isModerator();
+        }
+
+        Report::create(array_merge($data, [
+            'reporter_id' => auth()->id(),
+            'mod_report' => $modReport,
+        ]));
 
         Cache::forget('admin_stats');
 

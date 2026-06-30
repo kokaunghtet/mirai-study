@@ -32,6 +32,7 @@ class Report extends Model
         'target_id',
         'category',
         'reason',
+        'mod_report',
         'status',
         'reviewed_by',
         'action_taken',
