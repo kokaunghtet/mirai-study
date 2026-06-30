@@ -185,25 +185,15 @@
                 radial-gradient(120% 80% at 50% 100%, rgba(255,220,150,0.4) 0%, rgba(255,220,150,0) 40%),
                 linear-gradient(180deg, #5b9bd5 0%, #87ceeb 40%, #c9e8f5 70%, #fde9c0 100%);"></div>
 
-        {{-- Day/night toggle button --}}
-        <button id="scene-toggle"
-                class="fixed top-4 right-4 z-20 flex h-9 w-9 items-center justify-center
-                       rounded-full border border-content/20 bg-surface/40 backdrop-blur-sm
-                       text-content/70 hover:text-content transition-colors"
-                aria-label="Toggle day/night">
-            <i data-lucide="sun" class="h-4 w-4" id="toggle-icon-sun"></i>
-            <i data-lucide="moon" class="h-4 w-4 hidden" id="toggle-icon-moon"></i>
-        </button>
+        {{-- Animated scene: click the moon (night) or sun (day) to toggle. --}}
+        <canvas id="auth-scene" class="fixed inset-0" style="z-index:0; cursor:default"></canvas>
 
-        {{-- Animated scene: procedural grass + interactive fireflies (resources/js/auth-scene.js). --}}
-        <canvas id="auth-scene" class="pointer-events-none fixed inset-0" style="z-index:0"></canvas>
-
-        <div class="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">
+        <div class="pointer-events-none relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">
             {{-- Frosted-glass card (single column). x-data drives the login/register toggle,
                  username suggestions, and live validation (the 'portal' component in app.js). --}}
             <div @if($portal) x-data="portal({ mode: '{{ $activeMode }}', username: @js(old('username')), displayName: @js(old('display_name')), email: @js(old('email')), suggestUrl: '{{ route('username.suggestions') }}', checkUrl: '{{ route('username.available') }}' })"
                  :class="{ 'is-switching': switching, 'to-register': mode === 'register' }" @endif
-                 class="auth-portal-card w-full max-w-[420px] overflow-hidden rounded-3xl border border-content/[0.08] bg-surface/55 p-7 shadow-[0_28px_70px_-20px_rgba(0,0,0,0.6)] sm:p-9">
+                 class="pointer-events-auto auth-portal-card w-full max-w-[420px] overflow-hidden rounded-3xl border border-content/[0.08] bg-surface/55 p-7 shadow-[0_28px_70px_-20px_rgba(0,0,0,0.6)] sm:p-9">
 
                 {{-- Logo --}}
                 <a href="/" class="mb-7 flex items-center justify-center gap-2.5">

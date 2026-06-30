@@ -559,24 +559,49 @@ function initAuthScene() {
         if (document.hidden) stop(); else if (!reduceMotion) start();
     });
 
-    // ── Toggle event wiring ──
-    document.getElementById('scene-toggle')?.addEventListener('click', () => {
+    // ── Toggle logic ──
+    function doSceneToggle() {
         sceneMode = sceneMode === 'dark' ? 'light' : 'dark';
         transitionDir = sceneMode === 'light' ? 1 : -1;
 
-        // Sky layers
         document.getElementById('sky-night').style.opacity = sceneMode === 'light' ? '0' : '1';
         document.getElementById('sky-day').style.opacity   = sceneMode === 'light' ? '1' : '0';
 
-        // Flip theme tokens with a crossfade window
         document.documentElement.classList.add('theme-transition');
         clearTimeout(themeTransTimer);
         themeTransTimer = setTimeout(() => document.documentElement.classList.remove('theme-transition'), 700);
         document.documentElement.classList.toggle('dark', sceneMode === 'dark');
+    }
 
-        // Icon swap
-        document.getElementById('toggle-icon-sun').classList.toggle('hidden', sceneMode === 'light');
-        document.getElementById('toggle-icon-moon').classList.toggle('hidden', sceneMode === 'dark');
+    // ── Canvas: click moon (dark) or sun (light) to toggle; cursor hint on hover ──
+    function getCelestialPos() {
+        if (!moonData) return null;
+        const ease = smoothstep(transitionT);
+        const { x, r } = moonData;
+        const yFull = H * 0.14;
+        const moonY = yFull + (H - yFull + r + 20) * ease;
+        const sunR  = r * 1.15;
+        const sunY  = yFull + (H - yFull + sunR + 20) * (1 - ease);
+        return { x, moonY, moonR: r, sunY, sunR, ease };
+    }
+
+    canvas.addEventListener('click', (e) => {
+        const pos = getCelestialPos();
+        if (!pos) return;
+        const { x, moonY, moonR, sunY, sunR, ease } = pos;
+        const hitR = moonR * 2.5;
+        if (ease < 0.5 && Math.hypot(e.clientX - x, e.clientY - moonY) <= hitR) doSceneToggle();
+        if (ease > 0.5 && Math.hypot(e.clientX - x, e.clientY - sunY)  <= hitR) doSceneToggle();
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        const pos = getCelestialPos();
+        if (!pos) { canvas.style.cursor = 'default'; return; }
+        const { x, moonY, moonR, sunY, ease } = pos;
+        const hitR = moonR * 2.5;
+        const overMoon = ease < 0.5 && Math.hypot(e.clientX - x, e.clientY - moonY) <= hitR;
+        const overSun  = ease > 0.5 && Math.hypot(e.clientX - x, e.clientY - sunY)  <= hitR;
+        canvas.style.cursor = (overMoon || overSun) ? 'pointer' : 'default';
     });
 
     makeGlowSprite();
