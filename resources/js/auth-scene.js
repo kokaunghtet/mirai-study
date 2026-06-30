@@ -33,10 +33,11 @@ function initAuthScene() {
     // Pointer in CSS pixels; inactive until the user actually moves.
     const pointer = { x: -9999, y: -9999, active: false };
 
-    // ── Day/Night transition state ──
-    let sceneMode = 'dark';          // 'dark' | 'light'
+    // ── Day/Night transition state — seeded from localStorage/html class ──
+    const _startDark = document.documentElement.classList.contains('dark');
+    let sceneMode = _startDark ? 'dark' : 'light';
     let themeTransTimer = null;
-    let transitionT = 0;             // 0 = full dark, 1 = full light
+    let transitionT = _startDark ? 0 : 1;   // 0 = full dark, 1 = full light
     const TRANSITION_DURATION = 2500; // ms — matches CSS sky transition
     let transitionDir = 0;           // +1 going light, -1 going dark, 0 idle
 
@@ -571,6 +572,8 @@ function initAuthScene() {
         clearTimeout(themeTransTimer);
         themeTransTimer = setTimeout(() => document.documentElement.classList.remove('theme-transition'), 700);
         document.documentElement.classList.toggle('dark', sceneMode === 'dark');
+
+        try { localStorage.setItem('themeMode', sceneMode); } catch(e) {}
     }
 
     // ── Canvas: click moon (dark) or sun (light) to toggle; cursor hint on hover ──
@@ -603,6 +606,10 @@ function initAuthScene() {
         const overSun  = ease > 0.5 && Math.hypot(e.clientX - x, e.clientY - sunY)  <= hitR;
         canvas.style.cursor = (overMoon || overSun) ? 'pointer' : 'default';
     });
+
+    // Apply initial sky state so light-mode entry looks correct immediately
+    document.getElementById('sky-night').style.opacity = sceneMode === 'light' ? '0' : '1';
+    document.getElementById('sky-day').style.opacity   = sceneMode === 'light' ? '1' : '0';
 
     makeGlowSprite();
     buildLeafSprites();

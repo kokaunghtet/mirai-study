@@ -5,11 +5,18 @@
      theme tokens land on the dusk palette, with the brand "venom" accent.
      (Swap data-theme / drop the `dark` class to restyle.) --}}
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      class="dark" data-theme="venom" data-fill="gradient">
+      data-theme="venom" data-fill="gradient">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script>
+            (function() {
+                var stored = null;
+                try { stored = localStorage.getItem('themeMode'); } catch(e) {}
+                document.documentElement.classList.toggle('dark', stored === 'dark');
+            })();
+        </script>
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
