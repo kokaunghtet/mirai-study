@@ -18,7 +18,7 @@
     <style>
         [x-cloak] { display: none !important; }
         .welcome-page * { box-sizing: border-box; }
-        .welcome-page body {
+        body.welcome-page {
             transition: background-color 0.4s, color 0.3s;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: #f8faf9;
@@ -26,7 +26,7 @@
             overflow-x: hidden;
             min-height: 100vh;
         }
-        .dark .welcome-page body { background-color: #0f1412; }
+        .dark body.welcome-page { background-color: #0f1412; }
 
         .welcome-grid-bg {
             position: fixed; inset: 0; z-index: -1; pointer-events: none;
@@ -330,7 +330,7 @@
             <a href="{{ route('exams.index') }}"><i data-lucide="file-text"></i><span>Papers</span><span class="nav-indicator"></span></a>
             <a href="{{ route('quiz.index') }}"><i data-lucide="brain"></i><span>Quiz</span><span class="nav-indicator"></span></a>
             <a href="{{ route('timer.index') }}"><i data-lucide="clock"></i><span>Focus</span><span class="nav-indicator"></span></a>
-            <a href="https://github.com" target="_blank"><i data-lucide="git-branch"></i><span>GitHub</span><span class="nav-indicator"></span></a>
+            <a href="https://github.com/kokaunghtet/mirai-study.git" target="_blank"><i data-lucide="git-branch"></i><span>GitHub</span><span class="nav-indicator"></span></a>
         </nav>
 
         <div class="welcome-sidebar-footer">
@@ -832,15 +832,27 @@
         function updateThemeUI(isDark) {
             if (isDark) {
                 document.documentElement.classList.add('dark');
-                themeIcon.setAttribute('data-lucide', 'sun');
                 themeLabel.textContent = 'Light Mode';
                 toggleThumb.classList.add('dark-thumb');
                 sidebar.classList.remove('nav-hover');
             } else {
                 document.documentElement.classList.remove('dark');
-                themeIcon.setAttribute('data-lucide', 'moon');
                 themeLabel.textContent = 'Dark Mode';
                 toggleThumb.classList.remove('dark-thumb');
+            }
+            // Re-insert fresh <i> so Lucide can re-render (Lucide replaces <i> with <svg>,
+            // making the captured themeIcon ref stale after first render)
+            var cur = document.getElementById('themeIcon');
+            if (cur) {
+                var fresh = document.createElement('i');
+                fresh.id = 'themeIcon';
+                fresh.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                cur.parentNode.replaceChild(fresh, cur);
+                if (window.renderIcons) {
+                    window.renderIcons(document.getElementById('themeToggleRow'));
+                } else if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             }
         }
 
