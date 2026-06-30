@@ -1393,7 +1393,7 @@ Alpine.data("confirmModal", () => ({
         this.message = opts.message || "";
         this.confirmLabel = opts.confirmLabel || "Confirm";
         this.danger = opts.danger || false;
-        this._resolve = opts.resolve || null;
+        this._resolve = opts.onConfirm || opts.resolve || null;
         this.show = true;
         this.$nextTick(() => this.$refs.confirmBtn?.focus());
     },

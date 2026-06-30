@@ -318,13 +318,9 @@
     <div class="welcome-sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="welcome-sidebar" id="sidebar">
-        {{-- <div class="welcome-sidebar-logo" id="sidebarLogo">
-            <img src="{{ asset('images/logo.png') }}" alt="MiraiStudy" class="w-12 h-12 object-contain">
-            <div class="logo-text">Mirai<span>Study</span></div>
-        </div> --}}
         {{-- Logo --}}
         <a href="/" class="mb-7 flex items-center justify-center gap-2.5">
-            <span class="h-9 w-9 bg-gradient-to-br from-mirai-lime to-mirai-dark" role="img" aria-label="MiraiStudy"
+            <span class="h-16 w-16 bg-gradient-to-br from-mirai-lime to-mirai-dark" role="img" aria-label="MiraiStudy"
                     style="-webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
                                     mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;"></span>
             <span class="bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text text-2xl font-semibold text-transparent">MiraiStudy</span>
@@ -755,8 +751,8 @@
                         ];
                     @endphp
                     @foreach ($builders as $builder)
-                        <span class="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/40 rounded-full px-5 py-2.5 text-sm font-medium text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-800/40 transition-colors">
-                            <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i>{{ $builder }}
+                        <span class="inline-flex items-center gap-2 bg-mirai-lime/10 dark:bg-mirai-lime/20 border border-mirai-lime/30 dark:border-mirai-lime/30 rounded-full px-5 py-2.5 text-sm font-medium text-mirai-dark dark:text-mirai-lime hover:bg-mirai-lime/20 dark:hover:bg-mirai-lime/30 transition-colors">
+                            <i data-lucide="user" class="w-4 h-4 text-mirai-lime"></i>{{ $builder }}
                         </span>
                     @endforeach
                 </div>
@@ -767,10 +763,12 @@
         <footer class="border-t border-gray-200/30">
             <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
                 <div>
-                    <div class="flex items-center space-x-2 group cursor-pointer mb-3">
-                        <div class="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform duration-300 group-hover:rotate-12">M</div>
-                        <span class="font-bold tracking-tight text-gray-900">Mirai<span class="text-emerald-600">Study</span></span>
-                    </div>
+                    <a href="/" class="mb-7 flex items-center space-x-2 group cursor-pointer mb-3">
+                        <span class="h-7 w-7 bg-gradient-to-br from-mirai-lime to-mirai-dark" role="img" aria-label="MiraiStudy"
+                                style="-webkit-mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;
+                                                mask: url('{{ asset('images/logo-mask.png') }}') center / contain no-repeat;"></span>
+                        <span class="bg-gradient-to-r from-mirai-lime to-mirai-dark bg-clip-text font-bold text-transparent">MiraiStudy</span>
+                    </a>
                     <p class="text-gray-500 text-xs max-w-xs leading-relaxed">Free, open-source platform for ITPEC and JLPT exam preparation.</p>
                     <div class="flex space-x-4 mt-4">
                         <a href="#" class="text-gray-400 hover:text-emerald-600 transition-colors text-lg"><i data-lucide="git-branch" class="w-5 h-5"></i></a>
