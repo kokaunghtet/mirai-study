@@ -119,6 +119,10 @@ import {
     Globe,
     PlayCircle,
     GitBranchPlus,
+    Timer,
+    UserCircle,
+    Lightbulb,
+    Map,
 } from "lucide";
 
 const icons = {
@@ -218,6 +222,10 @@ const icons = {
     Globe,
     PlayCircle,
     GitBranchPlus,
+    Timer,
+    UserCircle,
+    Lightbulb,
+    Map,
 };
 
 Alpine.plugin(collapse);

@@ -380,9 +380,9 @@
                 </div>
 
                 <div class="flex items-center gap-6 pt-2 text-xs text-gray-500 flex-wrap">
-                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> 12K+ students</span>
-                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> 240+ past exams</span>
-                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> 97% satisfaction</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> Open source</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> ITPEC &amp; JLPT</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-mirai-lime"></i> Free forever</span>
                 </div>
             </div>
 
@@ -446,24 +446,24 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 reveal-stagger" id="why-grid">
                 <div class="why-card glass-card p-6 rounded-2xl shadow-sm text-center transition-all duration-300">
-                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="brain" class="w-7 h-7"></i></div>
-                    <h4 class="font-bold text-gray-800">Smart Practice</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Adaptive question selection that targets your weak areas for efficient study.</p>
+                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="users" class="w-7 h-7"></i></div>
+                    <h4 class="font-bold text-gray-800">Community Feed</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Share study notes, ask questions, and connect with fellow learners through a social feed with likes, comments, and bookmarks.</p>
                 </div>
                 <div class="why-card glass-card p-6 rounded-2xl shadow-sm text-center transition-all duration-300">
-                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="clock" class="w-7 h-7"></i></div>
-                    <h4 class="font-bold text-gray-800">Real Timers</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Simulate exam conditions with built-in timers for every section and level.</p>
+                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="timer" class="w-7 h-7"></i></div>
+                    <h4 class="font-bold text-gray-800">Focus Timer</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Stay productive with a Pomodoro-style focus timer backed by Web Audio ambient sounds and session logging.</p>
                 </div>
                 <div class="why-card glass-card p-6 rounded-2xl shadow-sm text-center transition-all duration-300">
                     <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="file-text" class="w-7 h-7"></i></div>
-                    <h4 class="font-bold text-gray-800">Detailed Explanations</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Every question comes with a clear explanation and reference to study materials.</p>
+                    <h4 class="font-bold text-gray-800">Exam Papers</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Browse ITPEC (IP / FE) and JLPT (N5 – N1) past papers organised by category, level, and year.</p>
                 </div>
                 <div class="why-card glass-card p-6 rounded-2xl shadow-sm text-center transition-all duration-300">
-                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="users" class="w-7 h-7"></i></div>
-                    <h4 class="font-bold text-gray-800">Community Driven</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Join a growing community of learners sharing tips, resources, and motivation.</p>
+                    <div class="w-14 h-14 bg-mirai-lime/10 text-mirai-lime rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i data-lucide="shield-check" class="w-7 h-7"></i></div>
+                    <h4 class="font-bold text-gray-800">Secure Login</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Email OTP verification, Google Sign-In, and optional two-factor authentication keep your account safe.</p>
                 </div>
             </div>
         </section>
@@ -480,46 +480,46 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger" id="features-grid">
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="book-open" class="w-5 h-5"></i></div>
-                    <h3 class="font-bold text-gray-800">Past Paper Engine</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Browse and practice ITPEC &amp; JLPT past questions organized by year and level.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">1,200+ questions</span>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="users" class="w-5 h-5"></i></div>
+                    <h3 class="font-bold text-gray-800">Social Feed</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Post updates, like, comment, bookmark, and follow other learners in a ranked community feed with infinite scroll.</p>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Fully working</span>
                 </div>
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="clock" class="w-5 h-5"></i></div>
-                    <h3 class="font-bold text-gray-800">Exam Simulation</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Take timed practice tests that mirror the real exam environment — pressure and all.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Full-length mocks</span>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="timer" class="w-5 h-5"></i></div>
+                    <h3 class="font-bold text-gray-800">Focus Timer</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Pomodoro-style focus sessions with configurable intervals, Web Audio ambient sounds, and automatic session recording.</p>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Fully working</span>
                 </div>
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="languages" class="w-5 h-5"></i></div>
-                    <h3 class="font-bold text-gray-800">JLPT Vocabulary Bank</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Master essential vocabulary from N5 to N1 with curated word lists and quizzes.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">2,500+ words</span>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                    <h3 class="font-bold text-gray-800">Exam Papers</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Browse and practice ITPEC (IP / FE) and JLPT (N5 – N1) past papers organised by category, level, and year.</p>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">In development</span>
                 </div>
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="bar-chart-2" class="w-5 h-5"></i></div>
-                    <h3 class="font-bold text-gray-800">Performance Analytics</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Track your progress, identify weak areas, and get personalized improvement tips.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Visual dashboards</span>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                    <h3 class="font-bold text-gray-800">OTP &amp; 2FA Auth</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Email OTP verification, Google Sign-In via OAuth, and optional two-factor authentication on every account.</p>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Fully working</span>
                 </div>
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></div>
-                    <h3 class="font-bold text-gray-800">Instant Feedback</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Get detailed answer explanations and references to study materials instantly.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Learn as you go</span>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="user-circle" class="w-5 h-5"></i></div>
+                    <h3 class="font-bold text-gray-800">User Profiles</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Personalised profiles with theme &amp; accent preferences, a follow system, and a full post history.</p>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Fully working</span>
                 </div>
                 <div class="feature-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
                     <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="smartphone" class="w-5 h-5"></i></div>
                     <h3 class="font-bold text-gray-800">Mobile Friendly</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Study on the go with a fully responsive design that works on any device.</p>
+                    <p class="text-gray-500 text-sm leading-relaxed">Study on the go with a fully responsive design that works on any screen size or device.</p>
                     <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Anywhere, anytime</span>
                 </div>
             </div>
         </section>
 
         {{-- HOW IT WORKS --}}
-        <section id="how-it-works" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 bg-mirai-lime/5 rounded-3xl mb-8 reveal">
+        <section id="how-it-works" class="max-w-7xl mx-auto px-6 py-20  border-gray-100/30 bg-mirai-lime/5 rounded-3xl mb-8 reveal">
             <div class="max-w-xl mx-auto space-y-3 mb-14 text-center">
                 <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">Getting Started</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
@@ -547,128 +547,98 @@
         </section>
 
         {{-- RESOURCES --}}
-        <section id="resources" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 reveal">
+        <section id="resources" class="max-w-7xl mx-auto px-6 py-20 border-gray-100/30 reveal">
             <div class="text-center max-w-xl mx-auto space-y-3 mb-14">
-                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">Featured Resources</span>
+                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">What's Inside</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
-                    Latest <span class="text-mirai-lime">Exam Updates</span>
+                    Explore the <span class="text-mirai-lime">Platform</span>
                 </h2>
-                <p class="text-gray-500 text-sm">Freshly added past papers and study materials to keep you ahead</p>
+                <p class="text-gray-500 text-sm">Tools, content, and community — everything in one place</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger" id="resources-grid">
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> March 2026</span>
-                        <h4 class="font-bold text-gray-800">ITPEC IP Passport – Spring 2026</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">Full set of 80 questions with detailed answer keys and explanations.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="check-circle" class="w-3 h-3"></i> Live</span>
+                        <h4 class="font-bold text-gray-800">Community Feed</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Post study updates, ask questions, and interact with other learners. Supports likes, threaded comments, bookmarks, and follows.</p>
+                        <a href="{{ route('feed.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Open Feed <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> February 2026</span>
-                        <h4 class="font-bold text-gray-800">JLPT N3 – Vocabulary Drill</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">300 essential N3 words with example sentences and audio pronunciation.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="check-circle" class="w-3 h-3"></i> Live</span>
+                        <h4 class="font-bold text-gray-800">Focus Timer</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Configurable Pomodoro sessions with Web Audio ambient sounds (rain, café, lo-fi) and automatic session tracking.</p>
+                        <a href="{{ route('timer.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Timer <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> January 2026</span>
-                        <h4 class="font-bold text-gray-800">ITPEC FE – Algorithm Practice</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">50 algorithm and data structure questions with step-by-step solutions.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="clock" class="w-3 h-3"></i> In development</span>
+                        <h4 class="font-bold text-gray-800">ITPEC Past Papers</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">IP Passport and Fundamental Exam past papers organised by year with question sets and answer keys.</p>
+                        <a href="{{ route('exams.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Browse Papers <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> December 2025</span>
-                        <h4 class="font-bold text-gray-800">JLPT N2 – Reading Comp.</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">20 long-form reading passages with question sets and grammar notes.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="clock" class="w-3 h-3"></i> In development</span>
+                        <h4 class="font-bold text-gray-800">JLPT Past Papers</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">N5 through N1 past paper question sets covering vocabulary, grammar, reading, and listening sections.</p>
+                        <a href="{{ route('exams.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Browse Papers <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> November 2025</span>
-                        <h4 class="font-bold text-gray-800">ITPEC IP – Mock Exam #3</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">Full 90-minute simulation with score breakdown and time analysis.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="clock" class="w-3 h-3"></i> Coming soon</span>
+                        <h4 class="font-bold text-gray-800">Quiz Mode</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Timed quizzes drawn from past papers with instant scoring. Practice by topic, level, or full-paper simulation.</p>
+                        <a href="{{ route('quiz.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Coming Soon <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="calendar" class="w-3 h-3"></i> October 2025</span>
-                        <h4 class="font-bold text-gray-800">JLPT N5 – Grammar Mastery</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">100 essential N5 grammar points with quizzes and example sentences.</p>
-                        <a href="#" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Start Practice <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <span class="resource-tag"><i data-lucide="check-circle" class="w-3 h-3"></i> Live</span>
+                        <h4 class="font-bold text-gray-800">Profiles &amp; Settings</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Customise your accent colour, dark/light theme, display name, and avatar. Follow other learners and manage 2FA.</p>
+                        <a href="{{ route('register') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Get Started <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
             </div>
         </section>
 
         {{-- TESTIMONIALS --}}
-        <section id="testimonials" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 bg-mirai-lime/[0.03] rounded-3xl mb-8 reveal">
+        <section id="testimonials" class="max-w-7xl mx-auto px-6 py-20 border-gray-100/30 bg-mirai-lime/[0.03] rounded-3xl mb-8 reveal">
             <div class="text-center max-w-xl mx-auto space-y-3 mb-14">
-                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">Testimonials</span>
+                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">About the Project</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
-                    What Our <span class="text-mirai-lime">Learners Say</span>
+                    Built by <span class="text-mirai-lime">Students, for Students</span>
                 </h2>
-                <p class="text-gray-500 text-sm">Real stories from students who achieved their goals with Mirai Study</p>
+                <p class="text-gray-500 text-sm">MiraiStudy is an open-source student project — no fake numbers, just real tools</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger" id="testimonials-grid">
                 <div class="testimonial-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="flex items-center gap-1 text-mirai-lime mb-3">
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="lightbulb" class="w-5 h-5"></i>
                     </div>
-                    <p class="text-sm text-gray-600 leading-relaxed">"Mirai Study Hub helped me pass the ITPEC FE on my first try. The past papers and explanations were incredibly clear and well-organized."</p>
-                    <div class="flex items-center gap-3 mt-4">
-                        <div class="w-10 h-10 bg-mirai-lime/10 rounded-full flex items-center justify-center text-mirai-dark font-bold text-sm">TK</div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">Thura Kyaw</p>
-                            <p class="text-xs text-gray-400">ITPEC FE Passed, 2025</p>
-                        </div>
-                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">Why We Built It</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">We wanted one place to study for both ITPEC and JLPT — so we built it. MiraiStudy brings together a social study feed, a focus timer, and a growing exam paper library.</p>
                 </div>
                 <div class="testimonial-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="flex items-center gap-1 text-mirai-lime mb-3">
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="map" class="w-5 h-5"></i>
                     </div>
-                    <p class="text-sm text-gray-600 leading-relaxed">"I used the JLPT N2 vocabulary bank and reading comprehension drills. Scored 142/180 — way beyond my expectation. Highly recommend!"</p>
-                    <div class="flex items-center gap-3 mt-4">
-                        <div class="w-10 h-10 bg-mirai-lime/10 rounded-full flex items-center justify-center text-mirai-dark font-bold text-sm">YN</div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">Yuki Nakamura</p>
-                            <p class="text-xs text-gray-400">JLPT N2 Passed, 2025</p>
-                        </div>
-                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">How It Works</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">Sign up, share your study journey on the community feed, use the focus timer to stay on track, then practice with ITPEC and JLPT past papers as they come online.</p>
                 </div>
                 <div class="testimonial-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="flex items-center gap-1 text-mirai-lime mb-3">
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
-                        <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+                    <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="rocket" class="w-5 h-5"></i>
                     </div>
-                    <p class="text-sm text-gray-600 leading-relaxed">"The exam simulation mode is a game-changer. I felt fully prepared for the time pressure and question formats. Absolutely love this platform."</p>
-                    <div class="flex items-center gap-3 mt-4">
-                        <div class="w-10 h-10 bg-mirai-lime/10 rounded-full flex items-center justify-center text-mirai-dark font-bold text-sm">AM</div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">Aung Myat</p>
-                            <p class="text-xs text-gray-400">ITPEC IP &amp; JLPT N4</p>
-                        </div>
-                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">What's Next</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">We're actively building the exam paper browser, timed quiz mode, and performance analytics. The platform grows with every sprint — stay tuned.</p>
                 </div>
             </div>
         </section>
@@ -676,28 +646,28 @@
         {{-- STATS --}}
         <section id="stats" class="max-w-7xl mx-auto px-6 py-20 border-t border-gray-100/30 reveal">
             <div class="text-center max-w-xl mx-auto space-y-3 mb-14">
-                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">Community Impact</span>
+                <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">By the Numbers</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
-                    Trusted by <span class="text-mirai-lime">Learners Worldwide</span>
+                    The <span class="text-mirai-lime">Platform at a Glance</span>
                 </h2>
-                <p class="text-gray-500 text-sm">Real numbers from our growing community</p>
+                <p class="text-gray-500 text-sm">What's actually in the project right now</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center reveal-stagger" id="stats-grid">
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">12K+</div>
-                    <p class="text-sm text-gray-500 mt-1">Active Students</p>
+                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">11</div>
+                    <p class="text-sm text-gray-500 mt-1">Builders</p>
                 </div>
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">240+</div>
-                    <p class="text-sm text-gray-500 mt-1">Past Exams</p>
+                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">2</div>
+                    <p class="text-sm text-gray-500 mt-1">Exams Targeted</p>
                 </div>
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">97%</div>
-                    <p class="text-sm text-gray-500 mt-1">Satisfaction Rate</p>
+                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">4</div>
+                    <p class="text-sm text-gray-500 mt-1">Working Features</p>
                 </div>
                 <div class="stat-card glass-card p-6 rounded-2xl shadow-sm transition-all duration-300">
-                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">4.9★</div>
-                    <p class="text-sm text-gray-500 mt-1">Average Rating</p>
+                    <div class="stat-number text-3xl font-extrabold text-mirai-lime">100%</div>
+                    <p class="text-sm text-gray-500 mt-1">Free to Use</p>
                 </div>
             </div>
         </section>
