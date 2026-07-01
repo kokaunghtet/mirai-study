@@ -200,7 +200,7 @@
                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                             <input type="text" name="content"
                                    placeholder="Reply..."
-                                   class="flex-1 bg-surface-muted text-content border border-line rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-accent/40">
+                                   class="flex-1 bg-surface-muted text-content border border-line rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-accent/40" required>
                             <button type="submit"
                                     class="text-xs bg-surface-muted hover:bg-accent/15 text-content hover:text-accent px-3 py-1.5 rounded-lg transition">
                                 Reply

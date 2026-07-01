@@ -72,6 +72,9 @@
                     const submitBtn = form.querySelector('[type=submit]');
                     window.showButtonLoading(submitBtn);
 
+                    // Remove any previous validation error for this form
+                    form.querySelectorAll('.js-reply-error').forEach(el => el.remove());
+
                     try {
                         const res = await fetch(form.action, {
                             method: 'POST', // _method spoofing handles DELETE
@@ -82,6 +85,20 @@
                                 'Accept': 'text/html',
                             }
                         });
+
+                        if (res.status === 422) {
+                            const data = await res.json();
+                            const msg = data.errors
+                                ? Object.values(data.errors).flat()[0]
+                                : data.message || 'Validation failed.';
+                            const errEl = document.createElement('p');
+                            errEl.className = 'js-reply-error text-red-500 text-xs mt-1';
+                            errEl.textContent = msg;
+                            form.appendChild(errEl);
+                            window.resetButtonLoading(submitBtn);
+                            return;
+                        }
+
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         this.$refs.content.innerHTML = await res.text();
                         window.renderIcons(this.$refs.content);

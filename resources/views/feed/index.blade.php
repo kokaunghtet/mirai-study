@@ -60,7 +60,7 @@
         </div>
 
         {{-- Sidebar --}}
-        <aside class="space-y-4"
+        <aside
                x-data="commentDrawer()"
                x-on:open-comments.window="open($event.detail)">
 
@@ -89,7 +89,12 @@
                 </div>
             @endguest
 
-            <div id="quick-links" x-show="!isOpen" class="bg-surface border border-line rounded-xl p-5">
+                @guest
+                    <div id="quick-links" x-show="!isOpen" class="mt-4 bg-surface border border-line rounded-xl p-5">
+                @else
+                    <div id="quick-links" x-show="!isOpen" class="bg-surface border border-line rounded-xl p-5">
+                @endguest
+
                 <h3 class="font-semibold text-content mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm text-muted">
                     <li><a href="{{ route('exams.index') }}" class="hover:text-accent">Exam Papers</a></li>

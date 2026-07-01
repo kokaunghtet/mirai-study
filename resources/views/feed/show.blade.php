@@ -57,7 +57,7 @@
                 @endif
 
                 {{-- Content --}}
-                <div class="text-content leading-relaxed mb-3">
+                <div class="text-content leading-relaxed mb-3 whitespace-pre-line">
                     {{ $post->content }}
                 </div>
 

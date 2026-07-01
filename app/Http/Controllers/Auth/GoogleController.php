@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
@@ -78,8 +80,8 @@ class GoogleController extends Controller
         if ($user) {
             $user->forceFill([
                 'google_id' => $user->google_id ?: $googleUser->getId(),
-                // Signing in with Google proves the email, so consider it verified.
                 'email_verified_at' => $user->email_verified_at ?? now(),
+                'profile_image' => $this->downloadGoogleAvatar($googleUser, $user),
             ])->save();
 
             return $user;
@@ -92,13 +94,48 @@ class GoogleController extends Controller
             'email' => $googleUser->getEmail(),
             'password' => null,
             'google_id' => $googleUser->getId(),
-            'profile_image' => $googleUser->getAvatar(),
+            'profile_image' => $this->downloadGoogleAvatar($googleUser),
         ]);
 
         // email_verified_at isn't mass-assignable; set it via the model helper.
         $user->markEmailAsVerified();
 
         return $user;
+    }
+
+    /**
+     * Download Google avatar to local storage. Deletes any previous local profile image.
+     * Falls back to the raw Google URL if download fails.
+     */
+    protected function downloadGoogleAvatar(SocialiteUser $googleUser, ?User $existingUser = null): ?string
+    {
+        // Delete old local profile image (not external Google URLs).
+        if ($existingUser?->profile_image && str_starts_with($existingUser->profile_image, '/storage/profiles/')) {
+            $oldPath = str_replace('/storage/', '', $existingUser->profile_image);
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        try {
+            $response = Http::timeout(10)->get($googleUser->getAvatar());
+
+            if ($response->successful()) {
+                $ext = match ($response->header('Content-Type')) {
+                    'image/png' => 'png',
+                    'image/gif' => 'gif',
+                    'image/webp' => 'webp',
+                    default => 'jpg',
+                };
+                $filename = 'google-'.Str::random(20).'.'.$ext;
+                Storage::disk('public')->put('profiles/'.$filename, $response->body());
+
+                return Storage::url('profiles/'.$filename);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to download Google avatar', ['error' => $e->getMessage()]);
+        }
+
+        // Fallback: store the raw Google URL so the user still gets a picture.
+        return $googleUser->getAvatar();
     }
 
     /**

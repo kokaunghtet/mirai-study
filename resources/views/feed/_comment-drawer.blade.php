@@ -20,7 +20,7 @@
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100 translate-x-0"
      x-transition:leave-end="opacity-0 translate-x-6"
-     class="{{ $drawerClass ?? 'sticky top-4 z-30' }} flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-sm">
+     class="{{ $drawerClass ?? 'sticky top-4 z-30' }} flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-sm mb-4">
 
     {{-- Header --}}
     <div class="flex items-center justify-between border-b border-line px-5 py-3.5">
