@@ -117,9 +117,9 @@
             const SCROLL_KEY = 'feed_scroll_y';
             const PAGE_KEY   = 'feed_last_page';
 
-            let currentPage = 1;
+            let currentPage = {{ $posts->currentPage() }};
             let isFetching  = false;
-            let hasMore     = true;
+            let hasMore     = {{ $posts->hasMorePages() ? 'true' : 'false' }};
 
             const filterSearch = document.getElementById('filter-search');
             const filterTag = document.getElementById('filter-tag');
@@ -304,7 +304,13 @@
                 if (entries[0].isIntersecting) loadMore();
             }, { rootMargin: '200px' });
 
-            if (sentinel) observer.observe(sentinel);
+            if (sentinel) {
+                if (hasMore) {
+                    observer.observe(sentinel);
+                } else {
+                    sentinel.style.display = 'none';
+                }
+            }
 
             // ── Save position when navigating to a post ──────────────
             // We listen on the container so it works for dynamically
