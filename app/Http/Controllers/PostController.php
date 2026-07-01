@@ -29,7 +29,9 @@ class PostController extends Controller
             $with['likes'] = fn ($q) => $q->where('user_id', $userId);
         }
 
-        $query = Post::with($with)->withCount(['likes', 'comments', 'bookmarks']);
+        $query = Post::with($with)
+            ->withCount(['likes', 'comments', 'bookmarks'])
+            ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'));
 
         $profileUsers = collect();
 

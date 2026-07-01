@@ -292,7 +292,7 @@
         <div class="rounded-2xl border border-red-200 bg-surface p-6 shadow-sm" x-data="{ confirm: false }">
             <div class="mb-4">
                 <h2 class="text-base font-semibold text-red-600">Delete Account</h2>
-                <p class="mt-0.5 text-xs text-muted">Permanently delete your account and all of your data. This cannot be undone.</p>
+                <p class="mt-0.5 text-xs text-muted">Schedule your account for permanent deletion. You have 1 month to change your mind.</p>
             </div>
 
             <button type="button" @click="confirm = true" x-show="!confirm"
@@ -301,23 +301,41 @@
             </button>
 
             <form method="POST" action="{{ route('profile.destroy') }}" data-loading
-                  x-show="confirm" x-cloak class="space-y-3">
+                  x-show="confirm" x-cloak class="space-y-4">
                 @csrf
                 @method('DELETE')
 
-                <p class="text-sm text-muted">Enter your password to confirm deletion.</p>
+                <div class="rounded-xl bg-red-50 border border-red-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 mt-0.5">
+                            <i data-lucide="alert-circle" class="h-4 w-4 text-red-600"></i>
+                        </div>
+                        <div class="text-sm">
+                            <p class="font-semibold text-red-800">What happens when you delete your account:</p>
+                            <ul class="mt-2 space-y-1 text-red-700 text-xs">
+                                <li>• Your account will be scheduled for permanent deletion in <strong>1 month</strong></li>
+                                <li>• Your profile and posts will be hidden from other users</li>
+                                <li>• You can restore your account anytime within 1 month by logging back in</li>
+                                <li>• After 1 month, your account and all data will be permanently deleted</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-                <input type="password" name="password" placeholder="Your password"
-                       class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-red-400 transition-colors">
-
-                @if ($errors->userDeletion->has('password'))
-                    <p class="text-red-500 text-xs">{{ $errors->userDeletion->first('password') }}</p>
-                @endif
+                <div>
+                    <label class="block text-[13px] font-semibold text-content mb-1.5">Enter your password to confirm</label>
+                    <input type="password" name="password" placeholder="Your password"
+                           class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-red-400 transition-colors"
+                           required>
+                    @if ($errors->userDeletion->has('password'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->userDeletion->first('password') }}</p>
+                    @endif
+                </div>
 
                 <div class="flex items-center gap-2">
-                    <button type="submit" data-loading-text="Deleting…"
+                    <button type="submit" data-loading-text="Scheduling deletion…"
                             class="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-bold text-white hover:bg-red-700 transition-colors">
-                        Confirm Delete
+                        Schedule Deletion
                     </button>
                     <button type="button" @click="confirm = false"
                             class="rounded-lg border border-line px-4 py-2 text-[13px] font-semibold text-muted hover:bg-surface-muted transition-colors">

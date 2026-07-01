@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -48,22 +49,34 @@ class LoginRequest extends FormRequest
         // Allow signing in with either a username or an email address.
         $login = (string) $this->input('login');
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $password = $this->input('password');
 
-        // validate() checks the password but does not start a session.
-        if (! Auth::validate([$field => $login, 'password' => $this->input('password')])) {
-            RateLimiter::hit($this->throttleKey());
+        // First, try normal authentication (works for active users).
+        if (Auth::validate([$field => $login, 'password' => $password])) {
+            RateLimiter::clear($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'login' => trans('auth.failed'),
-            ]);
+            return Auth::getLastAttempted();
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // Normal auth failed — check for soft-deleted users with scheduled deletion.
+        $deletedUser = User::withTrashed()
+            ->where($field, $login)
+            ->whereNotNull('deleted_at')
+            ->whereNotNull('deletion_scheduled_at')
+            ->first();
 
-        /** @var User $user */
-        $user = Auth::getLastAttempted();
+        if ($deletedUser && Hash::check($password, $deletedUser->password)) {
+            RateLimiter::clear($this->throttleKey());
 
-        return $user;
+            return $deletedUser;
+        }
+
+        // No valid user found — rate limit and throw.
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'login' => trans('auth.failed'),
+        ]);
     }
 
     /**

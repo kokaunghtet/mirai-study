@@ -419,6 +419,45 @@
             @endpush
         @endif
 
+        {{-- Account Deletion Warning Banner --}}
+        @auth
+            @if (auth()->user()->isDeletionScheduled())
+                <div class="mx-auto max-w-6xl px-4 mb-4">
+                    <div class="rounded-xl border border-amber-300 bg-amber-50 p-4 shadow-sm" x-data="{ dismissed: false }" x-show="!dismissed">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                                    <i data-lucide="alert-triangle" class="h-5 w-5 text-amber-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-amber-800">Your account is scheduled for permanent deletion</p>
+                                    <p class="mt-0.5 text-xs text-amber-700">
+                                        Your account and all data will be permanently deleted on
+                                        <strong>{{ auth()->user()->deletionDate()->format('M j, Y') }}</strong>
+                                        ({{ auth()->user()->deletionDate()->diffForHumans() }}).
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <form method="POST" action="{{ route('profile.restore') }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 transition-colors">
+                                        Cancel Deletion
+                                    </button>
+                                </form>
+                                <button type="button" @click="dismissed = true"
+                                        class="rounded-lg p-2 text-amber-600 hover:bg-amber-100 transition-colors"
+                                        title="Dismiss">
+                                    <i data-lucide="x" class="h-4 w-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endauth
+
         {{-- Page Content — widens to use the freed space when the nav
              sidebar is collapsed; animates in step with the nav (200ms). --}}
         <main class="mx-auto py-8 transition-[max-width] duration-200 ease-in-out"

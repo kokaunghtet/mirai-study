@@ -53,6 +53,7 @@ class ProfileController extends Controller
             $posts = $user->likedPosts()
                 ->with($with)
                 ->withCount(['likes', 'comments'])
+                ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'))
                 ->latest('post_likes.created_at')
                 ->paginate(10);
         }
@@ -222,12 +223,15 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // Set deletion schedule (1 month grace period)
+        $user->update(['deletion_scheduled_at' => now()->addMonth()]);
+
         auth()->logout();
-        $user->delete();
+        $user->delete(); // Soft delete
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('feed.index');
+        return redirect()->route('feed.index')->with('success', 'Your account has been scheduled for deletion. You have 1 month to restore it by logging back in.');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountRestoreController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BookmarkController;
@@ -76,6 +77,7 @@ Route::middleware(['auth', 'not-banned'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/restore', [AccountRestoreController::class, 'restore'])->name('profile.restore');
 
     // --- Settings ---
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

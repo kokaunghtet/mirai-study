@@ -21,6 +21,7 @@ class BookmarkController extends Controller
                 'likes' => fn ($q) => $q->where('user_id', $userId),
             ])
             ->withCount(['likes', 'comments'])
+            ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'))
             ->latest('bookmarks.created_at')
             ->paginate(10);
 

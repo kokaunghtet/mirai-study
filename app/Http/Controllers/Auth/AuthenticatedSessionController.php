@@ -41,6 +41,18 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('login');
         }
 
+        // Soft-deleted user with scheduled deletion: fully restore account and cancel deletion.
+        if ($user->trashed() && $user->isDeletionScheduled()) {
+            $user->restoreFromDeletion();
+
+            $login = $request->input('login');
+            $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+            Auth::attempt([$field => $login, 'password' => $request->input('password')], $request->boolean('remember'));
+            $request->session()->regenerate();
+
+            return redirect()->route('feed.index')->with('success', "Welcome back, {$user->display_name}! Your account has been fully restored.");
+        }
+
         // Email not verified → make them verify before they get a session.
         if (! $user->hasVerifiedEmail()) {
             return $this->startChallenge($request, $otp, $user, 'email_verification');

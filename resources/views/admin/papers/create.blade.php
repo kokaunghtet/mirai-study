@@ -117,7 +117,7 @@
                         <div>
                             <x-input-label for="category_id" value="Category" />
                             <select name="category_id" id="category_id" x-model="categoryId"
-                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent">
+                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent" required>
                                 <option value="">Select a category…</option>
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -128,7 +128,7 @@
                         <div>
                             <x-input-label for="level_id" value="Level" />
                             <select name="level_id" id="level_id" x-model="levelId" :disabled="!categoryId"
-                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent disabled:opacity-50">
+                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent disabled:opacity-50" required>
                                 <option value="">Select a level…</option>
                                 <template x-for="lvl in levels" :key="lvl.id">
                                     <option :value="lvl.id" x-text="lvl.name"></option>
@@ -176,7 +176,7 @@
                         <div>
                             <x-input-label for="doc_type" value="Type (optional)" />
                             <select name="doc_type" id="doc_type" x-model="docType"
-                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent">
+                                    class="mt-1 block w-full rounded-md border-line bg-surface text-content shadow-sm focus:border-accent focus:ring-accent" required>
                                 <option value="">—</option>
                                 <option value="question">Question paper</option>
                                 <option value="answer">Answer key</option>

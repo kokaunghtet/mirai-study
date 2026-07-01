@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'role',
         'status',
         'two_factor_enabled',
+        'deletion_scheduled_at',
     ];
 
     protected $hidden = [
@@ -39,6 +41,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',
+            'deletion_scheduled_at' => 'datetime',
         ];
     }
 
@@ -192,5 +195,25 @@ class User extends Authenticatable
         }
 
         return $this->bans()->active()->with(['bannedBy', 'report'])->latest()->first();
+    }
+
+    // ---- Account Deletion Helpers ----
+
+    /** Check if this user has a scheduled deletion (grace period active). */
+    public function isDeletionScheduled(): bool
+    {
+        return $this->trashed() && $this->deletion_scheduled_at !== null;
+    }
+
+    /** Get the scheduled deletion date. */
+    public function deletionDate(): ?Carbon
+    {
+        return $this->deletion_scheduled_at;
+    }
+
+    /** Restore a soft-deleted account by clearing deletion markers. */
+    public function restoreFromDeletion(): bool
+    {
+        return $this->restore() && $this->update(['deletion_scheduled_at' => null]);
     }
 }

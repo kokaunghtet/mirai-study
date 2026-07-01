@@ -126,6 +126,7 @@ import {
     Lightbulb,
     Map,
     Mail,
+    AlertCircle,
 } from "lucide";
 
 const icons = {
@@ -230,6 +231,7 @@ const icons = {
     Lightbulb,
     Map,
     Mail,
+    AlertCircle,
 };
 
 Alpine.plugin(collapse);
