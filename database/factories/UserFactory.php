@@ -7,6 +7,21 @@ use Illuminate\Support\Facades\Hash;
 
 class UserFactory extends Factory
 {
+    public function definition(): array
+    {
+        return [
+            'username' => fake()->unique()->userName(),
+            'display_name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'password' => Hash::make('password'),
+            'bio' => fake()->optional()->sentence(),
+            'profile_image' => null,
+            'role' => 'user',
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ];
+    }
+
     public function admin(): static
     {
         return $this->state(['role' => 'admin']);
