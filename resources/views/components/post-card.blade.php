@@ -163,13 +163,14 @@
     {{-- Media (images) --}}
     @php $mediaItems = $post->media->where('type', '!=', 'document'); @endphp
     @if ($mediaItems->isNotEmpty())
-        <div class="mx-4 mb-3" x-data="{ idx: 0 }">
+        <div class="mx-4 mb-3" x-data="{ idx: 0, lightboxOpen: false, lightboxSrc: '' }">
             <div class="relative aspect-video overflow-hidden rounded-xl bg-black">
 
                 {{-- Slides --}}
                 @foreach ($mediaItems->values() as $i => $item)
                     <div x-show="idx === {{ $i }}" class="h-full w-full">
                         <img src="{{ $item->url }}" alt="post media" loading="lazy"
+                            @click="lightboxSrc = '{{ $item->url }}'; lightboxOpen = true"
                             class="h-full w-full object-cover cursor-zoom-in">
                     </div>
                 @endforeach
@@ -185,8 +186,7 @@
                             class="absolute left-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 text-xl">
                         ‹
                     </button>
-                    <button type="button" @click="idx = Math.min({{ $mediaItems->count() - 1 }}, idx + 1)"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 text-xl">
+                    <button type="button" @click="idx = Math.min({{ $mediaItems->count() - 1 }}, idx + 1)" class="absolute right-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 text-xl">
                         ›
                     </button>
                 @endif
@@ -203,6 +203,23 @@
                     @endforeach
                 </div>
             @endif
+
+            {{-- Lightbox --}}
+            <div x-show="lightboxOpen" x-cloak
+                 @click="lightboxOpen = false"
+                 @keydown.escape.window="lightboxOpen = false"
+                 x-transition.opacity
+                 class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4">
+                <img :src="lightboxSrc" alt="post media"
+                     @click.stop
+                     class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl">
+                <button type="button"
+                        @click="lightboxOpen = false"
+                        class="absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+                        aria-label="Close">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
         </div>
     @endif
 
