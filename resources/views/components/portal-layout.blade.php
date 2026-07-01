@@ -190,6 +190,9 @@
         </style>
     </head>
     <body class="relative min-h-screen overflow-x-hidden font-sans text-content antialiased">
+        <p class="absolute left-5 top-1 mt-4 text-center text-[11px] text-white/80 font-medium select-none pointer-events-none">
+            Click the moon or sun to switch between day and night
+        </p>
 
         {{-- Sky layers: night (default) and day (cross-faded by toggle). --}}
         <div id="sky-night" class="fixed inset-0 transition-opacity duration-[2500ms]"
@@ -221,6 +224,8 @@
 
                 {{ $slot }}
             </div>
+
+            
         </div>
     </body>
 </html>
