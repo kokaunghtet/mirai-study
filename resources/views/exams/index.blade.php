@@ -139,7 +139,6 @@
                     <div>
                         <nav class="crumbs">
                             <button class="crumb" @click="backToFolders()">
-                                <i data-lucide="folder" class="h-4 w-4"></i>
                                 <span x-text="curCat.name"></span>
                             </button>
                             <span class="sep">/</span>

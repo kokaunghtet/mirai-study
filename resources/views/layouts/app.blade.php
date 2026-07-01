@@ -13,7 +13,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <script>
         // Resolve light/dark before first paint to avoid a flash of the wrong theme.
         // A local override (from the sidebar toggle) wins; otherwise use the saved preference.

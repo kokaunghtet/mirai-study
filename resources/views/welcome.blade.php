@@ -615,7 +615,7 @@
             <div class="text-center max-w-xl mx-auto space-y-3 mb-14">
                 <span class="text-mirai-lime text-xs font-semibold tracking-widest uppercase">About the Project</span>
                 <h2 class="text-3xl font-bold tracking-tight text-gray-900">
-                    Built by <span class="text-mirai-lime">Students, for Students</span>
+                    Built by <span class="text-mirai-lime">Students</span>, for<span class="text-mirai-lime"> Students</span>
                 </h2>
                 <p class="text-gray-500 text-sm">MiraiStudy is an open-source student project — no fake numbers, just real tools</p>
             </div>

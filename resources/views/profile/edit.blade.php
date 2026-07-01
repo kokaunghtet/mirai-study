@@ -276,15 +276,15 @@
                         Others can see posts you've liked on your profile.
                     </div>
                 </div>
-                <div class="relative ml-4 shrink-0">
-                    <div :class="on ? 'bg-accent' : 'bg-line'"
-                         class="w-11 h-5 rounded-full transition-colors"
-                         :style="loading ? 'opacity:0.6' : ''">
-                        <div :class="on ? 'translate-x-5' : 'translate-x-0.5'"
-                             class="mt-0.5 ml-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform">
-                        </div>
-                    </div>
-                </div>
+                <button type="button" role="switch"
+                        :aria-checked="on ? 'true' : 'false'"
+                        :class="on ? 'bg-accent' : 'bg-line'"
+                        class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface cursor-pointer"
+                        :style="loading ? 'opacity:0.6' : ''"
+                        @click.prevent="toggle()">
+                    <span :class="on ? 'translate-x-5' : 'translate-x-1'"
+                        class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform"></span>
+                </button>
             </label>
         </div>
 
