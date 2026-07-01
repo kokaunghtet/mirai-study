@@ -1,11 +1,10 @@
-FROM php:8.4-cli
+# ─── Stage 1: Build ───────────────────────────────────────────────
+FROM php:8.4-cli AS build
 
-# System deps + Node.js 20
 RUN apt-get update && apt-get install -y \
     git curl zip unzip \
     libzip-dev libpng-dev libjpeg-dev libwebp-dev \
     libxml2-dev libonig-dev libicu-dev \
-    default-mysql-client \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
@@ -13,11 +12,9 @@ RUN apt-get update && apt-get install -y \
         pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
     && rm -rf /var/lib/apt/lists/*
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
-
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Dependencies first (layer cache)
@@ -27,19 +24,38 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source
+# Copy source and build assets
 COPY . .
-
-# Build assets
 RUN npm run build
 
-# Laravel bootstrap
-RUN php artisan storage:link || true
+# ─── Stage 2: Runtime ─────────────────────────────────────────────
+FROM php:8.4-apache
 
-EXPOSE 8000
+# Runtime PHP extensions
+RUN apt-get update && apt-get install -y \
+    libzip-dev libpng-dev libjpeg-dev libwebp-dev \
+    libxml2-dev libonig-dev libicu-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install \
+        pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan migrate --force \
-    && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Copy built app from build stage
+COPY --from=build /app /app
+
+WORKDIR /app
+
+# Point Apache at Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT=/app/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+        /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' \
+        /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Fix storage permissions
+RUN mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]

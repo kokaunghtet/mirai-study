@@ -334,7 +334,7 @@
 
             let currentPage = 1;
             let isFetching  = false;
-            let hasMore     = true;
+            let hasMore     = {{ $posts->isEmpty() ? 'false' : 'true' }};
 
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
