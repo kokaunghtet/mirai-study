@@ -12,21 +12,27 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::factory()->admin()->create([
+        $admin = User::create([
             'username' => 'admin',
             'display_name' => 'Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make(config('app.seed_admin_password')),
+            'role' => 'admin',
+            'status' => 'active',
+            'email_verified_at' => now(),
         ]);
 
-        $mod = User::factory()->moderator()->create([
+        $mod = User::create([
             'username' => 'moderator',
             'display_name' => 'Moderator',
             'email' => 'mod@example.com',
             'password' => Hash::make(config('app.seed_mod_password')),
+            'role' => 'moderator',
+            'status' => 'active',
+            'email_verified_at' => now(),
         ]);
 
-        User::whereIn('id', [$admin->id, $mod->id])->each(function (User $user) {
+        foreach ([$admin, $mod] as $user) {
             UserPreference::create([
                 'user_id' => $user->id,
                 'theme_mode' => 'light',
@@ -37,6 +43,6 @@ class UserSeeder extends Seeder
             PomodoroSetting::create([
                 'user_id' => $user->id,
             ]);
-        });
+        }
     }
 }
