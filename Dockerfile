@@ -51,10 +51,12 @@ ENV APACHE_DOCUMENT_ROOT=/app/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
         /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' \
-        /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+        /etc/apache2/apache2.conf \
+        /etc/apache2/conf-available/security.conf \
+        /etc/apache2/conf-available/docker-php.conf
 
 # Fix storage permissions
-RUN mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache \
+RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
 COPY docker-entrypoint.sh /usr/local/bin/
