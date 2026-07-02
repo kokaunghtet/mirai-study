@@ -1,0 +1,14 @@
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction",
+    "npm ci --ignore-scripts",
+]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = [
+    "npm run build",
+]
+
+[start]
+cmd = "bash docker.sh"
