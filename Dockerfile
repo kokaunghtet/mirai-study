@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install \
         pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
+    && a2dismod mpm_event \
+    && a2enmod mpm_prefork \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
