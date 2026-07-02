@@ -6,10 +6,24 @@ set -e
 echo "=== MiraiStudy Starting ==="
 echo "PORT: ${PORT}"
 
-echo "=== Configuring Apache ==="
-sed -ri "s/^Listen [0-9]+/Listen ${PORT}/" /etc/apache2/ports.conf
-sed -ri "s/<VirtualHost \*:[0-9]+>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
+# ─── Fix MPM conflict at runtime (guaranteed to run every start) ───
+echo "=== Fixing Apache MPM ==="
+# Remove ALL MPM modules first
+a2dismod mpm_event 2>/dev/null || true
+a2dismod mpm_worker 2>/dev/null || true
+a2dismod mpm_prefork 2>/dev/null || true
+# Force-clean any leftover symlinks
+rm -f /etc/apache2/mods-enabled/mpm_*.conf /etc/apache2/mods-enabled/mpm_*.load
+# Enable ONLY prefork (required for mod_php)
+a2enmod mpm_prefork
+a2enmod rewrite
 
+# ─── Configure Apache port ─────────────────────────────────────────
+echo "=== Configuring Apache port ==="
+sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
+sed -i "s/<VirtualHost \*:[0-9]*>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
+
+# ─── Laravel setup ─────────────────────────────────────────────────
 echo "=== Checking .env ==="
 if [ ! -f .env ]; then
     echo "WARNING: No .env file found, copying from .env.example"
@@ -43,6 +57,10 @@ php artisan db:seed --force 2>&1 || echo "WARNING: seeders failed"
 
 echo "=== Starting queue worker ==="
 php artisan queue:work --tries=3 --timeout=60 &
+
+# ─── Verify Apache config before starting ──────────────────────────
+echo "=== Verifying Apache config ==="
+apache2ctl configtest 2>&1 || { echo "ERROR: Apache config test failed"; exit 1; }
 
 echo "=== Starting Apache on port ${PORT} ==="
 exec apache2-foreground

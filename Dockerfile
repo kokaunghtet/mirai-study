@@ -31,20 +31,22 @@ RUN npm run build
 # ─── Stage 2: Runtime ─────────────────────────────────────────────
 FROM php:8.4-apache
 
-# Runtime PHP extensions
-RUN apt-get update && apt-get install -y \
+# Runtime PHP extensions only — do NOT touch Apache modules here
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libzip4 libpng16-16 libjpeg62-turbo libwebp7 \
+    libxml2 libonig5 libicu72 \
     libzip-dev libpng-dev libjpeg-dev libwebp-dev \
     libxml2-dev libonig-dev libicu-dev \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install \
         pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
+    && apt-get purge -y --auto-remove \
+        libzip-dev libpng-dev libjpeg-dev libwebp-dev \
+        libxml2-dev libonig-dev libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix MPM conflict: ensure ONLY mpm_prefork is loaded
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.conf /etc/apache2/mods-enabled/mpm_*.load \
-    && (sed -i '/^LoadModule mpm_/d' /etc/apache2/apache2.conf 2>/dev/null || true) \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite
+# Suppress ServerName warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Copy built app from build stage
 COPY --from=build /app /app
@@ -57,12 +59,12 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
         /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' \
         /etc/apache2/apache2.conf \
-        /etc/apache2/conf-available/security.conf \
-        /etc/apache2/conf-available/docker-php.conf
+        /etc/apache2/conf-available/*.conf
 
 # Fix storage permissions
 RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
