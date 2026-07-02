@@ -38,10 +38,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install \
         pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
-    && a2dismod mpm_event \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Fix MPM conflict: ensure ONLY mpm_prefork is loaded
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.conf /etc/apache2/mods-enabled/mpm_*.load \
+    && (sed -i '/^LoadModule mpm_/d' /etc/apache2/apache2.conf 2>/dev/null || true) \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # Copy built app from build stage
 COPY --from=build /app /app
