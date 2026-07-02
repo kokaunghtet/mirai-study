@@ -9,7 +9,7 @@ echo "=== MiraiStudy Railway Deploy ==="
 export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export APP_URL="${APP_URL:-http://localhost}"
-export PORT="${PORT:-8000}"
+export PORT="${PORT:-8080}"
 
 # -------------------------------------------------------------------
 # 2. Generate .env from Railway environment variables
@@ -121,7 +121,13 @@ echo ">> Starting queue worker..."
 php artisan queue:work --tries=3 --timeout=60 &
 
 # -------------------------------------------------------------------
-# 8. Start web server
+# 8. Start server
+#    FrankenPHP (Railpack) or php artisan serve (fallback)
 # -------------------------------------------------------------------
-echo ">> Starting server on port $PORT..."
-exec php artisan serve --host=0.0.0.0 --port="$PORT"
+if command -v frankenphp &> /dev/null; then
+    echo ">> Starting FrankenPHP..."
+    exec frankenphp run --config /etc/caddy/Caddyfile
+else
+    echo ">> Starting PHP dev server on port $PORT..."
+    exec php artisan serve --host=0.0.0.0 --port="$PORT"
+fi

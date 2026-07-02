@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "packages": {
+    "php": "8.4"
+  },
+  "deploy": {
+    "startCommand": "bash docker.sh"
+  }
+}
