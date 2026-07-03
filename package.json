@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@alpinejs/collapse": "^3.15.12",
+        "@getbrevo/brevo": "^5.0.4",
         "lucide": "^1.17.0"
     }
 }
