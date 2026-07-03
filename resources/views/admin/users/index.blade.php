@@ -55,8 +55,7 @@ function adminFilter() {
             });
         },
         async load(url) {
-            url = typeof url === 'string' ? url : url.toString();
-            history.pushState(null, '', url);
+            const u = new URL(typeof url === 'string' ? url : url.toString()); u.protocol = location.protocol; url = u.toString();
             const el = document.getElementById('admin-filter-results');
             el.style.opacity = '0.5';
             el.style.pointerEvents = 'none';
@@ -67,6 +66,7 @@ function adminFilter() {
                 el.innerHTML = html;
                 window.Alpine.initTree(el);
                 window.renderIcons(el);
+                history.pushState(null, '', url);
             } finally {
                 el.style.opacity = '';
                 el.style.pointerEvents = '';

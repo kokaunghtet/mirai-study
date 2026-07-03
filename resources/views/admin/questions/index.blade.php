@@ -47,6 +47,7 @@ function adminFilter() {
             });
         },
         async load(url) {
+            const u = new URL(url); u.protocol = location.protocol; url = u.toString();
             const el = document.getElementById('admin-filter-results');
             el.style.opacity = '0.5';
             el.style.pointerEvents = 'none';
