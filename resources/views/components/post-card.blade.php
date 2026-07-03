@@ -152,7 +152,7 @@
     @endif
 
     {{-- Content --}}
-    <div data-no-nav class="px-4 pb-3 break-words whitespace-pre-line {{ strlen($post->content) < 80 ? 'text-base leading-3 font-medium text-content' : 'text-[13px] leading-3 text-content' }}">
+    <div data-no-nav class="px-4 pb-3 break-words whitespace-pre-line {{ strlen($post->content) < 80 ? 'text-base leading-snug font-medium text-content' : 'text-[13px] leading-5 text-content' }}">
         {{ Str::limit($post->content, 300) }}
         @if (strlen($post->content) > 300)
             <a href="{{ route('posts.show', $post) }}"

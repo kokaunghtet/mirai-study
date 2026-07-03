@@ -59,7 +59,7 @@
                 @endif
 
                 {{-- Content --}}
-                <div class="px-4 pb-3 {{ $post->title ? 'pt-1' : 'pt-3' }} text-content leading-3 whitespace-pre-line">
+                <div class="px-4 pb-3 {{ $post->title ? 'pt-1' : 'pt-3' }} text-content leading-6 whitespace-pre-line">
                     {{ $post->content }}
                 </div>
 
