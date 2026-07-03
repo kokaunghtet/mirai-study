@@ -4,16 +4,10 @@
 {{-- Filters --}}
 <div class="mb-5 flex flex-wrap items-center gap-2">
     {{-- Search --}}
-    <form method="GET" action="{{ route('admin.users') }}" class="flex items-center gap-2" id="user-search-form" @submit.prevent>
+    <form method="GET" action="{{ route('admin.users') }}" class="flex items-center gap-2" id="user-search-form">
         <input type="text" name="search" value="{{ request('search') }}"
                placeholder="Search name, @username, email…"
-               class="rounded-xl border border-line bg-surface px-3 py-1.5 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent w-56"
-               @input="clearTimeout(this._t); this._t = setTimeout(() => { const url = new URL('{{ route('admin.users') }}'); const val = $el.value; if (val) url.searchParams.set('search', val); @foreach (['role', 'status'] as $k) @if (request($k)) url.searchParams.set('{{ $k }}', '{{ request($k) }}'); @endif @endforeach load(url); }, 400)">
-        @foreach (['role', 'status'] as $k)
-            @if (request($k))
-                <input type="hidden" name="{{ $k }}" value="{{ request($k) }}">
-            @endif
-        @endforeach
+               class="rounded-xl border border-line bg-surface px-3 py-1.5 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent w-56">
     </form>
 
     {{-- Role chips --}}

@@ -40,6 +40,7 @@
 <script>
 function adminFilter() {
     return {
+        _st: null,
         init() {
             window.addEventListener('popstate', () => {
                 this.load(window.location.href);
@@ -52,6 +53,21 @@ function adminFilter() {
                 if (url.pathname !== window.location.pathname) return;
                 e.preventDefault();
                 this.load(a.href);
+            });
+            this.$el.addEventListener('submit', e => {
+                if (e.target.closest('#user-search-form')) e.preventDefault();
+            });
+            this.$el.addEventListener('input', e => {
+                const input = e.target.closest('input[name="search"]');
+                if (!input) return;
+                clearTimeout(this._st);
+                this._st = setTimeout(() => {
+                    const url = new URL(window.location.href);
+                    if (input.value) url.searchParams.set('search', input.value);
+                    else url.searchParams.delete('search');
+                    url.searchParams.delete('page');
+                    this.load(url.toString());
+                }, 400);
             });
         },
         async load(url) {
@@ -67,6 +83,8 @@ function adminFilter() {
                 window.Alpine.initTree(el);
                 window.renderIcons(el);
                 history.pushState(null, '', url);
+                const s = el.querySelector('input[name="search"]');
+                if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
             } finally {
                 el.style.opacity = '';
                 el.style.pointerEvents = '';
