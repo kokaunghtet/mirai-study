@@ -1,0 +1,112 @@
+// Slide: Social Feed
+// Tables: posts, post_media, tags, post_tags, comments,
+//         post_likes, comment_likes, follows, bookmarks
+
+Enum media_type { image, document }
+Enum follow_status { accepted, pending, blocked }
+
+// stub — full definition in 01-auth-users.txt
+Table users {
+  id bigint [pk]
+  username varchar
+  display_name varchar
+  profile_image varchar [null]
+}
+
+Table posts {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  title varchar [null]
+  content text [null]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null]
+
+  Indexes { user_id }
+}
+
+Table post_media {
+  id bigint [pk, increment]
+  post_id bigint [not null]
+  url varchar [not null]
+  type media_type [not null]
+  filename varchar [null]
+  filesize bigint [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { post_id }
+}
+
+Table tags {
+  id bigint [pk, increment]
+  name varchar [not null, unique]
+}
+
+Table post_tags {
+  post_id bigint [not null]
+  tag_id bigint [not null]
+
+  Indexes { (post_id, tag_id) [pk] }
+}
+
+Table comments {
+  id bigint [pk, increment]
+  post_id bigint [not null]
+  user_id bigint [not null]
+  parent_id bigint [null]
+  content text [not null]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null]
+
+  Indexes { post_id, user_id }
+}
+
+Table post_likes {
+  user_id bigint [not null]
+  post_id bigint [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { (user_id, post_id) [pk], post_id }
+}
+
+Table comment_likes {
+  user_id bigint [not null]
+  comment_id bigint [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { (user_id, comment_id) [pk], comment_id }
+}
+
+Table follows {
+  follower_id bigint [not null]
+  following_id bigint [not null]
+  status follow_status [not null, default: 'accepted']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { (follower_id, following_id) [pk], following_id }
+}
+
+Table bookmarks {
+  user_id bigint [not null]
+  post_id bigint [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { (user_id, post_id) [pk], post_id }
+}
+
+Ref: posts.user_id > users.id [delete: cascade]
+Ref: post_media.post_id > posts.id [delete: cascade]
+Ref: post_tags.post_id > posts.id [delete: cascade]
+Ref: post_tags.tag_id > tags.id [delete: cascade]
+Ref: comments.post_id > posts.id [delete: cascade]
+Ref: comments.user_id > users.id [delete: cascade]
+Ref: comments.parent_id > comments.id [delete: cascade]
+Ref: post_likes.user_id > users.id [delete: cascade]
+Ref: post_likes.post_id > posts.id [delete: cascade]
+Ref: comment_likes.user_id > users.id [delete: cascade]
+Ref: comment_likes.comment_id > comments.id [delete: cascade]
+Ref: follows.follower_id > users.id [delete: cascade]
+Ref: follows.following_id > users.id [delete: cascade]
+Ref: bookmarks.user_id > users.id [delete: cascade]
+Ref: bookmarks.post_id > posts.id [delete: cascade]

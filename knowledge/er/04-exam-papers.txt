@@ -1,0 +1,72 @@
+// Slide: Exam Papers
+// Tables: exam_categories, exam_levels, exam_papers, paper_downloads, paper_revisions
+
+// stub
+Table users {
+  id bigint [pk]
+  username varchar
+  display_name varchar
+}
+
+Table exam_categories {
+  id bigint [pk, increment]
+  name varchar [not null, unique, note: 'ITPEC, JLPT']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table exam_levels {
+  id bigint [pk, increment]
+  category_id bigint [not null]
+  code varchar [not null]
+  name varchar [not null]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes { category_id }
+}
+
+Table exam_papers {
+  id bigint [pk, increment]
+  category_id bigint [not null]
+  level_id bigint [null]
+  uploaded_by bigint [not null]
+  title varchar [not null]
+  year integer [not null]
+  session varchar [null]
+  part varchar [null, note: 'AM | PM']
+  doc_type varchar [null]
+  description text [null]
+  file_url varchar [not null]
+  file_type varchar [not null]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes { category_id, level_id, year, uploaded_by }
+}
+
+Table paper_downloads {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  paper_id bigint [not null]
+  downloaded_at timestamp [default: `CURRENT_TIMESTAMP`]
+
+  Indexes { user_id, paper_id }
+}
+
+Table paper_revisions {
+  id bigint [pk, increment]
+  paper_id bigint [not null]
+  editor_id bigint [not null]
+  action varchar [not null, note: 'uploaded | edited']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Ref: exam_levels.category_id > exam_categories.id [delete: cascade]
+Ref: exam_papers.category_id > exam_categories.id [delete: cascade]
+Ref: exam_papers.level_id > exam_levels.id [delete: set null]
+Ref: exam_papers.uploaded_by > users.id [delete: cascade]
+Ref: paper_downloads.user_id > users.id [delete: cascade]
+Ref: paper_downloads.paper_id > exam_papers.id [delete: cascade]
+Ref: paper_revisions.paper_id > exam_papers.id [delete: cascade]
+Ref: paper_revisions.editor_id > users.id [delete: cascade]

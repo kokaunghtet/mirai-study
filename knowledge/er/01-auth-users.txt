@@ -1,0 +1,73 @@
+// Slide: Auth & User Identity
+// Tables: users, otps, user_preferences, password_reset_tokens, sessions
+
+Enum user_role { admin, moderator, user }
+Enum user_status { active, suspended, banned }
+Enum theme_mode { light, dark, system }
+Enum accent_color { venom, aurora, sangria, twilight, inferno }
+Enum fill_style { gradient, solid }
+Enum otp_purpose { email_verification, password_reset, login_verification }
+
+Table users {
+  id bigint [pk, increment]
+  username varchar [not null, unique]
+  display_name varchar [not null]
+  email varchar [not null, unique]
+  google_id varchar [null, unique]
+  password varchar [null]
+  bio text [null]
+  profile_image varchar [null]
+  role user_role [not null, default: 'user']
+  status user_status [not null, default: 'active']
+  two_factor_enabled boolean [not null, default: false]
+  email_verified_at timestamp [null]
+  remember_token varchar [null]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null]
+  deletion_scheduled_at timestamp [null]
+}
+
+Table password_reset_tokens {
+  email varchar [pk]
+  token varchar [not null]
+  created_at timestamp [null]
+}
+
+Table sessions {
+  id varchar [pk]
+  user_id bigint [null]
+  ip_address varchar(45) [null]
+  user_agent text [null]
+  payload longtext [not null]
+  last_activity integer [not null]
+
+  Indexes { user_id, last_activity }
+}
+
+Table user_preferences {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  theme_mode theme_mode [not null, default: 'light']
+  accent_color accent_color [not null, default: 'venom']
+  fill_style fill_style [not null, default: 'gradient']
+  show_liked_posts boolean [not null, default: true]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table otps {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  otp_code varchar(6) [not null]
+  purpose otp_purpose [not null]
+  expires_at timestamp [not null]
+  used_at timestamp [null]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes { (user_id, purpose), expires_at }
+}
+
+Ref: sessions.user_id > users.id
+Ref: user_preferences.user_id > users.id [delete: cascade]
+Ref: otps.user_id > users.id [delete: cascade]

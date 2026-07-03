@@ -131,7 +131,7 @@ class CommentController extends Controller
     {
         $post->load([
             'comments' => fn ($q) => $q->whereNull('parent_id')
-                ->with(['user', 'replies.user', 'likes'])
+                ->with(['user', 'replies' => fn ($r) => $r->with(['user', 'likes']), 'likes'])
                 ->latest(),
         ]);
 
