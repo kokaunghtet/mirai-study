@@ -135,6 +135,17 @@
                                 <span x-show="count > 0" x-text="count"></span>
                             </button>
                         </div>
+                    @else
+                        <div class="flex justify-end mt-1">
+                            <button type="button"
+                                    onclick="window.dispatchEvent(new Event('open-auth-modal'))"
+                                    class="flex items-center gap-1 text-xs text-muted hover:text-accent transition-all px-1">
+                                <i data-lucide="thumbs-up" class="h-3.5 w-3.5"></i>
+                                @if ($comment->likes->count() > 0)
+                                    <span>{{ $comment->likes->count() }}</span>
+                                @endif
+                            </button>
+                        </div>
                     @endauth
 
                     {{-- Replies --}}
@@ -239,6 +250,17 @@
                                                         class="flex items-center gap-1 text-xs transition-all px-1">
                                                     <i data-lucide="thumbs-up" class="h-3.5 w-3.5" :fill="liked ? 'currentColor' : 'none'"></i>
                                                     <span x-show="count > 0" x-text="count"></span>
+                                                </button>
+                                            </div>
+                                        @else
+                                            <div class="flex justify-end mt-1">
+                                                <button type="button"
+                                                        onclick="window.dispatchEvent(new Event('open-auth-modal'))"
+                                                        class="flex items-center gap-1 text-xs text-muted hover:text-accent transition-all px-1">
+                                                    <i data-lucide="thumbs-up" class="h-3.5 w-3.5"></i>
+                                                    @if ($reply->likes->count() > 0)
+                                                        <span>{{ $reply->likes->count() }}</span>
+                                                    @endif
                                                 </button>
                                             </div>
                                         @endauth

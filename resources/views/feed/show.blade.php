@@ -15,10 +15,10 @@
         <div class="lg:col-span-2 space-y-6">
 
             {{-- Post --}}
-            <article class="bg-surface border border-line rounded-xl p-6">
+            <article class="bg-surface border border-line rounded-xl">
 
                 {{-- Author --}}
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center justify-between px-4 py-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold">
                             {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
@@ -53,18 +53,20 @@
 
                 {{-- Title --}}
                 @if ($post->title)
-                    <h1 class="text-2xl font-bold text-content mb-3">{{ $post->title }}</h1>
+                    <div class="px-4 pt-3 pb-0">
+                        <h1 class="text-2xl leading-snug font-bold text-content">{{ $post->title }}</h1>
+                    </div>
                 @endif
 
                 {{-- Content --}}
-                <div class="text-content leading-relaxed mb-3 whitespace-pre-line">
+                <div class="px-4 pb-3 {{ $post->title ? 'pt-1' : 'pt-3' }} text-content leading-3 whitespace-pre-line">
                     {{ $post->content }}
                 </div>
 
                 {{-- Media (images/videos) --}}
                 @php $mediaItems = $post->media->where('type', '!=', 'document'); @endphp
                 @if ($mediaItems->isNotEmpty())
-                    <div class="mt-4" x-data="{ idx: 0, lightboxOpen: false, lightboxSrc: '' }">
+                    <div class="mx-4 mb-3" x-data="{ idx: 0, lightboxOpen: false, lightboxSrc: '' }">
                         <div class="relative aspect-video overflow-hidden rounded-xl bg-black">
 
                             {{-- Slides --}}
@@ -132,7 +134,7 @@
                 {{-- File attachments --}}
                 @php $fileItems = $post->media->where('type', 'document'); @endphp
                 @if ($fileItems->isNotEmpty())
-                    <div class="mt-4 flex flex-col gap-2">
+                    <div class="flex flex-col gap-2 px-4 pb-3">
                         @foreach ($fileItems as $file)
                             <a href="{{ $file->url }}" target="_blank"
                             class="flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 hover:bg-surface-muted transition-colors">
@@ -157,7 +159,7 @@
 
                 {{-- Tags --}}
                 @if ($post->tags->isNotEmpty())
-                    <div class="flex flex-wrap gap-2 my-4">
+                    <div class="flex flex-wrap gap-1.5 px-4 pb-3">
                         @foreach ($post->tags as $tag)
                             <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-full">
                                 {{ $tag->name }}
@@ -167,7 +169,7 @@
                 @endif
 
                 {{-- Footer: Actions --}}
-                <div class="flex items-center justify-between px-3.5 pt-3 border-t border-line">
+                <div class="flex items-center justify-between px-3.5 py-3 border-t border-line">
 
                     {{-- Left: Like + Comment --}}
                     <div class="flex items-center gap-1">
