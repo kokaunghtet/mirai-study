@@ -3,15 +3,12 @@ import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 window.Pusher = Pusher;
 
-if (import.meta.env.VITE_REVERB_APP_KEY) {
+if (import.meta.env.VITE_PUSHER_APP_KEY) {
     window.Echo = new Echo({
-        broadcaster: "reverb",
-        key: import.meta.env.VITE_REVERB_APP_KEY,
-        wsHost: import.meta.env.VITE_REVERB_HOST,
-        wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-        wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-        forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
-        enabledTransports: ["ws", "wss"],
+        broadcaster: "pusher",
+        key: import.meta.env.VITE_PUSHER_APP_KEY,
+        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+        forceTLS: true,
     });
 }
 import collapse from "@alpinejs/collapse";
@@ -1478,7 +1475,7 @@ document.addEventListener(
 );
 
 // ── Notification bell (sidebar) ──
-// Listens on the authenticated user's private Reverb channel.
+// Listens on the authenticated user's private Pusher channel.
 // userId and initial unreadCount are seeded from Blade.
 Alpine.data("notificationBell", (opts = {}) => ({
     unread: opts.unread ?? 0,
@@ -1577,3 +1574,11 @@ window.addEventListener("pageshow", () => {
         .querySelectorAll("[data-loading-active]")
         .forEach((b) => window.resetButtonLoading(b));
 });
+
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allow your team to quickly build robust real-time web applications.
+ */
+
+import './echo';
