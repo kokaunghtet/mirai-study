@@ -5,7 +5,7 @@
     class="relative rounded-2xl bg-surface border border-line shadow-sm">
 
     {{-- Header: Avatar + Name + Actions --}}
-    <header class="flex items-center justify-between px-4 py-3.5">
+    <header class="flex items-center justify-between px-4 py-3">
         <div class="flex items-center gap-2.5">
 
             {{-- Avatar --}}
@@ -143,16 +143,16 @@
 
     {{-- Title (optional) --}}
     @if ($post->title)
-        <div class="px-4 pb-1">
+        <div class="px-4 pt-1">
             <a href="{{ route('posts.show', $post) }}"
-               class="font-bold text-content hover:text-accent transition-colors">
+               class="block text-[20px] leading-snug font-bold text-content hover:text-accent transition-colors">
                 {{ $post->title }}
             </a>
         </div>
     @endif
 
     {{-- Content --}}
-    <div data-no-nav class="px-4 pb-3 pt-0 break-words whitespace-pre-line {{ strlen($post->content) < 80 ? 'text-lg leading-7 font-medium text-content' : 'text-sm leading-6 text-content' }}">
+    <div data-no-nav class="px-4 pb-3 break-words whitespace-pre-line {{ strlen($post->content) < 80 ? 'text-base leading-3 font-medium text-content' : 'text-[13px] leading-3 text-content' }}">
         {{ Str::limit($post->content, 300) }}
         @if (strlen($post->content) > 300)
             <a href="{{ route('posts.show', $post) }}"
