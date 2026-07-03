@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎓 MiraiStudy
+# MiraiStudy
 
 **A full-stack educational social platform for JLPT & ITPEC exam preparation**
 
