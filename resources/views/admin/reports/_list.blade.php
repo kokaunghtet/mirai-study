@@ -262,7 +262,8 @@ $actionLabels = [
                                         <div class="flex gap-1.5">
                                             <button @click="act('temp_ban')" :disabled="!duration || loading"
                                                     class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400 transition-colors">
-                                                Confirm
+                                                <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                                <span x-show="!loading">Confirm</span>
                                             </button>
                                             <button @click="showBanForm = false"
                                                     class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
@@ -292,7 +293,8 @@ $actionLabels = [
                                         <div class="flex gap-1.5">
                                             <button @click="act('temp_ban_remove')" :disabled="!duration || loading"
                                                     class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400 transition-colors">
-                                                Confirm
+                                                <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                                <span x-show="!loading">Confirm</span>
                                             </button>
                                             <button @click="showBanForm = false"
                                                     class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
@@ -312,7 +314,8 @@ $actionLabels = [
                                         <div class="flex gap-1.5">
                                             <button @click="act('perm_ban')" :disabled="loading"
                                                     class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
-                                                Confirm ban
+                                                <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                                <span x-show="!loading">Confirm ban</span>
                                             </button>
                                             <button @click="showBanForm = false"
                                                     class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
@@ -332,7 +335,8 @@ $actionLabels = [
                                         <div class="flex gap-1.5">
                                             <button @click="act('perm_ban_remove')" :disabled="loading"
                                                     class="flex-1 rounded-lg bg-red-100 py-1 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors">
-                                                Confirm ban &amp; remove
+                                                <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                                <span x-show="!loading">Confirm ban &amp; remove</span>
                                             </button>
                                             <button @click="showBanForm = false"
                                                     class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">

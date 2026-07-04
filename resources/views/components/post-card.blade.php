@@ -74,7 +74,8 @@
                                     ? 'bg-surface border-line text-content hover:border-red-200 hover:text-red-600 hover:bg-red-50'
                                     : 'bg-accent border-transparent text-white hover:bg-accent-strong'"
                                 class="shrink-0 rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
-                            <span x-text="following ? 'Following' : 'Follow'"></span>
+                            <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                            <span x-show="!loading" x-text="following ? 'Following' : 'Follow'"></span>
                         </button>
                     </div>
                 @else
@@ -299,7 +300,8 @@
                                 ? 'text-accent'
                                 : 'text-muted hover:bg-surface-muted hover:text-accent'"
                             class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-all">
-                        <i data-lucide="thumbs-up" class="h-[18px] w-[18px]"
+                        <svg x-show="loading" style="display:none" class="leaf-spin h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                        <i x-show="!loading" data-lucide="thumbs-up" class="h-[18px] w-[18px]"
                            :fill="liked ? 'currentColor' : 'none'"></i>
                         <span class="text-xs font-semibold" x-text="count"></span>
                     </button>
@@ -362,7 +364,8 @@
                                 ? 'text-accent'
                                 : 'text-muted hover:bg-surface-muted hover:text-accent'"
                             class="rounded-lg px-2.5 py-1.5 transition-all">
-                        <i data-lucide="bookmark" class="h-[18px] w-[18px]"
+                        <svg x-show="loading" style="display:none" class="leaf-spin h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                        <i x-show="!loading" data-lucide="bookmark" class="h-[18px] w-[18px]"
                            :fill="bookmarked ? 'currentColor' : 'none'"></i>
                     </button>
                 </div>

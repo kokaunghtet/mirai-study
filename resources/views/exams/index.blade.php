@@ -181,7 +181,7 @@
                             </button>
                         </div>
 
-                            <div x-show="loading" class="papers"><div class="empty">Loading…</div></div>
+                            <x-leaf-loader x-show="loading" />
 
                             <template x-if="!loading">
                                 <div>

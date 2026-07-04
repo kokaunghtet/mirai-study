@@ -77,7 +77,8 @@
                                         @click="remove()"
                                         :disabled="loading"
                                         class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[12px] font-bold text-red-600 hover:bg-red-100 transition-all active:scale-95">
-                                    Remove
+                                    <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                    <span x-show="!loading">Remove</span>
                                 </button>
                             </div>
                         @elseif (auth()->id() !== $user->id && auth()->id() !== $follower->id)
@@ -113,7 +114,8 @@
                                             ? (hovered ? 'border-red-200 text-red-600 bg-red-50 hover:bg-red-100' : 'border-line text-content bg-surface hover:bg-surface-muted')
                                             : 'border-transparent bg-gradient-to-tr from-accent-from to-accent-to text-white hover:opacity-90'"
                                         class="rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
-                                    <span x-text="following ? (hovered ? 'Unfollow' : 'Following') : 'Follow'"></span>
+                                    <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                    <span x-show="!loading" x-text="following ? (hovered ? 'Unfollow' : 'Following') : 'Follow'"></span>
                                 </button>
                             </div>
                         @endif

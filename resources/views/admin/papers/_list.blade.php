@@ -114,10 +114,7 @@
                  x-transition:enter-end="opacity-100"
                  class="border-t border-line px-4 pb-4 pt-3">
 
-                <div x-show="loading" class="py-3 text-center text-xs text-muted">
-                    <i data-lucide="loader-circle" class="mx-auto mb-1 h-4 w-4 animate-spin text-accent"></i>
-                    Loading history…
-                </div>
+                <x-leaf-loader x-show="loading" size="sm" />
 
                 <div x-show="!loading" class="relative">
                     <div class="absolute top-0 bottom-0 left-[11px] w-px bg-line"></div>

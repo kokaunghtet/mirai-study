@@ -175,62 +175,30 @@
     display: none !important;
 }
 
-/* Leaf loader — glides in from the lower-left, does a loop-the-loop in mid-air, then
-   glides out to the right (the user's drawn, self-crossing loop). Site-wide loading
-   indicator used by the <x-leaf-loader> component; colored via text-accent so it
-   follows the theme. Path-following motion via CSS Motion Path; the component renders
-   it inside a 144×80 track (the path's coord space). No fade — the leaf stays at full
-   opacity; depth comes from a scale pulse (small at the ends, full mid-flight). */
-.leaf-loader {
-    offset-path: path("M 8 58 C 26 57, 38 56, 50 54 C 100 14, 22 14, 74 54 C 96 56, 114 57, 136 58");
-    offset-rotate: auto;
-    /* leaf banks/tumbles along the path tangent */
-    transform-origin: center;
-    animation: leaf-travel 1s linear infinite, leaf-sway 1s ease-in-out infinite alternate;
+/* Leaf fan loader — 8 leaves arranged radially, each fading in sequence like a clock
+   hand sweep. Used by <x-leaf-loader>; colored via text-accent so it tracks the theme.
+   Animation delay is applied inline per petal so the stagger works without JS. */
+.leaf-fan-petal {
+    opacity: 0.15;
+    animation: leaf-fan-fade 1.6s ease-in-out infinite;
 }
 
-/* Depth: the leaf scales up as it nears mid-flight and shrinks toward the ends, so it
-   reads as flying nearer then away. Being small at both ends also masks the loop's
-   reset jump (the path is open). transform: scale composes with the motion-path offset. */
-@keyframes leaf-travel {
-    0% {
-        offset-distance: 0%;
-        transform: scale(0.75);
-    }
-
-    /* far */
-    50% {
-        offset-distance: 50%;
-        transform: scale(1);
-    }
-
-    /* near */
+@keyframes leaf-fan-fade {
+    0%,
     100% {
-        offset-distance: 100%;
-        transform: scale(0.75);
+        opacity: 0.15;
     }
 
-    /* far */
-}
-
-@keyframes leaf-sway {
-    from {
-        rotate: -8deg;
-    }
-
-    to {
-        rotate: 8deg;
+    50% {
+        opacity: 1;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .leaf-loader {
+    .leaf-fan-petal {
         animation: none;
-        offset-distance: 50%;
-        transform: none;
+        opacity: 0.6;
     }
-
-    /* park static */
 }
 
 /* Inline button spinner — a small spinning leaf swapped into a submit button while a
