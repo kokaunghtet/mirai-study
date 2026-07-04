@@ -217,11 +217,21 @@ class ProfileController extends Controller
     // ── Delete account ───────────────────────────────────
     public function destroy(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
+
+        if ($user->google_id) {
+            $request->validateWithBag('userDeletion', [
+                'confirm_email' => ['required', 'string', function ($attribute, $value, $fail) use ($user) {
+                    if (strtolower($value) !== strtolower($user->email)) {
+                        $fail('The email address does not match your account email.');
+                    }
+                }],
+            ]);
+        } else {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         // Set deletion schedule (1 month grace period)
         $user->update(['deletion_scheduled_at' => now()->addMonth()]);

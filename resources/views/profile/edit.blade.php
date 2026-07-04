@@ -323,12 +323,22 @@
                 </div>
 
                 <div>
-                    <label class="block text-[13px] font-semibold text-content mb-1.5">Enter your password to confirm</label>
-                    <input type="password" name="password" placeholder="Your password"
-                           class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-red-400 transition-colors"
-                           required>
-                    @if ($errors->userDeletion->has('password'))
-                        <p class="text-red-500 text-xs mt-1">{{ $errors->userDeletion->first('password') }}</p>
+                    @if (auth()->user()->google_id)
+                        <label class="block text-[13px] font-semibold text-content mb-1.5">Enter your email address to confirm</label>
+                        <input type="email" name="confirm_email" placeholder="{{ auth()->user()->email }}"
+                               class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-red-400 transition-colors"
+                               required>
+                        @if ($errors->userDeletion->has('confirm_email'))
+                            <p class="text-red-500 text-xs mt-1">{{ $errors->userDeletion->first('confirm_email') }}</p>
+                        @endif
+                    @else
+                        <label class="block text-[13px] font-semibold text-content mb-1.5">Enter your password to confirm</label>
+                        <input type="password" name="password" placeholder="Your password"
+                               class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-red-400 transition-colors"
+                               required>
+                        @if ($errors->userDeletion->has('password'))
+                            <p class="text-red-500 text-xs mt-1">{{ $errors->userDeletion->first('password') }}</p>
+                        @endif
                     @endif
                 </div>
 
