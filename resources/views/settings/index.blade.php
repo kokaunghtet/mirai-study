@@ -274,7 +274,7 @@
                             <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-circle" class="h-2.5 w-2.5"></i> 4</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i data-lucide="bookmark" class="h-2.5 w-2.5"></i>
+                            <i data-lucide="bookmark" class="h-2.5 w-2.5 fill-accent"></i>
                             <i data-lucide="send" class="h-2.5 w-2.5"></i>
                         </div>
                     </div>
@@ -400,52 +400,31 @@
                 </div>
             `,
             bookmarks: `
-                <div class="space-y-2">
-                    <div class="mb-1">
-                        <div class="text-[10px] font-bold text-content">Bookmarks</div>
-                        <div class="text-[8px] text-muted">Posts you've saved for later</div>
-                    </div>
-                    <div class="mockup-card border rounded-xl p-2.5 space-y-1.5 bg-surface border-line shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1.5">
-                                <div class="mockup-avatar-badge h-4 w-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0">A</div>
-                                <div>
-                                    <div class="text-[8px] font-bold text-content">Admin</div>
-                                    <div class="text-[7px] text-muted">2 minutes ago</div>
-                                </div>
+                <div class="mockup-card border rounded-xl p-3 space-y-2 bg-surface border-line shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <div class="mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white">A</div>
+                            <div>
+                                <div class="text-[9px] font-bold text-content">Admin</div>
+                                <div class="text-[8px] text-muted">2 minutes ago</div>
                             </div>
-                            <i data-lucide="bookmark" class="h-2.5 w-2.5 text-accent"></i>
                         </div>
-                        <p class="text-[9px] font-bold text-content leading-tight">Study tip: Use spaced repetition for JLPT vocab.</p>
-                        <div class="flex gap-1 flex-wrap">
-                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">JLPT</span>
-                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">Study Tips</span>
-                        </div>
-                        <div class="pt-1 flex items-center gap-3 border-t border-line text-muted">
-                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="thumbs-up" class="h-2 w-2"></i> 12</span>
-                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="message-circle" class="h-2 w-2"></i> 4</span>
-                            <i data-lucide="send" class="h-2 w-2 ml-auto"></i>
-                        </div>
+                        <button class="mockup-interactive-text text-[8px] font-semibold border px-2 py-0.5 rounded-md border-line">Follow</button>
                     </div>
-                    <div class="mockup-card border rounded-xl p-2.5 space-y-1.5 bg-surface border-line shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1.5">
-                                <div class="mockup-avatar-badge h-4 w-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0">M</div>
-                                <div>
-                                    <div class="text-[8px] font-bold text-content">Moderator</div>
-                                    <div class="text-[7px] text-muted">1 hour ago</div>
-                                </div>
-                            </div>
-                            <i data-lucide="bookmark" class="h-2.5 w-2.5 text-accent"></i>
+                    <p class="text-[10px] font-bold text-content leading-tight">Study tip: Use spaced repetition for JLPT vocab.</p>
+                    <p class="text-[9px] text-muted leading-normal">Reviewing cards at increasing intervals helps move vocabulary into long-term memory faster.</p>
+                    <div class="flex gap-1 flex-wrap pt-0.5">
+                        <span class="mockup-tag text-[8px] font-semibold px-1.5 py-0.5 rounded">JLPT</span>
+                        <span class="mockup-tag text-[8px] font-semibold px-1.5 py-0.5 rounded">Study Tips</span>
+                    </div>
+                    <div class="pt-1 flex items-center justify-between border-t border-line text-muted">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="thumbs-up" class="h-2.5 w-2.5"></i> 12</span>
+                            <span class="flex items-center gap-1 text-[8px]"><i data-lucide="message-circle" class="h-2.5 w-2.5"></i> 4</span>
                         </div>
-                        <p class="text-[9px] text-muted leading-normal">ITPEC FE exam is next month. Practice past papers!</p>
-                        <div class="flex gap-1 flex-wrap">
-                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">ITPEC</span>
-                        </div>
-                        <div class="pt-1 flex items-center gap-3 border-t border-line text-muted">
-                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="thumbs-up" class="h-2 w-2"></i> 5</span>
-                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="message-circle" class="h-2 w-2"></i> 2</span>
-                            <i data-lucide="send" class="h-2 w-2 ml-auto"></i>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="bookmark" class="h-2.5 w-2.5 fill-accent"></i>
+                            <i data-lucide="send" class="h-2.5 w-2.5"></i>
                         </div>
                     </div>
                 </div>
