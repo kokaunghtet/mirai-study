@@ -51,6 +51,11 @@ function adminFilter() {
             const el = document.getElementById('admin-filter-results');
             el.style.opacity = '0.5';
             el.style.pointerEvents = 'none';
+            el.style.position = 'relative';
+            const loader = document.createElement('div');
+            loader.style.cssText = 'position:absolute;top:4rem;left:50%;transform:translateX(-50%);z-index:10;';
+            loader.innerHTML = '<span class="mirai-loader" style="font-size:1.75rem" aria-hidden="true"></span>';
+            el.appendChild(loader);
             try {
                 const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 if (!res.ok) return;
@@ -62,6 +67,8 @@ function adminFilter() {
             } finally {
                 el.style.opacity = '';
                 el.style.pointerEvents = '';
+                el.style.position = '';
+                loader.remove();
             }
         }
     };
