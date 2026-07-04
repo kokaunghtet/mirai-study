@@ -113,7 +113,6 @@
                                     <span id="twofa-knob" class="inline-block h-5 w-5 translate-x-1 transform rounded-full bg-white shadow transition-transform"></span>
                                 </button>
                             </div>
-                            <p id="twofa-status" class="mt-2 text-xs font-semibold hidden"></p>
                         </div>
 
                         <div class="border-t border-line my-5"></div>
@@ -125,12 +124,6 @@
                                     class="w-full rounded-xl bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition-all cursor-pointer">
                                 Save Changes
                             </button>
-                            <p id="save-status" class="text-center text-xs text-green-600 font-semibold hidden">
-                                ✓ Preferences saved
-                            </p>
-                            <p id="save-error" class="text-center text-xs text-red-500 font-semibold hidden">
-                                Failed to save. Please try again.
-                            </p>
                         </div>
 
                     </section>
@@ -207,6 +200,14 @@
                 </div>
 
             </div>
+        </div>
+    </div>
+
+    {{-- Snackbar --}}
+    <div id="snackbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div id="snackbar-inner"
+             class="flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg translate-y-3 opacity-0 transition-all duration-300 ease-out">
+            <span id="snackbar-msg"></span>
         </div>
     </div>
 
@@ -384,8 +385,6 @@
         const fillSolidBtn    = document.getElementById('fill-solid');
         const mockupNavItems  = document.querySelectorAll('.mockup-nav-item');
         const saveBtn        = document.getElementById('save-btn');
-        const saveStatus     = document.getElementById('save-status');
-        const saveError      = document.getElementById('save-error');
 
         const SEG_BASE  = "seg-btn flex flex-row items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all cursor-pointer";
         const FILL_BASE = "fill-btn flex items-center justify-center rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer";
@@ -410,14 +409,28 @@
             }
         }
 
+        // ── Snackbar ────────────────────────────────────────────────
+        let snackTimer;
+        function showSnackbar(msg, ok) {
+            const inner = document.getElementById('snackbar-inner');
+            const msgEl = document.getElementById('snackbar-msg');
+            clearTimeout(snackTimer);
+            msgEl.textContent = msg;
+            inner.className = `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 ease-out ${ok ? 'bg-green-600' : 'bg-red-500'}`;
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                inner.classList.remove('translate-y-3', 'opacity-0');
+            }));
+            snackTimer = setTimeout(() => {
+                inner.classList.add('translate-y-3', 'opacity-0');
+            }, 2500);
+        }
+
         // ── Save button state helpers ───────────────────────────────
         function markDirty() {
             isDirty = true;
             saveBtn.textContent = 'Save Changes';
             saveBtn.disabled = false;
             saveBtn.className = saveBtnActiveClass();
-            saveStatus.classList.add('hidden');
-            saveError.classList.add('hidden');
         }
 
         function setSaving() {
@@ -431,11 +444,9 @@
             saveBtn.textContent = 'Saved';
             saveBtn.disabled = true;
             saveBtn.className = 'w-full rounded-xl bg-surface-muted px-5 py-3 text-sm font-bold text-muted cursor-not-allowed';
-            saveStatus.classList.remove('hidden');
-            saveError.classList.add('hidden');
+            showSnackbar('Preferences saved', true);
 
             setTimeout(() => {
-                saveStatus.classList.add('hidden');
                 saveBtn.textContent = 'Save Changes';
                 saveBtn.disabled = false;
                 saveBtn.className = saveBtnActiveClass();
@@ -446,8 +457,7 @@
             saveBtn.textContent = 'Save Changes';
             saveBtn.disabled = false;
             saveBtn.className = saveBtnActiveClass();
-            saveError.classList.remove('hidden');
-            saveStatus.classList.add('hidden');
+            showSnackbar('Failed to save. Please try again.', false);
         }
 
         // ── Apply the chosen theme to the real page (<html>) ────────
@@ -664,7 +674,6 @@
     (function () {
         const toggle = document.getElementById('twofa-toggle');
         const knob   = document.getElementById('twofa-knob');
-        const status = document.getElementById('twofa-status');
         if (!toggle) return;
 
         function paint(enabled) {
@@ -674,14 +683,6 @@
             toggle.classList.toggle('bg-line', !enabled);
             knob.classList.toggle('translate-x-5', enabled);
             knob.classList.toggle('translate-x-1', !enabled);
-        }
-
-        function flash(msg, ok) {
-            status.textContent = msg;
-            status.classList.remove('hidden', 'text-green-600', 'text-red-500');
-            status.classList.add(ok ? 'text-green-600' : 'text-red-500');
-            clearTimeout(flash._t);
-            flash._t = setTimeout(() => status.classList.add('hidden'), 2500);
         }
 
         paint(toggle.dataset.enabled === '1');
@@ -701,10 +702,10 @@
                     body: JSON.stringify({ two_factor_enabled: next }),
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                flash(next ? '✓ Two-factor enabled' : 'Two-factor disabled', true);
+                showSnackbar(next ? 'Two-factor enabled' : 'Two-factor disabled', true);
             } catch (e) {
                 paint(!next);            // revert on failure
-                flash('Failed to update. Please try again.', false);
+                showSnackbar('Failed to update. Please try again.', false);
             } finally {
                 toggle.disabled = false;
             }
