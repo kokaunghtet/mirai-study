@@ -16,6 +16,7 @@ class Notification extends Model
         'content',
         'url',
         'read_at',
+        'created_at',
     ];
 
     protected $casts = [

@@ -82,7 +82,7 @@
                                 <span class="w-2 h-2 rounded-full bg-accent flex-shrink-0"></span>
                             @endif
                             <span class="text-[11px] text-muted whitespace-nowrap">
-                                {{ $notification->created_at->diffForHumans() }}
+                                {{ $notification->created_at->timezone('Asia/Yangon')->diffForHumans() }}
                             </span>
                             <form method="POST"
                                   action="{{ route('notifications.destroy', $notification) }}">

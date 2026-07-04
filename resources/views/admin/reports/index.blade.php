@@ -170,7 +170,10 @@ function adminFilter() {
             });
         },
         async load(url) {
-            url = typeof url === 'string' ? url : url.toString();
+            const parsed = new URL(typeof url === 'string' ? url : url.toString(), window.location.href);
+            parsed.protocol = window.location.protocol;
+            parsed.host = window.location.host;
+            url = parsed.toString();
             history.pushState(null, '', url);
             const el = document.getElementById('admin-filter-results');
             el.style.opacity = '0.5';

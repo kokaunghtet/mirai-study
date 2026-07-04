@@ -28,6 +28,7 @@ class NotificationService
             'title' => $title,
             'content' => $content,
             'url' => $url,
+            'created_at' => now(),
         ]);
 
         $notification->load('sender');
