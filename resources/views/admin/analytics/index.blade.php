@@ -4,14 +4,6 @@
     <div class="px-4 pb-10" x-data="analyticsPage()">
         <div class="max-w-7xl mx-auto">
 
-            {{-- AJAX fetch error banner --}}
-            <div x-show="error"
-                 x-transition.opacity
-                 class="mb-4 rounded-lg bg-red-100 border border-red-300 px-4 py-3 text-sm font-bold text-red-700
-                        dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
-                <span x-text="error"></span>
-            </div>
-
             {{-- Page header --}}
             <header class="mb-8">
                 <div class="flex items-center justify-between gap-3 mb-1">
@@ -252,7 +244,6 @@
             customFrom: '',
             customTo: '',
             loading: false,
-            error: null,
             dateError: null,
             kpis: @json($initialData['kpis']),
             chartsReady: false,
@@ -486,8 +477,9 @@
                     history.pushState(null, '', `/admin/analytics?${params}`);
                 } catch (err) {
                     console.error('[analytics fetchData]', err);
-                    this.error = 'Could not load analytics data. Please try again.';
-                    setTimeout(() => { this.error = null; }, 5000);
+                    window.dispatchEvent(new CustomEvent('show-snackbar', {
+                        detail: { message: 'Could not load analytics data. Please try again.', type: 'error', duration: 5000 }
+                    }));
                 } finally {
                     this.loading = false;
                 }
