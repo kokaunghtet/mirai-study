@@ -416,7 +416,7 @@
             const msgEl = document.getElementById('snackbar-msg');
             clearTimeout(snackTimer);
             msgEl.textContent = msg;
-            inner.className = `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 ease-out ${ok ? 'bg-green-600' : 'bg-red-500'}`;
+            inner.className = `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 ease-out ${ok ? accentFill() : 'bg-red-500'}`;
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 inner.classList.remove('translate-y-3', 'opacity-0');
             }));
