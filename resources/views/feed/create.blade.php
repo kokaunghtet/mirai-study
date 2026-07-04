@@ -15,9 +15,16 @@
 
                 {{-- Author --}}
                 <section class="flex items-center gap-2.5 px-5 py-3">
-                    <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/15 text-[15px] font-bold text-accent">
-                        {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
-                    </div>
+                    @if (auth()->user()->profile_image)
+                        <img src="{{ auth()->user()->profile_image }}"
+                            alt="{{ auth()->user()->display_name }}"
+                            loading="lazy"
+                            class="h-10 w-10 rounded-full object-cover">
+                    @else
+                        <div class="grid h-10 w-10 place-items-center rounded-full bg-accent/15 text-[15px] font-bold text-accent">
+                            {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                        </div>
+                    @endif
                     <div>
                         <div class="text-sm font-bold text-content">{{ auth()->user()->display_name }}</div>
                         <p class="text-[11px] text-muted">Public post</p>
