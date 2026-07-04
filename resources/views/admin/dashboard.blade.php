@@ -34,6 +34,10 @@
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                            {{ number_format($stats['suspended_users']) }} suspended
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-500"></span>
                             {{ number_format($stats['banned_users']) }} banned
                         </div>
                         @if ($trends['users'] !== 0)

@@ -29,6 +29,7 @@ class AdminController extends Controller
             return [
                 'total_users' => User::count(),
                 'active_users' => User::where('status', 'active')->count(),
+                'suspended_users' => User::where('status', 'suspended')->count(),
                 'banned_users' => User::where('status', 'banned')->count(),
                 'total_posts' => Post::count(),
                 'posts_today' => Post::whereDate('created_at', today())->count(),
