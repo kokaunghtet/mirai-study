@@ -38,9 +38,13 @@
 
 @push('scripts')
 <script>
+const ADMIN_USERS_SKELETON = @json(view('admin.users._skeleton')->render());
+
 function adminFilter() {
     return {
         _st: null,
+        _ac: null,
+        _rid: 0,
         init() {
             window.addEventListener('popstate', () => {
                 this.load(window.location.href);
@@ -67,31 +71,57 @@ function adminFilter() {
                     else url.searchParams.delete('search');
                     url.searchParams.delete('page');
                     this.load(url.toString());
-                }, 400);
+                }, 300);
             });
         },
         async load(url) {
-            const u = new URL(typeof url === 'string' ? url : url.toString()); u.protocol = location.protocol; url = u.toString();
+            const u = new URL(typeof url === 'string' ? url : url.toString());
+            u.protocol = location.protocol;
+            url = u.toString();
+
+            if (this._ac) this._ac.abort();
+            this._ac = new AbortController();
+            const signal = this._ac.signal;
+            const myRid = ++this._rid;
+
             const el = document.getElementById('admin-filter-results');
-            el.style.opacity = '0.5';
-            el.style.pointerEvents = 'none';
+            const typedSearch = el.querySelector('input[name="search"]')?.value ?? '';
+            el.innerHTML = ADMIN_USERS_SKELETON;
+
             try {
-                const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const res = await fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    signal,
+                });
+                if (myRid !== this._rid) return;
                 if (!res.ok) return;
                 const { html } = await res.json();
+                if (myRid !== this._rid) return;
                 el.innerHTML = html;
                 window.Alpine.initTree(el);
                 window.renderIcons(el);
-                history.pushState(null, '', url);
+                history.replaceState(null, '', url);
                 const s = el.querySelector('input[name="search"]');
-                if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
-            } finally {
-                el.style.opacity = '';
-                el.style.pointerEvents = '';
+                if (s) { s.value = typedSearch; s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                console.error('Admin filter load failed:', err);
             }
         },
     };
 }
+
+(function () {
+    const el = document.getElementById('admin-filter-results');
+    if (!el || !el.children.length) return;
+    const initialHTML = el.innerHTML;
+    el.innerHTML = ADMIN_USERS_SKELETON;
+    setTimeout(() => {
+        el.innerHTML = initialHTML;
+        window.Alpine.initTree(el);
+        window.renderIcons(el);
+    }, 1000);
+})();
 </script>
 @endpush
 </x-app-layout>
