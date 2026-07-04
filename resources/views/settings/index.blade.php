@@ -353,24 +353,100 @@
                 </div>
             `,
             notifications: `
-                <div class="bg-surface border border-line rounded-xl p-3 space-y-2 shadow-sm">
-                    <div class="text-[10px] font-bold text-content mb-2">Notifications</div>
-                    <div class="flex items-start gap-2 p-2 rounded-lg bg-canvas">
-                        <div class="mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0">A</div>
-                        <p class="text-[9px] text-muted"><strong>Admin</strong> liked your post.</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between mb-1">
+                        <div>
+                            <div class="text-[10px] font-bold text-content">Notifications</div>
+                            <div class="text-[8px] text-muted">2 unread</div>
+                        </div>
+                        <button class="text-[8px] font-medium text-muted border border-line rounded-md px-1.5 py-0.5">Mark all read</button>
                     </div>
-                    <div class="flex items-start gap-2 p-2 rounded-lg">
+                    <div class="flex gap-2 px-2 py-2 rounded-xl border border-accent/40 bg-surface shadow-sm">
+                        <div class="mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0">A</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between gap-1">
+                                <p class="text-[9px] font-semibold text-content leading-snug">Admin liked your post</p>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                                    <span class="text-[7px] text-muted">2m</span>
+                                </div>
+                            </div>
+                            <p class="text-[8px] text-muted mt-0.5 leading-relaxed">Your study tip post got a like.</p>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <span class="w-3.5 h-3.5 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+                                    <i data-lucide="thumbs-up" class="w-2 h-2 text-red-500"></i>
+                                </span>
+                                <span class="text-[8px] font-semibold text-accent">View</span>
+                                <span class="text-[8px] text-muted">Mark as Read</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 px-2 py-2 rounded-xl border border-line bg-surface">
                         <div class="mockup-avatar-badge h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0">M</div>
-                        <p class="text-[9px] text-muted"><strong>Moderator</strong> started following you.</p>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between gap-1">
+                                <p class="text-[9px] font-semibold text-content leading-snug">Moderator followed you</p>
+                                <span class="text-[7px] text-muted shrink-0">5m</span>
+                            </div>
+                            <p class="text-[8px] text-muted mt-0.5 leading-relaxed">You have a new follower.</p>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <span class="w-3.5 h-3.5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+                                    <i data-lucide="user-plus" class="w-2 h-2 text-green-500"></i>
+                                </span>
+                                <span class="text-[8px] font-semibold text-accent">View</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `,
             bookmarks: `
-                <div class="bg-surface border border-line rounded-xl p-3 space-y-2 shadow-sm">
-                    <div class="text-[10px] font-bold text-content mb-2">Saved Posts</div>
-                    <div class="border border-line rounded-lg p-2 bg-canvas">
-                        <p class="text-[9px] font-semibold text-content">Study tip: Use spaced repetition for JLPT vocab.</p>
-                        <p class="text-[8px] text-muted mt-0.5">Admin · 2 minutes ago</p>
+                <div class="space-y-2">
+                    <div class="mb-1">
+                        <div class="text-[10px] font-bold text-content">Bookmarks</div>
+                        <div class="text-[8px] text-muted">Posts you've saved for later</div>
+                    </div>
+                    <div class="mockup-card border rounded-xl p-2.5 space-y-1.5 bg-surface border-line shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <div class="mockup-avatar-badge h-4 w-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0">A</div>
+                                <div>
+                                    <div class="text-[8px] font-bold text-content">Admin</div>
+                                    <div class="text-[7px] text-muted">2 minutes ago</div>
+                                </div>
+                            </div>
+                            <i data-lucide="bookmark" class="h-2.5 w-2.5 text-accent"></i>
+                        </div>
+                        <p class="text-[9px] font-bold text-content leading-tight">Study tip: Use spaced repetition for JLPT vocab.</p>
+                        <div class="flex gap-1 flex-wrap">
+                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">JLPT</span>
+                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">Study Tips</span>
+                        </div>
+                        <div class="pt-1 flex items-center gap-3 border-t border-line text-muted">
+                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="thumbs-up" class="h-2 w-2"></i> 12</span>
+                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="message-circle" class="h-2 w-2"></i> 4</span>
+                            <i data-lucide="send" class="h-2 w-2 ml-auto"></i>
+                        </div>
+                    </div>
+                    <div class="mockup-card border rounded-xl p-2.5 space-y-1.5 bg-surface border-line shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <div class="mockup-avatar-badge h-4 w-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0">M</div>
+                                <div>
+                                    <div class="text-[8px] font-bold text-content">Moderator</div>
+                                    <div class="text-[7px] text-muted">1 hour ago</div>
+                                </div>
+                            </div>
+                            <i data-lucide="bookmark" class="h-2.5 w-2.5 text-accent"></i>
+                        </div>
+                        <p class="text-[9px] text-muted leading-normal">ITPEC FE exam is next month. Practice past papers!</p>
+                        <div class="flex gap-1 flex-wrap">
+                            <span class="mockup-tag text-[7px] font-semibold px-1.5 py-0.5 rounded">ITPEC</span>
+                        </div>
+                        <div class="pt-1 flex items-center gap-3 border-t border-line text-muted">
+                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="thumbs-up" class="h-2 w-2"></i> 5</span>
+                            <span class="flex items-center gap-1 text-[7px]"><i data-lucide="message-circle" class="h-2 w-2"></i> 2</span>
+                            <i data-lucide="send" class="h-2 w-2 ml-auto"></i>
+                        </div>
                     </div>
                 </div>
             `
@@ -506,9 +582,14 @@
         // ── Mockup rendering ────────────────────────────────────────
         function switchMockupPage(targetPage) {
             currentActiveNav = targetPage;
-            document.getElementById('mockup-dynamic-stage').innerHTML = mockupPages[targetPage];
+            const stage = document.getElementById('mockup-dynamic-stage');
+            stage.innerHTML = mockupPages[targetPage];
             applyThemeColorsToMockup();
-            safeCreateIcons();
+            if (typeof window.renderIcons === 'function') {
+                window.renderIcons(stage);
+            } else {
+                safeCreateIcons();
+            }
         }
 
         function applyThemeColorsToMockup() {
