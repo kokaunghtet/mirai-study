@@ -18,22 +18,26 @@ highest first. The score blends four ingredients:
 score = ENGAGEMENT + RECENCY + FOLLOW_BOOST + JITTER
 ```
 
-The trick is putting all four on a **comparable scale**. We use **"days"** as the
-common unit — every term answers "how many days of freshness is this worth?"
+The trick is putting all four on a **comparable scale**. We use **"15-day units"** as
+the common unit — every term answers "how many 15-day periods of freshness is this worth?"
 
 ---
 
 ## Term 1 — RECENCY (how new is it)
 
 ```
-RECENCY = created_at_epoch / 259200
+RECENCY = (created_at_epoch − 1,735,689,600) / 1,296,000
 ```
 
-`created_at` becomes a Unix timestamp (seconds since 1970), divided by 259200
-(seconds in **3 days**). So 1 recency point = 3 days of age: a post made today
-scores ~0.33 higher than yesterday's, ~1.67 higher than one from 5 days ago.
-Newer = higher, but age now decays gently so engagement and follows can compete
-instead of being steamrolled by raw recency.
+`created_at` becomes a Unix timestamp (seconds since 1970), then we subtract
+`1,735,689,600` (2025-01-01 00:00:00 UTC — the app's reference epoch) and divide by
+`1,296,000` (seconds in **15 days**). Anchoring to the app epoch keeps values small
+(~12–25) instead of huge (~6 759), so engagement can actually compete.
+
+1 recency point = 15 days of age: a post made today scores ~0.067 higher than
+yesterday's, ~0.33 higher than one from 5 days ago. Newer = higher, but age now
+decays gently so engagement and follows can compete instead of being steamrolled by
+raw recency.
 
 ---
 
@@ -59,12 +63,12 @@ The log **compresses** large numbers: 0→10 adds ~1 point, but so does 100→10
 This stops one viral post from sitting at the top forever.
 
 **How the two main terms interact** — each `10×` of engagement adds ~1.0 log point,
-and (after the 3-day decay) each day of age subtracts only ~0.33:
+and (after the 15-day decay) each day of age subtracts only ~0.067:
 
-> **10× more engagement ≈ worth 3 days of freshness.**
+> **10× more engagement ≈ worth 15 days of freshness.**
 
-A ~3-day-old post needs only ~10× the engagement to beat a brand-new one. The gentle
-3-day decay is what lets an older-but-loved post climb above a fresh-but-dead one.
+A ~15-day-old post needs only ~10× the engagement to beat a brand-new one. The gentle
+15-day decay is what lets an older-but-loved post climb above a fresh-but-dead one.
 
 ---
 
@@ -76,9 +80,9 @@ FOLLOW_BOOST = 1.5 if you follow the author, else 0
 
 `PostController::index()` fetches the IDs you follow (accepted follows only) and
 passes them in; in SQL it becomes `CASE WHEN posts.user_id IN (...) THEN 1.5 ELSE 0`.
-At the 3-day decay, 1.5 points ≈ **4.5 days fresher** — a strong, deliberate lift so
+At the 15-day decay, 1.5 points ≈ **22.5 days fresher** — a strong, deliberate lift so
 a followed author clearly outranks a stranger's brand-new post. Very old followed
-content (>4.5 days) still yields to fresher posts, so it's a lift, not a hard pin.
+content (>22.5 days) still yields to fresher posts, so it's a lift, not a hard pin.
 
 Works for guests and brand-new users too: with no follows this term is just 0 for
 everyone, and the feed gracefully falls back to "trending + recent."
@@ -94,8 +98,8 @@ JITTER = (((post_id × 2654435761 + seed) % 100000) / 100000) × 0.25
 A small pseudo-random value between 0 and 0.25, **deterministic** for a given
 `(post, seed)` pair. It only reshuffles posts whose scores are nearly tied, so the
 feed isn't byte-identical every visit. The `seed` rotates daily, so today's order
-differs slightly from tomorrow's. Capped at 0.25 (≈ 18 hours of freshness at the
-3-day decay) so it swaps near-ties without ever letting a dead post leapfrog a
+differs slightly from tomorrow's. Capped at 0.25 (≈ 3.75 days of freshness at the
+15-day decay) so it swaps near-ties without ever letting a dead post leapfrog a
 genuinely popular one.
 
 ---
@@ -122,23 +126,18 @@ that:
 
 Three posts, you follow nobody:
 
-| Post | Age        | Engagement | RECENCY | ENGAGEMENT      | Score\* |
-| ---- | ---------- | ---------- | ------- | --------------- | ------- |
-| A    | today      | 0 likes    | 6875.00 | log10(1) = 0    | 6875.00 |
-| B    | 5 days ago | 30 likes   | 6873.33 | log10(31) ≈ 1.49 | 6874.82 |
-| C    | 2 days ago | 200 likes  | 6874.33 | log10(201) ≈ 2.30 | 6876.63 |
+| Post | Age        | Engagement  | RECENCY | ENGAGEMENT       | Score\* |
+| ---- | ---------- | ----------- | ------- | ---------------- | ------- |
+| A    | today      | 0 likes     | 12.40   | log10(1) = 0     | 12.40   |
+| B    | 5 days ago | 30 likes    | 12.07   | log10(31) ≈ 1.49 | 13.56   |
+| C    | 2 days ago | 200 likes   | 12.27   | log10(201) ≈ 2.30 | 14.57  |
 
-\*ignoring tiny jitter. RECENCY = epoch / 259200, so each day of age is only ~0.33.
+\*ignoring tiny jitter. RECENCY = (epoch − 1 735 689 600) / 1 296 000.
 
-Order: **C → A → B**. Post C wins — not the newest, but heavy engagement (≈2.3 log
-points = ~7 days of freshness) pushes its 2-day-old self clearly past today's empty
-post A. Post B's 1.49 points (~4.5 days) nearly offsets its 5-day age, landing it
-just behind A — much closer than under the old steep decay, where engagement barely
-mattered.
-
-Note the scores are huge (~6875) because RECENCY is an absolute 3-day-number — but
-only the **differences** between posts matter for sorting, so the shared baseline
-cancels out. (float64 precision is ample at this magnitude.)
+Order: **C → B → A**. Post C wins — not the newest, but heavy engagement (≈2.3 log
+points = ~34 days of freshness) pushes its 2-day-old self clearly past today's empty
+post A. Post B's 1.49 points (~22 days) easily offsets its 5-day age, landing it
+well above A — engagement now meaningfully outweighs modest recency differences.
 
 ---
 
@@ -146,10 +145,11 @@ cancels out. (float64 precision is ample at this magnitude.)
 
 Production runs **MySQL**; tests run **SQLite** in-memory. The scope is driver-aware:
 
-- **MySQL:** `LOG10(...)` and `UNIX_TIMESTAMP(created_at)`.
-- **SQLite:** `strftime('%s', created_at)` for the epoch, and a **linear** engagement
-  term (no `LOG10`) since the bundled SQLite build may lack math functions. Feed
-  order isn't asserted on SQLite — that path only needs to run without error.
+- **MySQL:** `LOG10(...)` and `(UNIX_TIMESTAMP(created_at) − 1735689600) / 1296000`.
+- **SQLite:** `(strftime('%s', created_at) − 1735689600) / 1296000.0` for recency,
+  and a **linear** engagement term (no `LOG10`) since the bundled SQLite build may
+  lack math functions. Feed order isn't asserted on SQLite — that path only needs to
+  run without error.
 
 The `likes_count` / `comments_count` / `bookmarks_count` values come from
 `withCount(['likes', 'comments', 'bookmarks'])` in the controller, and are referenced
@@ -161,14 +161,15 @@ by alias inside `ORDER BY` (valid on both engines).
 
 All constants in `app/Models/Post.php`:
 
-| Constant                 | Default      | Effect                                                              |
-| ------------------------ | ------------ | ------------------------------------------------------------------ |
-| `RECENCY_DECAY`          | `259200`     | Raise → age matters *less* (popular old posts surface harder). 3 days/point. |
-| `ENGAGE_COMMENT_WEIGHT`  | `2`          | Worth of a comment relative to a like.                             |
-| `ENGAGE_BOOKMARK_WEIGHT` | `1.5`        | Worth of a bookmark relative to a like.                            |
-| `FOLLOW_BOOST`           | `1.5`        | Crank up → more "following-centric" feed. ≈ 4.5 days at 3-day decay. |
-| `JITTER_SCALE`           | `0.25`       | Bigger → more shuffle/variety; smaller → more stable.              |
-| `JITTER_MULT`            | `2654435761` | Knuth multiplicative hash constant; don't need to change.          |
+| Constant                 | Default        | Effect                                                                 |
+| ------------------------ | -------------- | ---------------------------------------------------------------------- |
+| `RECENCY_DECAY`          | `1296000`      | Raise → age matters *less* (popular old posts surface harder). 15 days/point. |
+| `RECENCY_EPOCH`          | `1735689600`   | 2025-01-01 UTC reference point. Keeps recency values small (~12–25).   |
+| `ENGAGE_COMMENT_WEIGHT`  | `2`            | Worth of a comment relative to a like.                                 |
+| `ENGAGE_BOOKMARK_WEIGHT` | `1.5`          | Worth of a bookmark relative to a like.                                |
+| `FOLLOW_BOOST`           | `1.5`          | Crank up → more "following-centric" feed. ≈ 22.5 days at 15-day decay. |
+| `JITTER_SCALE`           | `0.25`         | Bigger → more shuffle/variety; smaller → more stable.                  |
+| `JITTER_MULT`            | `2654435761`   | Knuth multiplicative hash constant; don't need to change.              |
 
 ---
 
