@@ -21,6 +21,13 @@
                            class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                 </div>
                 <div class="w-full sm:w-40 shrink-0">
+                    <select id="filter-sort" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
+                        <option value="for_you" @selected(($sort ?? 'for_you') === 'for_you')>For You</option>
+                        <option value="recent" @selected(($sort ?? 'for_you') === 'recent')>Recent</option>
+                        <option value="popular" @selected(($sort ?? 'for_you') === 'popular')>Popular</option>
+                    </select>
+                </div>
+                <div class="w-full sm:w-40 shrink-0">
                     <select id="filter-tag" name="tag" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                         <option value="">All Tags</option>
                         @foreach($tags as $tag)
@@ -137,9 +144,13 @@
             // longer matches, so stale responses can't touch shared state.
             let requestId = 0;
 
+            const filterSort = document.getElementById('filter-sort');
+            let currentSort = filterSort ? filterSort.value : 'for_you';
+
             function buildUrl(page) {
                 const params = new URLSearchParams(window.location.search);
                 params.set('page', page);
+                params.set('sort', currentSort);
                 if (filterSearch.value.trim()) {
                     params.set('search', filterSearch.value.trim());
                 } else {
@@ -262,6 +273,11 @@
                     applyFilters();
                 });
             }
+
+            if (filterSort) filterSort.addEventListener('change', () => {
+                currentSort = filterSort.value;
+                applyFilters();
+            });
 
             // ── Infinite scroll ──────────────────────────────────────
             async function loadMore() {

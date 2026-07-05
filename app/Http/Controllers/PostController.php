@@ -71,22 +71,26 @@ class PostController extends Controller
             });
         }
 
-        // 3. "For You" ranking — recency + engagement + a boost for authors
-        //    the viewer follows, plus a per-session jitter so the feed feels
-        //    alive on revisit. The order is byte-stable across the separate
-        //    AJAX requests infinite scroll fires (see Post::scopeForYouRanked).
-        $followedIds = auth()->check()
-            ? auth()->user()->following()->wherePivot('status', 'accepted')->pluck('users.id')->all()
-            : [];
+        // 3. Sort order — driven by the `sort` query parameter.
+        $sort = in_array($request->input('sort'), ['for_you', 'recent', 'popular'])
+            ? $request->input('sort')
+            : 'for_you';
 
-        // Seed is derived from the session id + today's date: stable within a
-        // scroll session (so paging never duplicates/skips), but rotates daily
-        // so the order subtly reshuffles between visits.
-        $seed = (int) (sprintf('%u', crc32($request->session()->getId().now()->toDateString())) % 100000);
+        if ($sort === 'recent') {
+            $query->orderByDesc('posts.created_at');
+        } elseif ($sort === 'popular') {
+            $query->orderByRaw('(likes_count + 2 * comments_count + 1.5 * bookmarks_count) DESC')
+                ->orderByDesc('posts.created_at');
+        } else {
+            // "For You" — recency + engagement + follow boost + per-session jitter.
+            $followedIds = auth()->check()
+                ? auth()->user()->following()->wherePivot('status', 'accepted')->pluck('users.id')->all()
+                : [];
 
-        // Pass the viewer id so their own freshly-created posts pin to the top of
-        // their feed for a short window (see Post::scopeForYouRanked). Null for guests.
-        $query->forYouRanked($followedIds, $seed, auth()->id());
+            $seed = (int) (sprintf('%u', crc32($request->session()->getId().now()->toDateString())) % 100000);
+
+            $query->forYouRanked($followedIds, $seed, auth()->id());
+        }
 
         $posts = $query->paginate(10)->withQueryString();
 
@@ -102,7 +106,7 @@ class PostController extends Controller
 
         $tags = Tag::all();
 
-        return view('feed.index', compact('posts', 'tags', 'profileUsers'));
+        return view('feed.index', compact('posts', 'tags', 'profileUsers', 'sort'));
     }
 
     public function create()
