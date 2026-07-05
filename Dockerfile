@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
         pdo_mysql mbstring zip xml bcmath intl exif gd pcntl \
     && rm -rf /var/lib/apt/lists/*
 
+# PHP upload limits — match local dev settings
+RUN echo "upload_max_filesize = 20M\npost_max_size = 21M" \
+    > /usr/local/etc/php/conf.d/uploads.ini
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
