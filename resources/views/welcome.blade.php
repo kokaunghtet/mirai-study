@@ -515,7 +515,7 @@
                     <div class="w-10 h-10 bg-mirai-lime/10 text-mirai-lime rounded-xl flex items-center justify-center text-lg"><i data-lucide="smartphone" class="w-5 h-5"></i></div>
                     <h3 class="font-bold text-gray-800">Mobile Friendly</h3>
                     <p class="text-gray-500 text-sm leading-relaxed">Study on the go with a fully responsive design that works on any screen size or device.</p>
-                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">Anywhere, anytime</span>
+                    <span class="inline-block text-[10px] font-semibold text-mirai-lime bg-mirai-lime/10 px-2 py-0.5 rounded-full">In development</span>
                 </div>
             </div>
         </section>
@@ -593,10 +593,10 @@
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
                     <div class="p-5 space-y-3">
-                        <span class="resource-tag"><i data-lucide="clock" class="w-3 h-3"></i> Coming soon</span>
+                        <span class="resource-tag"><i data-lucide="clock" class="w-3 h-3"></i> Auth only</span>
                         <h4 class="font-bold text-gray-800">Quiz Mode</h4>
                         <p class="text-xs text-gray-500 leading-relaxed">Timed quizzes drawn from past papers with instant scoring. Practice by topic, level, or full-paper simulation.</p>
-                        <a href="{{ route('quiz.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Coming Soon <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
+                        <a href="{{ route('quiz.index') }}" class="inline-flex items-center text-xs font-medium text-mirai-lime hover:text-mirai-dark transition-colors gap-1 group">Try quizzes <i data-lucide="arrow-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1"></i></a>
                     </div>
                 </div>
                 <div class="resource-card glass-card rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
