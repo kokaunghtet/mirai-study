@@ -20,6 +20,8 @@ class Post extends Model
 
     const RECENCY_DECAY = 259200;          // seconds per freshness point (3 days)
 
+    const RECENCY_EPOCH = 1735689600;      // 2025-01-01 00:00:00 UTC — subtract before dividing so recency values stay small
+
     const FOLLOW_BOOST = 1.5;            // ≈ 4.5 days fresher if you follow the author
 
     const JITTER_SCALE = 0.25;           // max ≈ 6h-equivalent reshuffle of near-ties
@@ -99,8 +101,8 @@ class Post extends Model
 
         // Recency ≈ the post's age expressed in days (a fixed value per row).
         $recency = $sqlite
-            ? "(CAST(strftime('%s', posts.created_at) AS REAL) / ".self::RECENCY_DECAY.'.0)'
-            : '(UNIX_TIMESTAMP(posts.created_at) / '.self::RECENCY_DECAY.')';
+            ? "((CAST(strftime('%s', posts.created_at) AS REAL) - ".self::RECENCY_EPOCH.') / '.self::RECENCY_DECAY.'.0)'
+            : '((UNIX_TIMESTAMP(posts.created_at) - '.self::RECENCY_EPOCH.') / '.self::RECENCY_DECAY.')';
 
         // Weighted engagement (withCount aliases are resolvable in ORDER BY on
         // both MySQL and SQLite). LOG10 dampens viral runaway on MySQL; the
