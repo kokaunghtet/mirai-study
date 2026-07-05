@@ -18,11 +18,11 @@ class Post extends Model
 
     const ENGAGE_BOOKMARK_WEIGHT = 1.5;   // a bookmark is worth 1.5 likes
 
-    const RECENCY_DECAY = 259200;          // seconds per freshness point (3 days)
+    const RECENCY_DECAY = 1296000;         // seconds per freshness point (15 days)
 
     const RECENCY_EPOCH = 1735689600;      // 2025-01-01 00:00:00 UTC — subtract before dividing so recency values stay small
 
-    const FOLLOW_BOOST = 1.5;            // ≈ 4.5 days fresher if you follow the author
+    const FOLLOW_BOOST = 1.5;            // ≈ 22.5 days fresher if you follow the author
 
     const JITTER_SCALE = 0.25;           // max ≈ 6h-equivalent reshuffle of near-ties
 
