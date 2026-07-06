@@ -71,27 +71,33 @@
     {{-- ═══════════════════════════════════════════════
          Mobile Top Bar (visible on small screens only)
     ═══════════════════════════════════════════════ --}}
-    <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface/60 border-b border-line/70 h-14 flex items-center justify-between px-4">
-        <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent whitespace-nowrap">
+    <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface/60 backdrop-blur-sm border-b border-line/70 h-14 flex items-center gap-3 px-4">
+        <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent whitespace-nowrap shrink-0">
             MiraiStudy
         </a>
-        <button @click="sidebarOpen = !sidebarOpen"
-                class="p-2 rounded-lg text-muted hover:bg-surface-muted hover:text-content transition-colors">
-            <i data-lucide="menu" x-show="!sidebarOpen" class="w-6 h-6"></i>
-            <i data-lucide="x" x-show="sidebarOpen" class="w-6 h-6"></i>
-        </button>
-    </div>
 
-    {{-- Mobile overlay --}}
-    <div x-show="sidebarOpen"
-         x-transition:enter="transition-opacity ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         @click="sidebarOpen = false"
-         class="lg:hidden fixed inset-0 z-40 bg-black/40"></div>
+        <form action="{{ route('feed.index') }}" method="GET" class="flex-1 min-w-0">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted pointer-events-none"></i>
+                <input type="text" name="search" value="{{ request('search') }}"
+                       placeholder="Search..."
+                       class="w-full h-7 pl-7 pr-2 rounded-lg bg-surface/80 border border-line/70 text-xs text-content placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/50 transition-colors">
+            </div>
+        </form>
+
+        @auth
+            <a href="{{ route('profile.show', auth()->user()->username) }}"
+               class="h-8 w-8 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0 active:scale-95 transition-transform">
+                @if (auth()->user()->profile_image)
+                    <img src="{{ auth()->user()->profile_image }}" alt="{{ auth()->user()->display_name }}" class="h-full w-full object-cover">
+                @else
+                    {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                @endif
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="text-sm font-semibold text-accent shrink-0">Login</a>
+        @endauth
+    </div>
 
     {{-- ═══════════════════════════════════════════════
          Sidebar
@@ -400,7 +406,7 @@
     {{-- ═══════════════════════════════════════════════
          Main Content Area
     ═══════════════════════════════════════════════ --}}
-    <div class="min-h-screen pt-14 lg:pt-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
+    <div class="min-h-screen pt-14 pb-24 lg:pt-0 lg:pb-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
 
         {{-- Flash Messages via Snackbar --}}
         @if (session('success'))
@@ -460,7 +466,7 @@
 
         {{-- Page Content — widens to use the freed space when the nav
              sidebar is collapsed; animates in step with the nav (200ms). --}}
-        <main class="mx-auto py-8 transition-[max-width] duration-200 ease-in-out"
+        <main class="mx-auto px-4 sm:px-6 py-8 transition-[max-width] duration-200 ease-in-out"
               :class="sidebarCollapsed ? 'max-w-7xl' : 'max-w-6xl'">
             {{ $slot }}
         </main>
@@ -482,6 +488,9 @@
     @guest
         @include('components.auth-modal')
     @endguest
+
+    {{-- Mobile Bottom Navigation --}}
+    <x-mobile-bottom-nav />
 
     @stack('scripts')
 

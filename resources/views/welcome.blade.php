@@ -258,16 +258,83 @@
             .dark .welcome-sidebar { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
             .welcome-sidebar.open { transform: translateX(0); }
             .welcome-sidebar-overlay { display: block; }
-            .welcome-main-content { margin-left: 0; }
-            .welcome-mobile-hamburger { display: flex; align-items: center; gap: 0.5rem; }
+            .welcome-main-content { margin-left: 0; padding-bottom: 6rem; }
+            .welcome-mobile-hamburger { display: none; }
+            .welcome-bottom-nav { display: block; }
             header { padding-top: 0 !important; min-height: 90vh !important; }
         }
         @media (max-width: 640px) {
             .welcome-sidebar { width: 260px; }
-            .welcome-mobile-hamburger .label { display: none; }
-            .welcome-mobile-hamburger { padding: 0.5rem 0.7rem; font-size: 1.1rem; }
             header { min-height: 92vh !important; padding-top: 0 !important; }
         }
+
+        /* Mobile bottom navigation */
+        .welcome-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 70;
+            padding: 0 1rem 1rem;
+        }
+        .welcome-bottom-nav-inner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .welcome-bottom-pill {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: 3.5rem;
+            padding: 0 0.25rem;
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(229,231,235,0.40);
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+        }
+        .dark .welcome-bottom-pill {
+            background: rgba(15,20,18,0.82);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .welcome-bottom-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.625rem;
+            color: #6b7280;
+            text-decoration: none;
+            transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+        .welcome-bottom-item:active { transform: scale(0.95); }
+        .dark .welcome-bottom-item { color: #9ca3af; }
+        .welcome-bottom-item i { width: 1.1rem; height: 1.1rem; }
+        .welcome-bottom-item-label {
+            font-size: 0.5625rem;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .welcome-bottom-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #16A34A 0%, #166534 100%);
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.40);
+            flex-shrink: 0;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+        }
+        .welcome-bottom-action:active { transform: scale(0.95); }
+        .welcome-bottom-action i { width: 1.4rem; height: 1.4rem; }
 
         .welcome-sidebar::-webkit-scrollbar { width: 3px; }
         .welcome-sidebar::-webkit-scrollbar-track { background: transparent; }
@@ -774,6 +841,44 @@
         </footer>
 
     </main>
+
+    {{-- Mobile Bottom Navigation --}}
+    <nav class="welcome-bottom-nav">
+        <div class="welcome-bottom-nav-inner">
+
+            {{-- Pill bar: Feed · Papers · Quiz · Focus --}}
+            <div class="welcome-bottom-pill">
+                <a href="{{ route('feed.index') }}" class="welcome-bottom-item">
+                    <i data-lucide="home"></i>
+                    <span class="welcome-bottom-item-label">Feed</span>
+                </a>
+                <a href="{{ route('exams.index') }}" class="welcome-bottom-item">
+                    <i data-lucide="file-text"></i>
+                    <span class="welcome-bottom-item-label">Papers</span>
+                </a>
+                <a href="{{ route('quiz.index') }}" class="welcome-bottom-item">
+                    <i data-lucide="brain"></i>
+                    <span class="welcome-bottom-item-label">Quiz</span>
+                </a>
+                <a href="{{ route('timer.index') }}" class="welcome-bottom-item">
+                    <i data-lucide="clock"></i>
+                    <span class="welcome-bottom-item-label">Focus</span>
+                </a>
+            </div>
+
+            {{-- Circular primary action --}}
+            @auth
+                <a href="{{ route('feed.index') }}" class="welcome-bottom-action">
+                    <i data-lucide="rocket"></i>
+                </a>
+            @else
+                <a href="{{ route('register') }}" class="welcome-bottom-action">
+                    <i data-lucide="rocket"></i>
+                </a>
+            @endauth
+
+        </div>
+    </nav>
 
     <script>
     (function() {

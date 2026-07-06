@@ -15,19 +15,19 @@
             @endauth
 
             {{-- Search & Filters --}}
-            <div class="flex flex-col sm:flex-row gap-3">
-                <div class="flex-1">
+            <div class="flex flex-row gap-2 sm:gap-3">
+                <div class="flex-1 hidden sm:block">
                     <input type="text" id="filter-search" name="search" placeholder="Search posts, authors..." value="{{ request('search') }}"
                            class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                 </div>
-                <div class="w-full sm:w-40 shrink-0">
+                <div class="flex-1 sm:flex-none sm:w-40">
                     <select id="filter-sort" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                         <option value="for_you" @selected(($sort ?? 'for_you') === 'for_you')>For You</option>
                         <option value="recent" @selected(($sort ?? 'for_you') === 'recent')>Recent</option>
                         <option value="popular" @selected(($sort ?? 'for_you') === 'popular')>Popular</option>
                     </select>
                 </div>
-                <div class="w-full sm:w-40 shrink-0">
+                <div class="flex-1 sm:flex-none sm:w-40">
                     <select id="filter-tag" name="tag" class="w-full rounded-xl bg-surface-muted border-line focus:border-accent focus:ring focus:ring-accent/30 focus:ring-opacity-50 text-sm">
                         <option value="">All Tags</option>
                         @foreach($tags as $tag)
@@ -35,7 +35,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="w-full sm:w-auto shrink-0">
+                <div class="shrink-0">
                     <button type="button" id="clear-filters" class="w-full sm:w-auto px-4 py-2 bg-surface-muted hover:bg-surface-muted text-content text-sm font-medium rounded-xl border border-line transition">
                         Clear
                     </button>
@@ -97,9 +97,9 @@
             @endguest
 
                 @guest
-                    <div id="quick-links" x-show="!isOpen" class="mt-4 bg-surface border border-line rounded-xl p-5">
+                    <div id="quick-links" x-show="!isOpen" class="mt-4 hidden lg:block bg-surface border border-line rounded-xl p-5">
                 @else
-                    <div id="quick-links" x-show="!isOpen" class="bg-surface border border-line rounded-xl p-5">
+                    <div id="quick-links" x-show="!isOpen" class="hidden lg:block bg-surface border border-line rounded-xl p-5">
                 @endguest
 
                 <h3 class="font-semibold text-content mb-3">Quick Links</h3>
