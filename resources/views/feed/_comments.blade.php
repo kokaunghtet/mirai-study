@@ -56,7 +56,7 @@
                         {{-- Header: name + timestamp left, meatball right --}}
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2 min-w-0">
-                                <span class="text-sm font-semibold text-content truncate">{{ ($truncateNames ?? true) ? Str::limit($comment->user->display_name, 10) : $comment->user->display_name }}</span>
+                                <span class="text-sm font-semibold text-content truncate max-w-[10rem] lg:max-w-none">{{ $comment->user->display_name }}</span>
                                 <span class="text-xs text-muted shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
                             </div>
                             @if (auth()->id() === $comment->user_id || ! $comment->user->isAdmin())
@@ -173,7 +173,7 @@
                                             {{-- Header: name + timestamp left, meatball right --}}
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-2 min-w-0">
-                                                    <span class="text-xs font-semibold text-content truncate">{{ ($truncateNames ?? true) ? Str::limit($reply->user->display_name, 10) : $reply->user->display_name }}</span>
+                                                    <span class="text-xs font-semibold text-content truncate max-w-[10rem] lg:max-w-none">{{ $reply->user->display_name }}</span>
                                                     <span class="text-xs text-muted shrink-0">{{ $reply->created_at->diffForHumans() }}</span>
                                                 </div>
                                                 @if (auth()->id() === $reply->user_id || ! $reply->user->isAdmin())
