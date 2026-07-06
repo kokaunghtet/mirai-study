@@ -71,6 +71,7 @@
                         <label class="block text-[13px] font-semibold text-content mb-1.5">Display Name</label>
                         <input type="text" name="display_name"
                                x-model="displayName"
+                               maxlength="30"
                                class="w-full rounded-xl border border-line bg-surface-muted px-4 py-2.5 text-sm text-content outline-none focus:border-accent focus:bg-surface transition-colors"
                                required>
                         @error('display_name')

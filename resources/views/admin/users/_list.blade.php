@@ -54,7 +54,7 @@
                 @foreach ($users as $user)
                     <tr class="hover:bg-surface-muted transition-colors" id="user-row-{{ $user->id }}">
                         {{-- Name + username --}}
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-3 w-[220px] max-w-[220px]">
                             <div class="flex items-center gap-2.5">
                                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
                                     {{ strtoupper(substr($user->display_name, 0, 1)) }}
@@ -68,7 +68,7 @@
 
                         {{-- Email --}}
                         <td class="px-4 py-3 text-xs text-muted hidden sm:table-cell">
-                            {{ $user->email }}
+                            <div class="max-w-[200px] truncate">{{ $user->email }}</div>
                         </td>
 
                         {{-- Role --}}

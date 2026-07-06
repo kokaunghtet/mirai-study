@@ -137,7 +137,7 @@ class ProfileController extends Controller
         }
 
         $validated = $request->validate([
-            'display_name' => 'required|string|max:255',
+            'display_name' => 'required|string|max:30',
             'username' => $usernameRules,
             'bio' => 'nullable|string|max:500',
             'profile_image' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:5120',

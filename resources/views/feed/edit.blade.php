@@ -25,8 +25,8 @@
                             {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
                         </div>
                     @endif
-                    <div>
-                        <div class="text-sm font-bold text-content">{{ auth()->user()->display_name }}</div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-bold text-content truncate">{{ auth()->user()->display_name }}</div>
                         <p class="text-[11px] text-muted">Public post</p>
                     </div>
                 </section>

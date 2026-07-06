@@ -203,7 +203,7 @@
                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </span>
-                    <input type="text" name="display_name" x-model="reg.displayName" @input="onDisplayName()" required autocomplete="name"
+                    <input type="text" name="display_name" x-model="reg.displayName" @input="onDisplayName()" required autocomplete="name" maxlength="30"
                            placeholder="Your Full Name"
                            class="w-full rounded-xl border border-line bg-surface py-2 pl-11 pr-10 text-sm font-medium text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
                     <span x-show="steps[0]" x-transition.opacity class="absolute right-3.5 top-1/2 -translate-y-1/2 text-accent">

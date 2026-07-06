@@ -180,8 +180,8 @@
                                         <div class="h-5 w-5 rounded-full bg-surface-muted flex items-center justify-center text-[8px] font-bold text-muted">
                                             {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
                                         </div>
-                                        <div class="leading-none text-left">
-                                            <div class="text-[9px] font-bold text-content">{{ auth()->user()->display_name }}</div>
+                                        <div class="leading-none text-left min-w-0">
+                                            <div class="text-[9px] font-bold text-content truncate">{{ auth()->user()->display_name }}</div>
                                             <div class="text-[8px] text-muted">{{'@'.auth()->user()->username }}</div>
                                         </div>
                                     </div>

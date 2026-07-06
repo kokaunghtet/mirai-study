@@ -22,9 +22,9 @@
                 @endif
             </div>
 
-            <div>
+            <div class="min-w-0 flex-1">
                 <a href="{{ route('profile.show', $post->user->username) }}"
-                   class="text-[13px] font-bold text-content hover:text-accent transition-colors">
+                   class="text-[13px] font-bold text-content hover:text-accent transition-colors truncate block">
                     {{ $post->user->display_name }}
                 </a>
                 <div class="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">

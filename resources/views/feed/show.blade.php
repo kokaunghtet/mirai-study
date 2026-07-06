@@ -23,32 +23,75 @@
                         <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold">
                             {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <a href="{{ route('profile.show', $post->user->username) }}"
-                               class="font-semibold text-content hover:text-accent">
+                               class="font-semibold text-content hover:text-accent truncate block">
                                 {{ $post->user->display_name }}
                             </a>
                             <p class="text-xs text-muted">{{ $post->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
 
-                    {{-- Edit/Delete for owner --}}
-                    @auth
-                        @if (auth()->id() === $post->user_id)
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('posts.edit', $post) }}"
-                                    class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">Edit</a>
-                                <form method="POST" action="{{ route('posts.destroy', $post) }}"
-                                      data-confirm="Delete this post?">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-red-500 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 active:scale-95">
-                                        Delete
-                                    </button>
-                                </form>
+                    {{-- Edit/Delete for owner, Follow for others --}}
+                    @if (auth()->check() && auth()->id() === $post->user_id)
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('posts.edit', $post) }}"
+                                class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-sm transition-all hover:bg-accent/10 hover:text-accent hover:border-accent/30 active:scale-95">Edit</a>
+                            <form method="POST" action="{{ route('posts.destroy', $post) }}"
+                                  data-confirm="Delete this post?">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-red-500 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 active:scale-95">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        @auth
+                            <div x-data="{
+                                    following: {{ auth()->user()->following()->where('following_id', $post->user_id)->exists() ? 'true' : 'false' }},
+                                    loading: false,
+                                    async toggle() {
+                                        if (this.loading) return;
+                                        this.loading = true;
+                                        try {
+                                            const res = await fetch('{{ route('users.follow', $post->user) }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                    'Accept': 'application/json',
+                                                }
+                                            });
+                                            const data = await res.json();
+                                            this.following = data.following;
+                                            window.dispatchEvent(new CustomEvent('follow-changed', {
+                                                detail: { userId: {{ $post->user_id }}, following: data.following }
+                                            }));
+                                        } finally {
+                                            this.loading = false;
+                                        }
+                                    }
+                                 }"
+                                 @follow-changed.window="if ($event.detail.userId === {{ $post->user_id }}) following = $event.detail.following">
+                                <button type="button"
+                                        @click="toggle()"
+                                        :disabled="loading"
+                                        :class="following
+                                            ? 'bg-surface border-line text-content hover:border-red-200 hover:text-red-600 hover:bg-red-50'
+                                            : 'bg-accent border-transparent text-white hover:bg-accent-strong'"
+                                        class="shrink-0 rounded-lg border px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95">
+                                    <svg x-show="loading" style="display:none" class="leaf-spin inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                    <span x-show="!loading" x-text="following ? 'Following' : 'Follow'"></span>
+                                </button>
                             </div>
-                        @endif
-                    @endauth
+                        @else
+                            <button type="button"
+                                    onclick="window.dispatchEvent(new Event('open-auth-modal'))"
+                                    class="rounded-lg border border-line bg-surface px-3 py-1.5 text-[12px] font-bold text-content transition-all hover:bg-surface-muted active:scale-95">
+                                Follow
+                            </button>
+                        @endauth
+                    @endif
                 </div>
 
                 {{-- Title --}}
@@ -389,7 +432,7 @@
 
             {{-- Comments Section --}}
             <section id="comments" class="bg-surface border border-line rounded-xl p-6">
-                @include('feed._comments', ['post' => $post])
+                @include('feed._comments', ['post' => $post, 'truncateNames' => false])
             </section>
         </div>
 
