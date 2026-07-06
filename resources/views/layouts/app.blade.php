@@ -207,7 +207,7 @@
          Sidebar
     ═══════════════════════════════════════════════ --}}
     <aside :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'w-16' : 'w-64']"
-           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
+           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out -translate-x-full lg:translate-x-0">
 
         {{-- Logo --}}
         <div class="h-16 flex items-center border-b border-line shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">
