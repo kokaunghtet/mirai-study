@@ -337,6 +337,7 @@
                 @php $isBookmarked = $post->bookmarks->isNotEmpty(); @endphp
                 <div x-data="{
                         bookmarked: {{ $isBookmarked ? 'true' : 'false' }},
+                        count: {{ $post->bookmarks_count }},
                         loading: false,
                         async toggle() {
                             if (this.loading) return;
@@ -351,6 +352,7 @@
                                 });
                                 const data = await res.json();
                                 this.bookmarked = data.bookmarked;
+                                this.count = data.bookmarks_count;
                             } finally {
                                 this.loading = false;
                             }
@@ -363,17 +365,19 @@
                             :class="bookmarked
                                 ? 'text-accent'
                                 : 'text-muted hover:bg-surface-muted hover:text-accent'"
-                            class="rounded-lg px-2.5 py-1.5 transition-all">
+                            class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-all">
                         <svg x-show="loading" style="display:none" class="leaf-spin h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
                         <i x-show="!loading" data-lucide="bookmark" class="h-[18px] w-[18px]"
                            :fill="bookmarked ? 'currentColor' : 'none'"></i>
+                        <span class="text-xs font-semibold" x-text="count"></span>
                     </button>
                 </div>
             @else
                 <button type="button"
                         onclick="window.dispatchEvent(new Event('open-auth-modal'))"
-                        class="rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
+                        class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-muted hover:text-accent transition-all">
                     <i data-lucide="bookmark" class="h-[18px] w-[18px]"></i>
+                    <span class="text-xs font-semibold">{{ $post->bookmarks_count }}</span>
                 </button>
             @endauth
 

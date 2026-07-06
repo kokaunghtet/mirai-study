@@ -20,7 +20,7 @@ class BookmarkController extends Controller
                 'bookmarks' => fn ($q) => $q->where('user_id', $userId),
                 'likes' => fn ($q) => $q->where('user_id', $userId),
             ])
-            ->withCount(['likes', 'comments'])
+            ->withCount(['likes', 'comments', 'bookmarks'])
             ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'))
             ->latest('bookmarks.created_at')
             ->paginate(10);
@@ -51,6 +51,9 @@ class BookmarkController extends Controller
             $bookmarked = true;
         }
 
-        return response()->json(['bookmarked' => $bookmarked]);
+        return response()->json([
+            'bookmarked' => $bookmarked,
+            'bookmarks_count' => $post->bookmarks()->count(),
+        ]);
     }
 }

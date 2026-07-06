@@ -183,12 +183,13 @@ class PostController extends Controller
             'tags',
             'media',
             'likes',
+            'bookmarks' => fn ($q) => $q->when(auth()->id(), fn ($q) => $q->where('user_id', auth()->id())),
             'comments' => fn ($q) => $q->whereNull('parent_id')
                 ->with(['user', 'replies.user', 'likes'])
                 ->latest(),
         ]);
 
-        $post->loadCount(['likes', 'comments']);
+        $post->loadCount(['likes', 'comments', 'bookmarks']);
 
         return view('feed.show', compact('post'));
     }
