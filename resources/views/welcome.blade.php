@@ -261,6 +261,7 @@
             .welcome-main-content { margin-left: 0; padding-bottom: 6rem; }
             .welcome-mobile-hamburger { display: none; }
             .welcome-bottom-nav { display: block; }
+            .welcome-sidebar-footer .btn-get-started { display: none; }
             header { padding-top: 0 !important; min-height: 90vh !important; }
         }
         @media (max-width: 640px) {
@@ -865,17 +866,6 @@
                     <span class="welcome-bottom-item-label">Focus</span>
                 </a>
             </div>
-
-            {{-- Circular primary action --}}
-            @auth
-                <a href="{{ route('feed.index') }}" class="welcome-bottom-action">
-                    <i data-lucide="rocket"></i>
-                </a>
-            @else
-                <a href="{{ route('register') }}" class="welcome-bottom-action">
-                    <i data-lucide="rocket"></i>
-                </a>
-            @endauth
 
         </div>
     </nav>

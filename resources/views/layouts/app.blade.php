@@ -71,32 +71,126 @@
     {{-- ═══════════════════════════════════════════════
          Mobile Top Bar (visible on small screens only)
     ═══════════════════════════════════════════════ --}}
-    <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface/60 backdrop-blur-sm border-b border-line/70 h-14 flex items-center gap-3 px-4">
-        <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent whitespace-nowrap shrink-0">
-            MiraiStudy
-        </a>
+    <div x-data="{ mobileSheet: false }" @keydown.escape.window="mobileSheet = false">
 
-        <form action="{{ route('feed.index') }}" method="GET" class="flex-1 min-w-0">
-            <div class="relative">
-                <i data-lucide="search" class="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted pointer-events-none"></i>
-                <input type="text" name="search" value="{{ request('search') }}"
-                       placeholder="Search..."
-                       class="w-full h-7 pl-7 pr-2 rounded-lg bg-surface/80 border border-line/70 text-xs text-content placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/50 transition-colors">
-            </div>
-        </form>
+        {{-- Mobile Top Bar --}}
+        <div id="mobile-top-bar" class="lg:hidden fixed top-0 inset-x-0 z-40 bg-surface/60 backdrop-blur-sm border-b border-line/70 h-14 flex items-center gap-3 px-4 transition-transform duration-300">
+            <a href="{{ route('feed.index') }}" class="font-bold text-lg bg-gradient-to-tr from-accent-from to-accent-to bg-clip-text text-transparent whitespace-nowrap shrink-0">
+                MiraiStudy
+            </a>
+
+            <form action="{{ route('feed.index') }}" method="GET" class="flex-1 min-w-0">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted pointer-events-none"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           placeholder="Search..."
+                           class="w-full h-7 pl-7 pr-2 rounded-lg bg-surface/80 border border-line/70 text-xs text-content placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/50 transition-colors">
+                </div>
+            </form>
+
+            @auth
+                <button @click="mobileSheet = true"
+                        class="h-8 w-8 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0 active:scale-95 transition-transform">
+                    @if (auth()->user()->profile_image)
+                        <img src="{{ auth()->user()->profile_image }}" alt="{{ auth()->user()->display_name }}" class="h-full w-full object-cover">
+                    @else
+                        {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                    @endif
+                </button>
+            @else
+                <a href="{{ route('login') }}" class="text-sm font-semibold text-accent shrink-0">Login</a>
+            @endauth
+        </div>
 
         @auth
-            <a href="{{ route('profile.show', auth()->user()->username) }}"
-               class="h-8 w-8 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0 active:scale-95 transition-transform">
-                @if (auth()->user()->profile_image)
-                    <img src="{{ auth()->user()->profile_image }}" alt="{{ auth()->user()->display_name }}" class="h-full w-full object-cover">
-                @else
-                    {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
-                @endif
-            </a>
-        @else
-            <a href="{{ route('login') }}" class="text-sm font-semibold text-accent shrink-0">Login</a>
+            {{-- Backdrop --}}
+            <div x-show="mobileSheet"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="mobileSheet = false"
+                 class="lg:hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"
+                 style="display:none"></div>
+
+            {{-- Bottom Sheet --}}
+            <div x-show="mobileSheet"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="translate-y-full opacity-0"
+                 x-transition:enter-end="translate-y-0 opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="translate-y-0 opacity-100"
+                 x-transition:leave-end="translate-y-full opacity-0"
+                 class="lg:hidden fixed bottom-0 inset-x-0 z-[61] bg-surface rounded-t-2xl shadow-2xl border-t border-line pb-8"
+                 style="display:none">
+
+                {{-- Drag handle --}}
+                <div class="flex justify-center pt-3 pb-1">
+                    <div class="w-10 h-1 rounded-full bg-line"></div>
+                </div>
+
+                {{-- User info --}}
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-line">
+                    <div class="h-11 w-11 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold shrink-0">
+                        @if (auth()->user()->profile_image)
+                            <img src="{{ auth()->user()->profile_image }}" alt="{{ auth()->user()->display_name }}" class="h-full w-full object-cover">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->display_name, 0, 1)) }}
+                        @endif
+                    </div>
+                    <div class="min-w-0">
+                        <div class="font-semibold text-content truncate">{{ auth()->user()->display_name }}</div>
+                        <div class="text-xs text-muted truncate">{{ '@' . auth()->user()->username }}</div>
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="py-2">
+                    <a href="{{ route('profile.show', auth()->user()->username) }}" @click="mobileSheet = false"
+                       class="flex items-center gap-3 px-5 py-3 text-sm text-content hover:bg-surface-muted transition-colors">
+                        <i data-lucide="user" class="h-4 w-4 text-muted shrink-0"></i>
+                        My Profile
+                    </a>
+                    <a href="{{ route('profile.edit') }}" @click="mobileSheet = false"
+                       class="flex items-center gap-3 px-5 py-3 text-sm text-content hover:bg-surface-muted transition-colors">
+                        <i data-lucide="square-pen" class="h-4 w-4 text-muted shrink-0"></i>
+                        Edit Profile
+                    </a>
+                    <a href="{{ route('settings.index') }}" @click="mobileSheet = false"
+                       class="flex items-center gap-3 px-5 py-3 text-sm text-content hover:bg-surface-muted transition-colors">
+                        <i data-lucide="settings" class="h-4 w-4 text-muted shrink-0"></i>
+                        Settings
+                    </a>
+
+                    <div class="my-1 border-t border-line"></div>
+
+                    {{-- Theme toggle --}}
+                    <button type="button"
+                            x-data="themeToggle({ persistUrl: '{{ route('settings.theme-mode') }}' })"
+                            @click="toggle()"
+                            class="w-full flex items-center gap-3 px-5 py-3 text-sm text-content hover:bg-surface-muted transition-colors">
+                        <i data-lucide="moon" x-show="!dark" class="h-4 w-4 text-muted shrink-0"></i>
+                        <i data-lucide="sun" x-show="dark" class="h-4 w-4 text-muted shrink-0"></i>
+                        <span x-text="dark ? 'Light mode' : 'Dark mode'"></span>
+                    </button>
+
+                    <div class="my-1 border-t border-line"></div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-3 px-5 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
+                            <i data-lucide="log-out" class="h-4 w-4 shrink-0"></i>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         @endauth
+
     </div>
 
     {{-- ═══════════════════════════════════════════════
@@ -406,7 +500,7 @@
     {{-- ═══════════════════════════════════════════════
          Main Content Area
     ═══════════════════════════════════════════════ --}}
-    <div class="min-h-screen pt-14 pb-24 lg:pt-0 lg:pb-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
+    <div class="min-h-screen pt-10 pb-10 lg:pt-0 lg:pb-0 transition-[margin] duration-200 ease-in-out" :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'">
 
         {{-- Flash Messages via Snackbar --}}
         @if (session('success'))
@@ -493,6 +587,34 @@
     <x-mobile-bottom-nav />
 
     @stack('scripts')
+
+    <script>
+    (function () {
+        const bar = document.getElementById('mobile-top-bar');
+        if (!bar) return;
+        let lastY = 0, ticking = false, hideTimer;
+
+        window.addEventListener('scroll', function () {
+            if (!ticking) {
+                requestAnimationFrame(function () {
+                    const y = window.scrollY;
+                    if (y > lastY && y > 56) {
+                        bar.classList.add('-translate-y-full');
+                    } else {
+                        bar.classList.remove('-translate-y-full');
+                    }
+                    lastY = y;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(function () {
+                bar.classList.remove('-translate-y-full');
+            }, 300);
+        }, { passive: true });
+    })();
+    </script>
 
 </body>
 </html>
