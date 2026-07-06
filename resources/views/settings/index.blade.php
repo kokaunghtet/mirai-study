@@ -2,10 +2,10 @@
     <x-slot name="title">Settings — MiraiStudy</x-slot>
 
     <style>
-        html, body { overflow: hidden; }
+        @media(min-width:1024px){ html, body { overflow: hidden; } }
     </style>
 
-    <div class="w-full min-h-full flex justify-center items-center p-6 md:p-10 lg:p-12 transition-colors duration-300">
+    <div class="w-full min-h-full flex justify-center items-start lg:items-center pt-14 lg:pt-0 p-6 md:p-10 lg:p-12 transition-colors duration-300">
         <div class="max-w-6xl mx-auto w-full">
 
             <header class="mb-8">
@@ -130,7 +130,7 @@
                 </div>
 
                 {{-- Right Column — Live Preview --}}
-                <div class="lg:col-span-2">
+                <div class="hidden lg:block lg:col-span-2">
                     <section class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
                         <h3 class="text-sm font-semibold uppercase tracking-wider text-muted mb-4">
                             Live Interface Preview

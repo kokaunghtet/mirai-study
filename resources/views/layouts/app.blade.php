@@ -89,6 +89,16 @@
             </form>
 
             @auth
+                @php $topBarUnread = auth()->user()->appNotifications()->whereNull('read_at')->count(); @endphp
+                <a href="{{ route('notifications.index') }}"
+                   class="relative shrink-0 flex items-center justify-center h-8 w-8 rounded-full text-muted hover:text-content active:scale-95 transition-all {{ request()->routeIs('notifications.*') ? 'text-accent' : '' }}">
+                    <i data-lucide="bell" class="h-5 w-5"></i>
+                    @if ($topBarUnread > 0)
+                        <span class="absolute top-0 right-0 min-w-[1rem] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[8px] font-bold px-0.5 leading-none">
+                            {{ $topBarUnread > 99 ? '99+' : $topBarUnread }}
+                        </span>
+                    @endif
+                </a>
                 <button @click="mobileSheet = true"
                         class="h-8 w-8 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0 active:scale-95 transition-transform">
                     @if (auth()->user()->profile_image)
@@ -197,7 +207,7 @@
          Sidebar
     ═══════════════════════════════════════════════ --}}
     <aside :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'w-16' : 'w-64']"
-           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out lg:translate-x-0">
+           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out -translate-x-full lg:translate-x-0">
 
         {{-- Logo --}}
         <div class="h-16 flex items-center border-b border-line shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">
@@ -590,28 +600,30 @@
 
     <script>
     (function () {
-        const bar = document.getElementById('mobile-top-bar');
-        if (!bar) return;
+        const bar    = document.getElementById('mobile-top-bar');
+        const bottom = document.getElementById('mobile-bottom-nav');
+        if (!bar && !bottom) return;
         let lastY = 0, ticking = false, hideTimer;
+
+        function showBars() {
+            if (bar)    bar.style.transform = '';
+            if (bottom) bottom.style.transform = '';
+        }
 
         window.addEventListener('scroll', function () {
             if (!ticking) {
                 requestAnimationFrame(function () {
                     const y = window.scrollY;
-                    if (y > lastY && y > 56) {
-                        bar.classList.add('-translate-y-full');
-                    } else {
-                        bar.classList.remove('-translate-y-full');
-                    }
+                    const scrollingDown = y > lastY && y > 56;
+                    if (bar)    bar.style.transform    = scrollingDown ? 'translateY(-100%)' : '';
+                    if (bottom) bottom.style.transform = scrollingDown ? 'translateY(100%)'  : '';
                     lastY = y;
                     ticking = false;
                 });
                 ticking = true;
             }
             clearTimeout(hideTimer);
-            hideTimer = setTimeout(function () {
-                bar.classList.remove('-translate-y-full');
-            }, 300);
+            hideTimer = setTimeout(showBars, 300);
         }, { passive: true });
     })();
     </script>
