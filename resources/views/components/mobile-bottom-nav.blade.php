@@ -7,7 +7,7 @@
     ];
 @endphp
 
-<nav class="lg:hidden fixed bottom-0 inset-x-0 z-40" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav id="mobile-bottom-nav" class="lg:hidden fixed bottom-0 inset-x-0 z-40 transition-transform duration-300" style="padding-bottom: env(safe-area-inset-bottom)">
     <div class="flex items-center gap-3 mx-4 mb-3">
 
         {{-- Pill nav bar: 4 primary items --}}

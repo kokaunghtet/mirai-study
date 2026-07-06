@@ -600,28 +600,30 @@
 
     <script>
     (function () {
-        const bar = document.getElementById('mobile-top-bar');
-        if (!bar) return;
+        const bar    = document.getElementById('mobile-top-bar');
+        const bottom = document.getElementById('mobile-bottom-nav');
+        if (!bar && !bottom) return;
         let lastY = 0, ticking = false, hideTimer;
+
+        function showBars() {
+            if (bar)    bar.style.transform = '';
+            if (bottom) bottom.style.transform = '';
+        }
 
         window.addEventListener('scroll', function () {
             if (!ticking) {
                 requestAnimationFrame(function () {
                     const y = window.scrollY;
-                    if (y > lastY && y > 56) {
-                        bar.classList.add('-translate-y-full');
-                    } else {
-                        bar.classList.remove('-translate-y-full');
-                    }
+                    const scrollingDown = y > lastY && y > 56;
+                    if (bar)    bar.style.transform    = scrollingDown ? 'translateY(-100%)' : '';
+                    if (bottom) bottom.style.transform = scrollingDown ? 'translateY(100%)'  : '';
                     lastY = y;
                     ticking = false;
                 });
                 ticking = true;
             }
             clearTimeout(hideTimer);
-            hideTimer = setTimeout(function () {
-                bar.classList.remove('-translate-y-full');
-            }, 300);
+            hideTimer = setTimeout(showBars, 300);
         }, { passive: true });
     })();
     </script>
