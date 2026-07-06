@@ -89,6 +89,16 @@
             </form>
 
             @auth
+                @php $topBarUnread = auth()->user()->appNotifications()->whereNull('read_at')->count(); @endphp
+                <a href="{{ route('notifications.index') }}"
+                   class="relative shrink-0 flex items-center justify-center h-8 w-8 rounded-full text-muted hover:text-content active:scale-95 transition-all {{ request()->routeIs('notifications.*') ? 'text-accent' : '' }}">
+                    <i data-lucide="bell" class="h-5 w-5"></i>
+                    @if ($topBarUnread > 0)
+                        <span class="absolute top-0 right-0 min-w-[1rem] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[8px] font-bold px-0.5 leading-none">
+                            {{ $topBarUnread > 99 ? '99+' : $topBarUnread }}
+                        </span>
+                    @endif
+                </a>
                 <button @click="mobileSheet = true"
                         class="h-8 w-8 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0 active:scale-95 transition-transform">
                     @if (auth()->user()->profile_image)

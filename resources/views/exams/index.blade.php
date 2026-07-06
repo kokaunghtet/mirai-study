@@ -6,7 +6,18 @@
     <style>
         .exam-ui [x-cloak]{display:none}
         .exam-ui .folder-grid{display:grid;gap:16px;grid-template-columns:repeat(2,1fr)}
-        @media(max-width:560px){.exam-ui .folder-grid{grid-template-columns:1fr}}
+        @media(max-width:640px){.exam-ui .folder-grid{grid-template-columns:1fr}}
+        @media(max-width:640px){.exam-ui .card-art{height:110px}}
+        @media(max-width:640px){.exam-ui .meta-list{flex-direction:row;flex-wrap:wrap;gap:4px 10px}}
+        @media(max-width:640px){.exam-ui .meta-row{font-size:12px}}
+        @media(max-width:640px){.exam-ui .level-popout{display:none!important}}
+        @media(max-width:640px){.exam-ui .papers-toolbar{flex-direction:column;align-items:stretch;gap:8px}}
+        @media(max-width:640px){.exam-ui .sort-btn{align-self:flex-end}}
+        .exam-ui .mobile-sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:45;backdrop-filter:blur(2px)}
+        .exam-ui .mobile-sheet{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:46;background:rgb(var(--surface));border-radius:20px;width:90%;max-width:400px;max-height:72vh;overflow-y:auto;padding-bottom:1rem}
+        .exam-ui .mobile-sheet-handle{display:none}
+        .exam-ui .mobile-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 12px;border-bottom:1px solid rgb(var(--line))}
+        .exam-ui .mobile-sheet-head h3{font-size:16px;font-weight:700;color:rgb(var(--content))}
         .exam-ui .exam-card{display:flex;flex-direction:column;text-align:left;cursor:pointer;background:rgb(var(--surface));border:1px solid rgb(var(--line));border-radius:18px;overflow:hidden;transition:transform .15s,border-color .2s,box-shadow .2s}
         .exam-ui .exam-card:hover{transform:scale(1.02);border-color:rgb(var(--accent)/.6);box-shadow:0 14px 32px rgba(0,0,0,.45)}
         .exam-ui .exam-card:active{transform:scale(.98)}
@@ -68,7 +79,7 @@
         .exam-ui .empty{padding:48px 16px;text-align:center;color:rgb(var(--muted));font-size:14px}
     </style>
 
-    <div class="exam-ui px-4" x-data="examBrowser(@js(['categories' => $categories]))" x-cloak>
+    <div class="exam-ui px-4 pt-6 lg:pt-0" x-data="examBrowser(@js(['categories' => $categories]))" x-cloak>
         <div class="mx-auto max-w-4xl">
 
             <header class="mb-6">
@@ -236,5 +247,54 @@
             @endif
 
         </div>
+
+        {{-- Mobile level bottom sheet (replaces inline popout on small screens) --}}
+        @if (!$categories->isEmpty())
+        <template x-if="openCat">
+            <div class="lg:hidden">
+                {{-- Backdrop --}}
+                <div class="mobile-sheet-backdrop"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     @click="openId = null"></div>
+                {{-- Sheet --}}
+                <div class="mobile-sheet"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95">
+                    <div class="mobile-sheet-handle"></div>
+                    <div class="mobile-sheet-head">
+                        <h3 x-text="openCat.name + ' — choose a level'"></h3>
+                        <button @click="openId = null" class="text-muted hover:text-content active:scale-90 transition-transform">
+                            <i data-lucide="x" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 flex flex-col gap-3"
+                         x-effect="openCat && $nextTick(() => window.renderIcons($el))">
+                        <template x-for="(lvl, i) in (openCat.levels ?? [])" :key="lvl.id">
+                            <div class="level-card" :style="`animation-delay:${i * 55}ms`"
+                                 @click="openLevel(openCat, lvl); openId = null">
+                                <span class="level-badge" x-text="lvl.code"></span>
+                                <span class="lc-body">
+                                    <span class="lc-name" x-text="lvl.name"></span>
+                                    <span class="lc-sub"
+                                          x-text="lvl.papers_count + (lvl.papers_count === 1 ? ' paper' : ' papers')"></span>
+                                </span>
+                                <span class="lc-chev">›</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+        @endif
+
     </div>
 </x-app-layout>
