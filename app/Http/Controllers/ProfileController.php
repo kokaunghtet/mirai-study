@@ -46,13 +46,13 @@ class ProfileController extends Controller
         if ($tab === 'posts') {
             $posts = Post::where('user_id', $user->id)
                 ->with($with)
-                ->withCount(['likes', 'comments'])
+                ->withCount(['likes', 'comments', 'bookmarks'])
                 ->latest()
                 ->paginate(10);
         } else {
             $posts = $user->likedPosts()
                 ->with($with)
-                ->withCount(['likes', 'comments'])
+                ->withCount(['likes', 'comments', 'bookmarks'])
                 ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'))
                 ->latest('post_likes.created_at')
                 ->paginate(10);
