@@ -70,7 +70,9 @@
                         {{-- Text — always visible --}}
                         <textarea name="content" rows="1"
                                   placeholder="What's on your mind?"
-                                  class="min-h-[88px] w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
+                                  class="w-full resize-none rounded-xl bg-surface-muted px-3.5 py-3 text-sm leading-6 text-content border border-line outline-none placeholder:text-muted focus:border-accent transition-colors"
+                                  style="min-height: 88px; overflow-y: hidden"
+                                  x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
                                   :required="tab === 'text'">{{ old('content') }}</textarea>
                         @error('content')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
