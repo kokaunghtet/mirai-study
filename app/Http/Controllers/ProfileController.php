@@ -34,6 +34,9 @@ class ProfileController extends Controller
         if ($tab === 'liked' && ! $showLikedTab) {
             $tab = 'posts';
         }
+        if ($tab === 'bookmarks' && ! $isOwnProfile) {
+            $tab = 'posts';
+        }
 
         // Constrained eager loads for auth users
         $with = ['user', 'tags', 'media'];
@@ -48,6 +51,13 @@ class ProfileController extends Controller
                 ->with($with)
                 ->withCount(['likes', 'comments', 'bookmarks'])
                 ->latest()
+                ->paginate(10);
+        } elseif ($tab === 'bookmarks') {
+            $posts = $user->bookmarkedPosts()
+                ->with($with)
+                ->withCount(['likes', 'comments', 'bookmarks'])
+                ->whereHas('user', fn ($q) => $q->whereNull('users.deleted_at'))
+                ->latest('bookmarks.created_at')
                 ->paginate(10);
         } else {
             $posts = $user->likedPosts()

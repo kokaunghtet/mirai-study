@@ -286,6 +286,15 @@
                           : 'text-muted hover:bg-surface-muted' }}">
                 Posts
             </a>
+            @if ($isOwnProfile)
+                <a href="{{ route('profile.show', $user->username) }}?tab=bookmarks"
+                   class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
+                           {{ $tab === 'bookmarks'
+                               ? 'bg-gradient-to-tr from-accent-from to-accent-to text-white shadow-sm'
+                               : 'text-muted hover:bg-surface-muted' }}">
+                    Bookmarks
+                </a>
+            @endif
             @if ($showLikedTab)
                 <a href="{{ route('profile.show', $user->username) }}?tab=liked"
                    class="flex-1 text-center py-2 rounded-lg text-sm font-semibold transition-colors
@@ -310,7 +319,7 @@
                         <i data-lucide="message-circle" class="h-7 w-7 text-muted"></i>
                     </div>
                     <p class="text-sm font-semibold text-muted">
-                        {{ $tab === 'liked' ? 'No liked posts yet' : 'No posts yet' }}
+                        {{ $tab === 'liked' ? 'No liked posts yet' : ($tab === 'bookmarks' ? 'No bookmarked posts yet' : 'No posts yet') }}
                     </p>
                 </div>
             @endif

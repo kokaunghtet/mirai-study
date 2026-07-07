@@ -173,6 +173,11 @@
                         <i data-lucide="settings" class="h-4 w-4 text-muted shrink-0"></i>
                         Settings
                     </a>
+                    <a href="{{ route('bookmarks.index') }}" @click="mobileSheet = false"
+                       class="flex items-center gap-3 px-5 py-3 text-sm text-content hover:bg-surface-muted transition-colors">
+                        <i data-lucide="bookmark" class="h-4 w-4 text-muted shrink-0"></i>
+                        Bookmarks
+                    </a>
 
                     <div class="my-1 border-t border-line"></div>
 
