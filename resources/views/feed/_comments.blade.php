@@ -50,13 +50,13 @@
                     @endif
                 </div>
 
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     {{-- Card --}}
                     <div class="bg-surface-muted rounded-lg px-4 py-3">
                         {{-- Header: name + timestamp left, meatball right --}}
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2 min-w-0">
-                                <span class="text-sm font-semibold text-content truncate max-w-[10rem] lg:max-w-none">{{ $comment->user->display_name }}</span>
+                                <span class="text-sm font-semibold text-content truncate max-w-[10rem]">{{ $comment->user->display_name }}</span>
                                 <span class="text-xs text-muted shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
                             </div>
                             @if (auth()->id() === $comment->user_id || ! $comment->user->isAdmin())
@@ -167,13 +167,13 @@
                                         @endif
                                     </div>
 
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-0">
                                         {{-- Card --}}
                                         <div class="bg-surface-muted rounded-lg px-3 py-2">
                                             {{-- Header: name + timestamp left, meatball right --}}
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-2 min-w-0">
-                                                    <span class="text-xs font-semibold text-content truncate max-w-[10rem] lg:max-w-none">{{ $reply->user->display_name }}</span>
+                                                    <span class="text-xs font-semibold text-content truncate max-w-[10rem]">{{ $reply->user->display_name }}</span>
                                                     <span class="text-xs text-muted shrink-0">{{ $reply->created_at->diffForHumans() }}</span>
                                                 </div>
                                                 @if (auth()->id() === $reply->user_id || ! $reply->user->isAdmin())
