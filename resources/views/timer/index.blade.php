@@ -136,13 +136,13 @@
                     <div class="rounded-xl border border-line bg-surface overflow-hidden"
                          x-data="{ open: false }">
                         <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default m-4">
+                                class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                             <span>Today</span>
                             <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
                                :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         <div x-show="open" class="lg:!block grid grid-cols-2 gap-2 p-2.5">
-                            <div class="p-3 mb-3 rounded-lg bg-surface-muted">
+                            <div class="p-3 rounded-lg bg-surface-muted">
                                 <div class="text-lg font-medium text-content" x-text="todaySessions">0</div>
                                 <div class="text-xs text-muted">Sessions</div>
                             </div>

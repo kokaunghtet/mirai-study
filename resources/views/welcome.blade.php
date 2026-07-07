@@ -258,7 +258,7 @@
             .dark .welcome-sidebar { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
             .welcome-sidebar.open { transform: translateX(0); }
             .welcome-sidebar-overlay { display: block; }
-            .welcome-main-content { margin-left: 0; padding-bottom: 6rem; }
+            .welcome-main-content { margin-left: 0; padding-top: 3rem; padding-bottom: 6rem; }
             .welcome-mobile-hamburger { display: none; }
             .welcome-bottom-nav { display: block; }
             .welcome-sidebar-footer .btn-get-started { display: none; }
