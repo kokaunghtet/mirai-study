@@ -2,6 +2,9 @@
 
 <article x-data="{ commentsCount: {{ $post->comments_count }} }"
     @dblclick="if (!$event.target.closest('a,button,input,textarea,video,form,[data-no-nav]')) window.location='{{ route('posts.show', $post) }}'"
+    data-post-id="{{ $post->id }}"
+    data-comments-url="{{ route('comments.index', $post) }}"
+    data-comments-title="{{ $post->title ?: $post->user->display_name . "'s post" }}"
     class="relative rounded-2xl bg-surface border border-line shadow-sm">
 
     {{-- Header: Avatar + Name + Actions --}}

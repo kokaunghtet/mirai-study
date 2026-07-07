@@ -54,9 +54,58 @@
                 }
             },
 
+            _setupAutoSwitch() {
+                if (window.innerWidth < 1024) return;
+                const component = this;
+
+                const observer = new IntersectionObserver(entries => {
+                    for (const entry of entries) {
+                        const id = Number(entry.target.dataset.postId);
+                        if (id !== component.postId || !component.isOpen || entry.intersectionRatio > 0) continue;
+
+                        // Don't interrupt an in-progress draft
+                        const textarea = component.$refs.content?.querySelector('textarea[name=content]');
+                        if (textarea?.value.trim()) continue;
+
+                        const next = [...document.querySelectorAll('#posts-container article[data-post-id]')]
+                            .find(el => {
+                                if (Number(el.dataset.postId) === component.postId) return false;
+                                const r = el.getBoundingClientRect();
+                                return r.top < window.innerHeight && r.bottom > 0;
+                            });
+
+                        if (next) {
+                            component.open({
+                                id:    Number(next.dataset.postId),
+                                url:   next.dataset.commentsUrl,
+                                title: next.dataset.commentsTitle,
+                            });
+                        }
+                    }
+                }, { threshold: 0 });
+
+                document.querySelectorAll('#posts-container article[data-post-id]')
+                    .forEach(el => observer.observe(el));
+
+                // Pick up articles added by infinite scroll
+                const container = document.getElementById('posts-container');
+                if (container) {
+                    new MutationObserver(mutations => {
+                        for (const m of mutations) {
+                            for (const node of m.addedNodes) {
+                                if (node.nodeType !== 1) continue;
+                                if (node.matches('article[data-post-id]')) observer.observe(node);
+                                node.querySelectorAll?.('article[data-post-id]').forEach(el => observer.observe(el));
+                            }
+                        }
+                    }).observe(container, { childList: true, subtree: true });
+                }
+            },
+
             // Intercept comment / reply / delete form submits inside the
             // drawer so they post via AJAX and refresh in place.
             init() {
+                this._setupAutoSwitch();
                 const token = document.querySelector('meta[name=csrf-token]')?.content;
 
                 this.$refs.content.addEventListener('submit', async (e) => {
