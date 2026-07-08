@@ -56,11 +56,16 @@
                             });
                             const data = await res.json();
                             this.following = data.following;
+                            window.dispatchEvent(new CustomEvent('follow-changed', {
+                                detail: { userId: {{ $user->id }}, following: data.following }
+                            }));
                         } finally {
                             this.loading = false;
                         }
                     }
-                }" class="shrink-0">
+                 }"
+                 @follow-changed.window="if ($event.detail.userId === {{ $user->id }}) following = $event.detail.following"
+                 class="shrink-0">
                 <button type="button"
                         @click="toggle()"
                         :disabled="loading"
