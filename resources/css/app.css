@@ -268,3 +268,16 @@ body::after {
         linear-gradient(to right, rgb(var(--accent) / 0.06) 1px, transparent 1px),
         linear-gradient(to bottom, rgb(var(--accent) / 0.06) 1px, transparent 1px);
 }
+
+/* ── Linkified URLs in post content ──────────────────────────────── */
+.linkified-url {
+    color: rgb(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgb(var(--accent) / 0.4);
+    word-break: break-all;
+    transition: text-decoration-color 0.15s ease;
+}
+.linkified-url:hover {
+    text-decoration-color: rgb(var(--accent));
+}

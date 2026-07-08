@@ -94,7 +94,7 @@
 
                         <hr class="border-line my-2">
 
-                        <p class="text-sm text-content">{{ $comment->content }}</p>
+                        <p class="text-sm text-content">{!! linkify_urls($comment->content) !!}</p>
                     </div>
 
                     {{-- Like — outside card, right-aligned --}}
@@ -211,7 +211,7 @@
 
                                             <hr class="border-line my-1.5">
 
-                                            <p class="text-xs text-content">{{ $reply->content }}</p>
+                                            <p class="text-xs text-content">{!! linkify_urls($reply->content) !!}</p>
                                         </div>
 
                                         {{-- Like — outside card, right-aligned --}}

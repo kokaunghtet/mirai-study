@@ -2,7 +2,6 @@
 
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsAdminOrModerator;
-use App\Http\Middleware\EnsureUserIsModerator;
 use App\Http\Middleware\EnsureUserIsNotBanned;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,7 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
-            'moderator' => EnsureUserIsModerator::class,
             'admin-or-mod' => EnsureUserIsAdminOrModerator::class,
             'not-banned' => EnsureUserIsNotBanned::class,
         ]);

@@ -1445,6 +1445,54 @@ window.confirmDialog = (opts = {}) =>
         );
     });
 
+// ── Global capture-phase handler for external links ──
+// Shows a confirmation dialog before navigating away from the site.
+document.addEventListener(
+    "click",
+    async (e) => {
+        const anchor = e.target.closest("a[href]");
+        if (!anchor) return;
+
+        const href = anchor.getAttribute("href");
+        if (!href || !/^https?:\/\//.test(href)) return;
+
+        // Don't hijack downloads — window.open() would open the file inline
+        // instead of triggering the browser's save behavior.
+        if (anchor.hasAttribute("download")) return;
+
+        // Let native modifier/middle-click new-tab behavior through untouched.
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+            return;
+
+        let url;
+        try {
+            url = new URL(href);
+        } catch {
+            return;
+        }
+
+        if (url.hostname === window.location.hostname) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const confirmed = await window.confirmDialog({
+            title: "Leaving MiraiStudy",
+            message:
+                "You're about to visit " +
+                url.hostname +
+                ". External sites may not be safe. Continue?",
+            confirmLabel: "Continue",
+            danger: false,
+        });
+
+        if (confirmed) {
+            window.open(href, anchor.target || "_blank", "noopener,noreferrer");
+        }
+    },
+    true,
+);
+
 // ── Global capture-phase handler for <form data-confirm> ──
 // Intercepts form submits, shows the themed modal, re-submits only on confirm.
 document.addEventListener(
