@@ -28,6 +28,8 @@ class EnsureUserIsNotBanned
         'notifications.index',
         'notifications.read',
         'notifications.read-all',
+        'notifications.destroy',
+        'notifications.destroy-all',
         'posts.like',
         'comments.like',
     ];

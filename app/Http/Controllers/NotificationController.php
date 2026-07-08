@@ -13,7 +13,14 @@ class NotificationController extends Controller
             ->appNotifications()
             ->with('sender')
             ->latest('created_at')
-            ->paginate(20);
+            ->paginate(10);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('notifications._list', compact('notifications'))->render(),
+                'next_page_url' => $notifications->nextPageUrl(),
+            ]);
+        }
 
         return view('notifications.index', compact('notifications'));
     }
