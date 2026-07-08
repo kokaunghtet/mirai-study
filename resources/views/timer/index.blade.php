@@ -281,12 +281,13 @@
                     activeSound: 'silent',
                     volume: 65,
                     sounds: [
-                        { key: 'silent',   label: 'Silent' },
-                        { key: 'ocean',    label: 'Ocean waves' },
-                        { key: 'forest',   label: 'Forest' },
-                        { key: 'binaural', label: 'Binaural' },
-                        { key: 'lofi',     label: 'Lo-fi pad' },
-                        { key: 'piano',    label: 'Piano' },
+                        { key: 'silent',       label: 'Silent' },
+                        { key: 'quietplease', label: 'Quiet Please' },
+                        { key: 'ocean',        label: 'Ocean waves' },
+                        { key: 'forest',       label: 'Forest' },
+                        { key: 'binaural',     label: 'Binaural' },
+                        { key: 'lofi',         label: 'Lo-fi pad' },
+                        { key: 'piano',        label: 'Piano' },
                     ],
 
                     // ── Internal ──
@@ -296,6 +297,7 @@
                     _masterGain: null,    // volume node for ambient sound
                     _ambientNodes: [],    // live Web Audio nodes for the active sound
                     _noiseBuf: null,      // cached brown-noise buffer
+                    _mp3Buf: null,        // cached decoded buffer for quietplease.m4a
 
                     // ── Lifecycle ──
                     init() {
@@ -568,7 +570,26 @@
                         const master = this._masterGain;
                         const nodes = [];
 
-                        if (name === 'ocean') {
+                        if (name === 'quietplease') {
+                            const loadAndPlay = async () => {
+                                if (!this._mp3Buf) {
+                                    const res = await fetch('{{ asset('sound/quietplease.m4a') }}');
+                                    const ab = await res.arrayBuffer();
+                                    this._mp3Buf = await ctx.decodeAudioData(ab);
+                                }
+                                if (this.activeSound !== 'quietplease') return;
+                                const src = ctx.createBufferSource();
+                                src.buffer = this._mp3Buf;
+                                src.loop = true;
+                                const g = ctx.createGain();
+                                g.gain.value = 0.8;
+                                src.connect(g); g.connect(master);
+                                this._ambientNodes = [src, g];
+                                src.start();
+                            };
+                            loadAndPlay();
+                            return;
+                        } else if (name === 'ocean') {
                             // Slow deep swell: dark lowpass, gentle LFO, low gain
                             const src = ctx.createBufferSource();
                             src.buffer = this.noiseBuffer(ctx);
