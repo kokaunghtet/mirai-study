@@ -141,13 +141,13 @@
                             <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
                                :class="open ? 'rotate-180' : ''"></i>
                         </button>
-                        <div x-show="open" class="lg:!block grid grid-cols-2 gap-2 p-2.5">
-                            <div class="p-3 rounded-lg bg-surface-muted">
-                                <div class="text-lg font-medium text-content" x-text="todaySessions">0</div>
+                        <div x-show="open" class="lg:!grid grid grid-cols-2 gap-3 p-3">
+                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col gap-1.5">
+                                <div class="text-xl font-semibold text-content" x-text="todaySessions">0</div>
                                 <div class="text-xs text-muted">Sessions</div>
                             </div>
-                            <div class="p-3 rounded-lg bg-surface-muted">
-                                <div class="text-lg font-medium text-content" x-text="todayFocusLabel">0m</div>
+                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col gap-1.5">
+                                <div class="text-xl font-semibold text-content" x-text="todayFocusLabel">0m</div>
                                 <div class="text-xs text-muted">Focus time</div>
                             </div>
                         </div>
@@ -282,9 +282,11 @@
                     volume: 65,
                     sounds: [
                         { key: 'silent',   label: 'Silent' },
-                        { key: 'rain',     label: 'Rain' },
-                        { key: 'brown',    label: 'Brown noise' },
+                        { key: 'ocean',    label: 'Ocean waves' },
+                        { key: 'forest',   label: 'Forest' },
                         { key: 'binaural', label: 'Binaural' },
+                        { key: 'lofi',     label: 'Lo-fi pad' },
+                        { key: 'piano',    label: 'Piano' },
                     ],
 
                     // ── Internal ──
@@ -566,30 +568,67 @@
                         const master = this._masterGain;
                         const nodes = [];
 
-                        if (name === 'rain' || name === 'brown') {
+                        if (name === 'ocean') {
+                            // Slow deep swell: dark lowpass, gentle LFO, low gain
                             const src = ctx.createBufferSource();
                             src.buffer = this.noiseBuffer(ctx);
                             src.loop = true;
+                            const lp = ctx.createBiquadFilter();
+                            lp.type = 'lowpass';
+                            lp.frequency.value = 500;
+                            const lp2 = ctx.createBiquadFilter();
+                            lp2.type = 'lowpass';
+                            lp2.frequency.value = 500;
+                            const lfo = ctx.createOscillator();
+                            lfo.type = 'sine';
+                            lfo.frequency.value = 0.07;
+                            const lfoGain = ctx.createGain();
+                            lfoGain.gain.value = 0.12;
                             const g = ctx.createGain();
-                            if (name === 'rain') {
-                                const filter = ctx.createBiquadFilter();
-                                filter.type = 'lowpass';
-                                filter.frequency.value = 1400;
-                                g.gain.value = 0.9;
-                                src.connect(filter); filter.connect(g); g.connect(master);
-                                nodes.push(src, filter, g);
-                            } else {
-                                g.gain.value = 0.55;
-                                src.connect(g); g.connect(master);
-                                nodes.push(src, g);
-                            }
+                            g.gain.value = 0.35;
+                            lfo.connect(lfoGain);
+                            lfoGain.connect(g.gain);
+                            src.connect(lp); lp.connect(lp2); lp2.connect(g); g.connect(master);
+                            lfo.start(); src.start();
+                            nodes.push(src, lp, lp2, lfo, lfoGain, g);
+                        } else if (name === 'forest') {
+                            const g = ctx.createGain();
+                            g.gain.value = 0.5;
+                            g.connect(master);
+                            nodes.push(g);
+                            const chirp = () => {
+                                if (!this._forestInterval) return;
+                                const osc = ctx.createOscillator();
+                                const cg = ctx.createGain();
+                                osc.type = 'sine';
+                                const base = 2000 + Math.random() * 3000;
+                                osc.frequency.setValueAtTime(base, ctx.currentTime);
+                                osc.frequency.linearRampToValueAtTime(base + 800 * (Math.random() > 0.5 ? 1 : -1), ctx.currentTime + 0.08);
+                                cg.gain.setValueAtTime(0.0001, ctx.currentTime);
+                                cg.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+                                cg.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+                                osc.connect(cg); cg.connect(g);
+                                osc.start(); osc.stop(ctx.currentTime + 0.2);
+                            };
+                            this._forestInterval = setInterval(chirp, 300 + Math.random() * 600);
+                            chirp();
+                            const src = ctx.createBufferSource();
+                            src.buffer = this.noiseBuffer(ctx);
+                            src.loop = true;
+                            const lp = ctx.createBiquadFilter();
+                            lp.type = 'lowpass';
+                            lp.frequency.value = 400;
+                            const bg = ctx.createGain();
+                            bg.gain.value = 0.15;
+                            src.connect(lp); lp.connect(bg); bg.connect(g);
                             src.start();
+                            nodes.push(src, lp, bg);
                         } else if (name === 'binaural') {
                             const g = ctx.createGain();
                             g.gain.value = 0.22;
                             g.connect(master);
                             nodes.push(g);
-                            [[200, -1], [207, 1]].forEach(([freq, pan]) => {   // 7Hz beat
+                            [[200, -1], [207, 1]].forEach(([freq, pan]) => {
                                 const osc = ctx.createOscillator();
                                 osc.type = 'sine';
                                 osc.frequency.value = freq;
@@ -604,10 +643,81 @@
                                 osc.start();
                                 nodes.push(osc);
                             });
+                        } else if (name === 'lofi') {
+                            const g = ctx.createGain();
+                            g.gain.value = 0.35;
+                            g.connect(master);
+                            nodes.push(g);
+                            [261.63, 329.63, 392.00].forEach((freq) => {
+                                const osc = ctx.createOscillator();
+                                osc.type = 'sine';
+                                osc.frequency.value = freq;
+                                const og = ctx.createGain();
+                                og.gain.value = 0.18;
+                                osc.connect(og); og.connect(g);
+                                osc.start();
+                                nodes.push(osc, og);
+                            });
+                            const src = ctx.createBufferSource();
+                            src.buffer = this.noiseBuffer(ctx);
+                            src.loop = true;
+                            const hp = ctx.createBiquadFilter();
+                            hp.type = 'highpass';
+                            hp.frequency.value = 5000;
+                            const crackle = ctx.createGain();
+                            crackle.gain.value = 0.06;
+                            src.connect(hp); hp.connect(crackle); crackle.connect(g);
+                            src.start();
+                            nodes.push(src, hp, crackle);
+                            const lfo = ctx.createOscillator();
+                            lfo.type = 'sine';
+                            lfo.frequency.value = 0.5;
+                            const lfoG = ctx.createGain();
+                            lfoG.gain.value = 0.03;
+                            lfo.connect(lfoG); lfoG.connect(g.gain);
+                            lfo.start();
+                            nodes.push(lfo, lfoG);
+                        } else if (name === 'piano') {
+                            const g = ctx.createGain();
+                            g.gain.value = 0.3;
+                            g.connect(master);
+                            nodes.push(g);
+                            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+                            let idx = 0;
+                            const playNote = () => {
+                                if (!this._pianoInterval) return;
+                                const freq = notes[idx % notes.length];
+                                idx++;
+                                const osc = ctx.createOscillator();
+                                osc.type = 'triangle';
+                                osc.frequency.value = freq;
+                                const ng = ctx.createGain();
+                                const now = ctx.currentTime;
+                                ng.gain.setValueAtTime(0.0001, now);
+                                ng.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
+                                ng.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+                                osc.connect(ng); ng.connect(g);
+                                osc.start(now); osc.stop(now + 2.6);
+                                const osc2 = ctx.createOscillator();
+                                osc2.type = 'sine';
+                                osc2.frequency.value = freq * 2;
+                                const ng2 = ctx.createGain();
+                                ng2.gain.setValueAtTime(0.0001, now);
+                                ng2.gain.exponentialRampToValueAtTime(0.06, now + 0.01);
+                                ng2.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+                                osc2.connect(ng2); ng2.connect(g);
+                                osc2.start(now); osc2.stop(now + 1.3);
+                            };
+                            this._pianoInterval = setInterval(playNote, 1800 + Math.random() * 1200);
+                            playNote();
                         }
                         this._ambientNodes = nodes;
                     },
                     stopAmbient() {
+                        clearInterval(this._forestInterval);
+                        clearInterval(this._pianoInterval);
+                        this._forestInterval = null;
+                        this._pianoInterval = null;
                         (this._ambientNodes || []).forEach((n) => {
                             try { if (n.stop) n.stop(); } catch (e) { /* already stopped */ }
                             try { n.disconnect(); } catch (e) { /* ignore */ }
