@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Auth\Concerns\MasksEmail;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\LinkedAccountService;
 use App\Services\OtpService;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +17,7 @@ class OtpChallengeController extends Controller
 {
     use MasksEmail;
 
-    public function __construct(protected OtpService $otp) {}
+    public function __construct(protected OtpService $otp, protected LinkedAccountService $linkedAccounts) {}
 
     /**
      * Show the 6-digit code entry screen for the pending challenge.
@@ -82,6 +83,8 @@ class OtpChallengeController extends Controller
         }
 
         Auth::login($user, (bool) ($challenge['remember'] ?? false));
+
+        $this->linkedAccounts->remember($request, $user);
 
         $request->session()->forget('otp_challenge');
         $request->session()->regenerate();

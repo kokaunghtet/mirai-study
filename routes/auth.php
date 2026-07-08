@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\OtpChallengeController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SwitchAccountController;
 use App\Http\Controllers\Auth\UsernameController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -37,14 +38,6 @@ Route::middleware('guest')->group(function () {
         ->name('auth.google');
     Route::get('auth/google/callback', [GoogleController::class, 'callback']);
 
-    // OTP challenge (email verification at sign-up / unverified login, and 2FA on login).
-    // Guest-accessible: the pending user lives in the session until the code is verified.
-    Route::get('otp', [OtpChallengeController::class, 'show'])->name('otp.challenge');
-    Route::post('otp', [OtpChallengeController::class, 'verify'])
-        ->middleware('throttle:6,1')->name('otp.verify');
-    Route::post('otp/resend', [OtpChallengeController::class, 'resend'])
-        ->middleware('throttle:6,1')->name('otp.resend');
-
     // Password reset — OTP based (email → 6-digit code → new password).
     Route::get('forgot-password', [ForgotPasswordController::class, 'create'])
         ->name('password.request');
@@ -68,6 +61,17 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
+// OTP challenge (email verification at sign-up / unverified login, 2FA on login, and
+// adding a second account from the sidebar switcher). Deliberately outside the `guest`
+// group: an already-authenticated browser must be able to complete a pending challenge
+// too (see SwitchAccountController), and the pending user lives in the session either
+// way — not the auth guard — until the code is verified.
+Route::get('otp', [OtpChallengeController::class, 'show'])->name('otp.challenge');
+Route::post('otp', [OtpChallengeController::class, 'verify'])
+    ->middleware('throttle:6,1')->name('otp.verify');
+Route::post('otp/resend', [OtpChallengeController::class, 'resend'])
+    ->middleware('throttle:6,1')->name('otp.resend');
+
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
@@ -89,4 +93,14 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Sidebar account switcher — add another account and hop between them without
+    // logging out. Guest-only /login can't be reused here since it 302s an
+    // authenticated visitor away before the form is ever seen.
+    Route::get('accounts/add', [SwitchAccountController::class, 'create'])
+        ->name('accounts.add');
+    Route::post('accounts/add', [SwitchAccountController::class, 'store'])
+        ->name('accounts.add.store');
+    Route::post('accounts/{user}/switch', [SwitchAccountController::class, 'switch'])
+        ->name('accounts.switch');
 });

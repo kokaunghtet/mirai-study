@@ -3,6 +3,9 @@
     $accentColor = $pref->accent_color ?? 'venom';
     $themeMode   = $pref->theme_mode ?? 'light';
     $fillStyle   = $pref->fill_style ?? 'gradient';
+    $switchableAccounts = auth()->check()
+        ? app(\App\Services\LinkedAccountService::class)->accounts(request())
+        : collect();
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
@@ -463,6 +466,54 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          :class="sidebarCollapsed ? 'bottom-0 left-full ml-2 w-56' : 'bottom-full left-0 right-0 mb-1'"
                          class="absolute bg-surface rounded-lg shadow-lg border border-line py-1 z-50">
+
+                        {{-- Account switcher --}}
+                        <div class="px-2 pb-1 pt-1.5">
+                            <p class="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-muted">Accounts</p>
+                            @foreach ($switchableAccounts as $account)
+                                @if ($account->id === auth()->id())
+                                    <div class="flex items-center gap-2.5 rounded-lg bg-accent/10 px-2 py-2">
+                                        <div class="h-7 w-7 shrink-0 rounded-full bg-accent/15 flex items-center justify-center text-xs font-bold text-accent overflow-hidden">
+                                            @if ($account->profile_image)
+                                                <img src="{{ $account->profile_image }}" alt="{{ $account->display_name }}" class="h-full w-full object-cover">
+                                            @else
+                                                {{ strtoupper(substr($account->display_name, 0, 1)) }}
+                                            @endif
+                                        </div>
+                                        <div class="min-w-0 flex-1 text-left">
+                                            <div class="truncate text-sm font-semibold text-content">{{ $account->display_name }}</div>
+                                            <div class="truncate text-[11px] text-muted">{{ '@' . $account->username }}</div>
+                                        </div>
+                                        <i data-lucide="check" class="h-4 w-4 shrink-0 text-accent"></i>
+                                    </div>
+                                @else
+                                    <form method="POST" action="{{ route('accounts.switch', $account) }}">
+                                        @csrf
+                                        <button type="submit" class="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left hover:bg-surface-muted transition-colors">
+                                            <div class="h-7 w-7 shrink-0 rounded-full bg-accent/15 flex items-center justify-center text-xs font-bold text-accent overflow-hidden">
+                                                @if ($account->profile_image)
+                                                    <img src="{{ $account->profile_image }}" alt="{{ $account->display_name }}" class="h-full w-full object-cover">
+                                                @else
+                                                    {{ strtoupper(substr($account->display_name, 0, 1)) }}
+                                                @endif
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="truncate text-sm font-medium text-content">{{ $account->display_name }}</div>
+                                                <div class="truncate text-[11px] text-muted">{{ '@' . $account->username }}</div>
+                                            </div>
+                                        </button>
+                                    </form>
+                                @endif
+                            @endforeach
+                            <a href="{{ route('accounts.add') }}"
+                               @click="sidebarOpen = false; userMenu = false"
+                               class="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium text-accent hover:bg-surface-muted transition-colors">
+                                <i data-lucide="user-plus" class="h-4 w-4"></i>
+                                Add account
+                            </a>
+                        </div>
+                        <hr class="my-1 border-line">
+
                         <a href="{{ route('profile.show', auth()->user()->username) }}"
                            @click="sidebarOpen = false; userMenu = false"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-surface-muted">
