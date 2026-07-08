@@ -141,11 +141,12 @@
                                 
                                 {{-- Prev/Next --}}
                                 <button type="button" @click="idx = Math.max(0, idx - 1)"
-                                        class="absolute left-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 text-xl">
-                                    ‹
+                                        class="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70">
+                                    <i data-lucide="chevron-left" class="h-4 w-4"></i>
                                 </button>
-                                <button type="button" @click="idx = Math.min({{ $mediaItems->count() - 1 }}, idx + 1)"          class="absolute right-2 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 text-xl">
-                                    ›
+                                <button type="button" @click="idx = Math.min({{ $mediaItems->count() - 1 }}, idx + 1)"
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70">
+                                    <i data-lucide="chevron-right" class="h-4 w-4"></i>
                                 </button>
                             @endif
                         </div>
