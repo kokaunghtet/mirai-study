@@ -164,34 +164,89 @@ class AdminController extends Controller
             abort(403, 'Cannot change the status of another admin.');
         }
 
-        $user->update(['status' => $request->status]);
+        $notifyUser = null;
+        $notifyAppeals = [];
 
-        if ($request->status === 'banned') {
-            // Ensure a UserBan record exists so storeGuest can find it via activeBan().
-            $ban = $user->bans()->active()->first();
-            if (! $ban) {
-                $ban = UserBan::create([
-                    'user_id' => $user->id,
-                    'banned_by' => auth()->id(),
-                    'type' => 'permanent',
-                    'reason' => null,
+        DB::transaction(function () use (&$user, $request, &$notifyUser, &$notifyAppeals) {
+            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $wasBannedOrSuspended = in_array($user->status, ['banned', 'suspended'], true);
+
+            $user->update(['status' => $request->status]);
+
+            if ($request->status === 'banned') {
+                // Ensure a UserBan record exists so storeGuest can find it via activeBan().
+                $ban = $user->bans()->active()->first();
+                if (! $ban) {
+                    $ban = UserBan::create([
+                        'user_id' => $user->id,
+                        'banned_by' => auth()->id(),
+                        'type' => 'permanent',
+                        'reason' => null,
+                    ]);
+                }
+
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'user_banned',
+                    'subject_type' => 'User',
+                    'subject_id' => $user->id,
+                    'properties' => ['username' => $user->username],
+                    'created_at' => now(),
                 ]);
+
+                SendBanNotificationJob::dispatch($user, $ban);
+            } elseif ($request->status === 'active' && $wasBannedOrSuspended) {
+                // Keep ban records and any pending appeals in sync with the
+                // manual unban so the Appeals tab doesn't show a stale "pending"
+                // appeal for a user who's already active again. A user can have
+                // more than one simultaneously-active ban (banUserDirect stacks
+                // temp bans), so lift all of them rather than an arbitrary one.
+                $activeBans = $user->bans()->active()->get();
+
+                foreach ($activeBans as $ban) {
+                    $ban->update([
+                        'lifted_at' => now(),
+                        'lifted_by' => auth()->id(),
+                    ]);
+                }
+
+                $pendingAppeals = $user->appeals()
+                    ->where('status', 'pending')
+                    ->whereIn('user_ban_id', $activeBans->pluck('id'))
+                    ->get();
+
+                foreach ($pendingAppeals as $appeal) {
+                    $appeal->update([
+                        'status' => 'approved',
+                        'reviewed_by' => auth()->id(),
+                        'reviewed_at' => now(),
+                    ]);
+
+                    ActivityLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'appeal_approved',
+                        'subject_type' => 'User',
+                        'subject_id' => $user->id,
+                        'properties' => [
+                            'username' => $user->username,
+                            'appeal_id' => $appeal->id,
+                            'ban_id' => $appeal->user_ban_id,
+                        ],
+                        'created_at' => now(),
+                    ]);
+
+                    $notifyUser = $user;
+                    $notifyAppeals[] = $appeal;
+                }
             }
 
-            ActivityLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'user_banned',
-                'subject_type' => 'User',
-                'subject_id' => $user->id,
-                'properties' => ['username' => $user->username],
-                'created_at' => now(),
-            ]);
+            Cache::forget('admin_stats');
+            Cache::forget('admin_trends');
+        });
 
-            SendBanNotificationJob::dispatch($user, $ban);
+        foreach ($notifyAppeals as $appeal) {
+            $notifyUser->notify(new AppealApprovedNotification($appeal));
         }
-
-        Cache::forget('admin_stats');
-        Cache::forget('admin_trends');
 
         return response()->json(['status' => $user->status]);
     }
