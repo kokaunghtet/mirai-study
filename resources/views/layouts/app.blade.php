@@ -4,7 +4,7 @@
     $themeMode   = $pref->theme_mode ?? 'light';
     $fillStyle   = $pref->fill_style ?? 'gradient';
     $switchableAccounts = auth()->check()
-        ? app(\App\Services\LinkedAccountService::class)->accounts(request())
+        ? once(fn () => app(\App\Services\LinkedAccountService::class)->accounts(request()))
         : collect();
 @endphp
 <!DOCTYPE html>

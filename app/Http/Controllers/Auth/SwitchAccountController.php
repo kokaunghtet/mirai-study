@@ -51,9 +51,9 @@ class SwitchAccountController extends Controller
             return $this->startChallenge($request, $otp, $user, 'login_verification');
         }
 
-        $this->accounts->remember($request, $user);
-
         Auth::login($user);
+
+        $this->accounts->remember($request, $user);
 
         $request->session()->regenerate();
 
@@ -69,7 +69,13 @@ class SwitchAccountController extends Controller
     {
         abort_unless($this->accounts->contains($request, $user->id), 403);
 
+        if ($user->isBanned()) {
+            return back()->withErrors(['login' => 'This account can\'t be switched to right now.']);
+        }
+
         Auth::login($user);
+
+        $this->accounts->remember($request, $user);
 
         $request->session()->regenerate();
 

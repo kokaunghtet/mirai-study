@@ -84,10 +84,10 @@ class OtpChallengeController extends Controller
 
         Auth::login($user, (bool) ($challenge['remember'] ?? false));
 
-        $this->linkedAccounts->remember($request, $user);
-
         $request->session()->forget('otp_challenge');
         $request->session()->regenerate();
+
+        $this->linkedAccounts->remember($request, $user);
 
         $default = match (true) {
             $user->isAdmin() => route('admin.dashboard', absolute: false),

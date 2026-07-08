@@ -74,7 +74,7 @@ class LoginRequest extends FormRequest
         // No valid credentials — rate limit, then report which field was wrong.
         RateLimiter::hit($this->throttleKey());
 
-        $user = $deletedUser ?? User::where($field, $login)->first();
+        $user = User::where($field, $login)->first();
 
         if (! $user) {
             throw ValidationException::withMessages([

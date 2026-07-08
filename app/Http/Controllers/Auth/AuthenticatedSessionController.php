@@ -51,8 +51,8 @@ class AuthenticatedSessionController extends Controller
             $login = $request->input('login');
             $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
             Auth::attempt([$field => $login, 'password' => $request->input('password')], $request->boolean('remember'));
-            $this->linkedAccounts->remember($request, $user);
             $request->session()->regenerate();
+            $this->linkedAccounts->remember($request, $user);
 
             return redirect()->route('feed.index')->with('success', "Welcome back, {$user->display_name}! Your account has been fully restored.");
         }
@@ -69,9 +69,9 @@ class AuthenticatedSessionController extends Controller
 
         Auth::login($user, $request->boolean('remember'));
 
-        $this->linkedAccounts->remember($request, $user);
-
         $request->session()->regenerate();
+
+        $this->linkedAccounts->remember($request, $user);
 
         $default = match (true) {
             $user->isAdmin() => route('admin.dashboard', absolute: false),
