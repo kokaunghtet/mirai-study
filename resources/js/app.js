@@ -1096,6 +1096,10 @@ Alpine.data("paperUploader", (cats = []) => ({
 
             // Register watch only after all initial values are restored.
             this.$nextTick(() => {
+                this.$watch("fileName", () => {
+                    this.$nextTick(() => window.renderIcons?.());
+                });
+
                 this.$watch("categoryId", () => {
                     this.levelId = "";
                     if (this.isJlpt) this.part = "";
