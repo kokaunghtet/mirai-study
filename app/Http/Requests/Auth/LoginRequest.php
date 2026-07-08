@@ -71,11 +71,19 @@ class LoginRequest extends FormRequest
             return $deletedUser;
         }
 
-        // No valid user found — rate limit and throw.
+        // No valid credentials — rate limit, then report which field was wrong.
         RateLimiter::hit($this->throttleKey());
 
+        $user = $deletedUser ?? User::where($field, $login)->first();
+
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'login' => trans('auth.account_not_found'),
+            ]);
+        }
+
         throw ValidationException::withMessages([
-            'login' => trans('auth.failed'),
+            'login_password' => trans('auth.password'),
         ]);
     }
 

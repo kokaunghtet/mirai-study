@@ -73,3 +73,7 @@ Working: social feed (CRUD, infinite scroll, search/tag/sort filters), likes/boo
 **Stale tests:** `tests/Feature/ProfileTest.php` and `tests/Feature/ExampleTest.php` are unmodified Breeze scaffolding that asserts against routes/fields this app changed (`GET /profile`, `$user->name`, `GET /` returning 200 — it now 302s to `feed.index`). They fail; treat as stale, not regressions. Trustworthy current-behavior tests: `Auth/OtpFlowTest`, `Auth/AuthenticationTest`, `Auth/RegistrationTest`, `ThemeModeTest`.
 
 `knowledge/MiraiStudy_Project_Context.md` is a thorough hand-written design doc but predates the OTP system, the theming overhaul, and the timer view — verify against code before trusting it.
+
+## Commit messages
+
+After finishing a task, generate a one-line commit message summarizing the change (Conventional Commits style, e.g. `fix(feed): restore scroll position on back nav`). Do this every time work is done, even if not asked.

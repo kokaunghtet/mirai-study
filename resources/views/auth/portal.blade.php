@@ -151,6 +151,7 @@
                         <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
                     </button>
                 </div>
+                <x-input-error :messages="$errors->get('login_password')" class="mt-1.5 px-0.5" />
 
                 <label class="mb-5 mt-4 flex items-center gap-2 pl-0.5">
                     <input type="checkbox" name="remember" class="rounded border-line text-accent shadow-sm focus:ring-accent">
