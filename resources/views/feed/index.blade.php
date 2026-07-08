@@ -167,12 +167,16 @@
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
             // ── Initial skeleton on first load ───────────────────────
+            // Resolves once the real content has been swapped back in.
+            // restoreScrollState() awaits this so it never scrolls
+            // while the container is still artificially short.
+            let initialRevealPromise = Promise.resolve();
             @if ($posts->isNotEmpty())
-            (function () {
+            initialRevealPromise = (function () {
                 const initialHTML = container.innerHTML;
                 container.innerHTML = '';
                 showSkeletons();
-                sleep(1000).then(() => {
+                return sleep(1000).then(() => {
                     removeSkeletons();
                     container.innerHTML = initialHTML;
                     window.renderIcons(container);
@@ -333,15 +337,14 @@
                 }
             }
 
-            // ── Save position when navigating to a post ──────────────
-            // We listen on the container so it works for dynamically
-            // loaded posts too (infinite scroll adds new cards to DOM)
-            container.addEventListener('click', (e) => {
-                const postLink = e.target.closest('a[href*="/posts/"]');
-                if (postLink) {
-                    sessionStorage.setItem(SCROLL_KEY, window.scrollY);
-                    sessionStorage.setItem(PAGE_KEY, currentPage);
-                }
+            // ── Save position whenever the page is left ───────────────
+            // pagehide covers every way off this page (title link,
+            // "see more" link, the card's dblclick-to-open handler,
+            // browser back/forward) with a single listener instead of
+            // delegating on every click.
+            window.addEventListener('pagehide', () => {
+                sessionStorage.setItem(SCROLL_KEY, window.scrollY);
+                sessionStorage.setItem(PAGE_KEY, currentPage);
             });
 
             // ── Restore on back navigation ───────────────────────────
@@ -350,7 +353,7 @@
                 const savedPage   = parseInt(sessionStorage.getItem(PAGE_KEY) || '1');
 
                 // Nothing saved — normal page load, do nothing
-                if (!savedScroll || savedPage <= 1) return;
+                if (!savedScroll) return;
 
                 // Clear immediately so a manual refresh doesn't restore again
                 sessionStorage.removeItem(SCROLL_KEY);
@@ -359,6 +362,10 @@
                 // Show restore indicator
                 loader.style.display = 'block';
                 setLoaderText('Restoring your place...');
+
+                // Wait for the initial skeleton reveal so the container
+                // is at full height before we compute/apply scroll.
+                await initialRevealPromise;
 
                 // Reload pages 2 → savedPage without the artificial delay
                 for (let page = 2; page <= savedPage; page++) {
