@@ -45,7 +45,7 @@
     </div>
 
     {{-- Body --}}
-    <div class="flex-1 overflow-y-auto px-5 py-4 pb-14 lg:pb-4">
+    <div class="flex-1 overflow-y-auto scrollbar-transparent px-5 py-4 pb-14 lg:pb-4">
         <div x-show="loading">
             <x-leaf-loader class="py-6" />
         </div>

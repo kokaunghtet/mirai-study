@@ -281,3 +281,25 @@ body::after {
 .linkified-url:hover {
     text-decoration-color: rgb(var(--accent));
 }
+
+/* ── Transparent scrollbar utility ─────────────────────────────── */
+.scrollbar-transparent {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+.scrollbar-transparent:hover {
+    scrollbar-color: rgb(var(--muted) / 0.4) transparent;
+}
+.scrollbar-transparent::-webkit-scrollbar {
+    width: 6px;
+}
+.scrollbar-transparent::-webkit-scrollbar-track {
+    background: transparent;
+}
+.scrollbar-transparent::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 3px;
+}
+.scrollbar-transparent:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--muted) / 0.4);
+}
