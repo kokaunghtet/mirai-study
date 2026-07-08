@@ -32,6 +32,17 @@ class LinkedAccountService
         $request->session()->put(self::SESSION_KEY, $ids);
     }
 
+    /** Remove a user from the session's linked accounts. Cannot remove the current user. */
+    public function forget(Request $request, int $userId): void
+    {
+        $ids = array_values(array_filter(
+            $request->session()->get(self::SESSION_KEY, []),
+            fn ($id) => $id !== $userId,
+        ));
+
+        $request->session()->put(self::SESSION_KEY, $ids);
+    }
+
     /** Whether a user id has been authenticated in this session and can be switched to. */
     public function contains(Request $request, int $userId): bool
     {

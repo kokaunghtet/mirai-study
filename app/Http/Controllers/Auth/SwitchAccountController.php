@@ -87,6 +87,24 @@ class SwitchAccountController extends Controller
     }
 
     /**
+     * Remove a linked account from this session's switcher. The target must already be
+     * a member of this session — this never accepts a bare user id as sufficient
+     * authorization. Cannot remove the currently active account.
+     */
+    public function remove(Request $request, User $user): RedirectResponse
+    {
+        abort_unless($this->accounts->contains($request, $user->id), 403);
+
+        if ($user->id === $request->user()->id) {
+            return back()->withErrors(['login' => 'You can\'t remove your current account.']);
+        }
+
+        $this->accounts->forget($request, $user->id);
+
+        return back()->with('success', "{$user->display_name} removed from this session.");
+    }
+
+    /**
      * Issue an OTP and hand off to the shared challenge screen, same as a normal login.
      */
     protected function startChallenge(Request $request, OtpService $otp, User $user, string $purpose): RedirectResponse

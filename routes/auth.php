@@ -103,4 +103,6 @@ Route::middleware('auth')->group(function () {
         ->name('accounts.add.store');
     Route::post('accounts/{user}/switch', [SwitchAccountController::class, 'switch'])
         ->name('accounts.switch');
+    Route::delete('accounts/{user}/remove', [SwitchAccountController::class, 'remove'])
+        ->name('accounts.remove');
 });
