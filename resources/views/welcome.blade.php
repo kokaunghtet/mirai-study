@@ -774,7 +774,7 @@
                             'Soe Yi Naing',
                             'Arkar Moe Myint',
                             'Shoon Lae Myint Myat',
-                            'Lynn Latt Khay',
+                            'Lynn Latt Nay Chi',
                             'Su Hanni Thit',
                             'Ei Thandar Aung',
                             'Su Ya Da Nar',

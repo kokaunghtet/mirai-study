@@ -289,6 +289,22 @@
             </label>
         </div>
 
+        {{-- ───────────────────── Sessions / Logged-in Device ───────────────────── --}}
+        <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+            <div class="mb-4">
+                <h2 class="text-base font-semibold text-content">Sessions</h2>
+                <p class="mt-0.5 text-xs text-muted">See where you're currently signed in.</p>
+            </div>
+
+            <div class="flex items-center gap-3 rounded-xl bg-surface-muted px-4 py-3">
+                <i data-lucide="smartphone" class="w-4 h-4 text-muted shrink-0"></i>
+                <div>
+                    <div class="text-sm font-semibold text-content">Logged-in device</div>
+                    <div class="text-xs text-muted mt-0.5">{{ $currentDevice }}</div>
+                </div>
+            </div>
+        </div>
+
         {{-- ───────────────────── Delete Account ───────────────────── --}}
         <div class="rounded-2xl border border-red-200 bg-surface p-6 shadow-sm" x-data="{ confirm: false }">
             <div class="mb-4">

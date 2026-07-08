@@ -122,7 +122,9 @@ class ProfileController extends Controller
             ['theme_mode' => 'light', 'accent_color' => 'venom', 'fill_style' => 'gradient', 'show_liked_posts' => true]
         );
 
-        return view('profile.edit', compact('user', 'preferences'));
+        $currentDevice = parse_user_device($request->userAgent());
+
+        return view('profile.edit', compact('user', 'preferences', 'currentDevice'));
     }
 
     // ── Save profile settings ────────────────────────────

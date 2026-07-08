@@ -27,7 +27,8 @@
     },
     "autoload": {
         "files": [
-            "app/Helpers/url_helper.php"
+            "app/Helpers/url_helper.php",
+            "app/Helpers/device_helper.php"
         ],
         "psr-4": {
             "App\\": "app/",
