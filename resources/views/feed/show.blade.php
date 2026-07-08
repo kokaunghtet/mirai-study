@@ -20,8 +20,15 @@
                 {{-- Author --}}
                 <div class="flex items-center justify-between px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold">
-                            {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-accent/15 flex items-center justify-center text-accent font-bold">
+                            @if ($post->user->profile_image)
+                                <img src="{{ $post->user->profile_image }}"
+                                    alt="{{ $post->user->display_name }}"
+                                    loading="lazy"
+                                    class="h-full w-full object-cover">
+                            @else
+                                {{ strtoupper(substr($post->user->display_name, 0, 1)) }}
+                            @endif
                         </div>
                         <div class="min-w-0">
                             <a href="{{ route('profile.show', $post->user->username) }}"
