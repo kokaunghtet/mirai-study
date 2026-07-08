@@ -80,9 +80,11 @@
                         <td class="px-4 py-3">
                             <span id="status-badge-{{ $user->id }}"
                                   class="rounded-full px-2 py-0.5 text-[10px] font-bold
-                                         {{ $user->status === 'active'
-                                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                             : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }}">
+                                         {{ match (true) {
+                                             $user->status === 'active' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                                             $user->status === 'suspended' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+                                             default => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                                         } }}">
                                 {{ ucfirst($user->status) }}
                             </span>
                         </td>
@@ -94,10 +96,50 @@
 
                         {{-- Actions --}}
                         <td class="px-4 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2">
+                            <div class="flex flex-wrap items-center justify-end gap-2">
                                 @if ($user->id === $authId)
                                     <span class="text-xs text-muted">-</span>
                                 @else
+                                    @if ($user->status !== 'banned')
+                                        <div x-data="suspendMenu({{ $user->id }})" @keydown.escape.window="open = false" @scroll.window="open = false">
+                                            <button @click="toggle($event)" :disabled="loading"
+                                                    id="suspend-btn-{{ $user->id }}"
+                                                    class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
+                                                Suspend
+                                            </button>
+
+                                            <div x-show="open" x-cloak @click.outside="open = false"
+                                                 x-transition
+                                                 :style="'position:fixed; left:' + dropX + 'px; top:' + dropY + 'px;'"
+                                                 class="z-50 w-56 rounded-xl border border-line bg-surface p-3 text-left shadow-lg">
+                                                <p class="mb-2 text-[10px] font-bold text-content">Suspend duration</p>
+                                                <div class="mb-2 flex flex-wrap gap-1.5">
+                                                    @foreach ([1 => '1d', 3 => '3d', 7 => '7d', 30 => '30d'] as $days => $lbl)
+                                                        <button type="button" @click="duration = {{ $days }}"
+                                                                :class="duration === {{ $days }} ? 'bg-accent text-white' : 'border border-line bg-surface-muted text-muted hover:text-content'"
+                                                                class="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-colors">
+                                                            {{ $lbl }}
+                                                        </button>
+                                                    @endforeach
+                                                </div>
+                                                <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
+                                                <input type="text" x-model="reason" maxlength="200"
+                                                       placeholder="Brief reason…"
+                                                       class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
+                                                <div class="flex gap-1.5">
+                                                    <button @click="confirm()" :disabled="!duration || loading"
+                                                            class="flex-1 rounded-lg bg-amber-100 py-1 text-[10px] font-bold text-amber-700 transition-colors hover:bg-amber-200 disabled:opacity-40 dark:bg-amber-900/30 dark:text-amber-400">
+                                                        <span x-show="!loading">Confirm</span>
+                                                        <span x-show="loading">…</span>
+                                                    </button>
+                                                    <button @click="open = false"
+                                                            class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <button
                                         onclick="toggleUserStatus({{ $user->id }}, '{{ $user->status }}')"
                                         id="toggle-btn-{{ $user->id }}"

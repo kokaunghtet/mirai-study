@@ -40,6 +40,79 @@
 <script>
 const ADMIN_USERS_SKELETON = @json(view('admin.users._skeleton')->render());
 
+function suspendMenu(userId) {
+    return {
+        userId,
+        loading: false,
+        open: false,
+        duration: null,
+        reason: '',
+        dropX: 0,
+        dropY: 0,
+
+        toggle(event) {
+            if (this.open) {
+                this.open = false;
+                return;
+            }
+            const rect = event.currentTarget.getBoundingClientRect();
+            this.dropX = rect.right - 224; // w-56 = 224px
+            this.dropY = rect.bottom + 6;
+            this.open = true;
+        },
+
+        notify(message, type) {
+            const detail = { message, type };
+            window._snackbarComponent ? window._snackbarComponent.show(detail) : window._snackbarQueue.push(detail);
+        },
+
+        async confirm() {
+            if (this.loading || !this.duration) return;
+            this.loading = true;
+
+            try {
+                const res = await fetch(`/admin/users/${this.userId}/ban`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ type: 'temp', duration: this.duration, reason: this.reason }),
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    this.notify(err.message || 'Suspend failed (HTTP ' + res.status + ')', 'error');
+                    return;
+                }
+
+                const badge = document.getElementById('status-badge-' + this.userId);
+                if (badge) {
+                    badge.textContent = 'Suspended';
+                    badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+                }
+
+                const toggleBtn = document.getElementById('toggle-btn-' + this.userId);
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'Unban';
+                    toggleBtn.setAttribute('onclick', `toggleUserStatus(${this.userId}, 'suspended')`);
+                }
+
+                this.notify('User suspended for ' + this.duration + ' day' + (this.duration > 1 ? 's' : '') + '.', 'success');
+                this.open = false;
+                this.duration = null;
+                this.reason = '';
+            } catch (e) {
+                console.error('Failed to suspend user:', e);
+                this.notify('Network error. Try again.', 'error');
+            } finally {
+                this.loading = false;
+            }
+        },
+    };
+}
+
 function adminFilter() {
     return {
         _st: null,
