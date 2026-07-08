@@ -33,6 +33,10 @@ class SwitchAccountController extends Controller
      */
     public function store(LoginRequest $request, OtpService $otp): RedirectResponse
     {
+        if (! $this->accounts->canAdd($request)) {
+            return back()->withErrors(['login' => 'You can only add up to '.LinkedAccountService::MAX_ACCOUNTS.' accounts per session.']);
+        }
+
         $user = $request->authenticateCredentials();
 
         if ($user->isBanned()) {

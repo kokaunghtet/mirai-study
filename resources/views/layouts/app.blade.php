@@ -505,12 +505,14 @@
                                     </form>
                                 @endif
                             @endforeach
-                            <a href="{{ route('accounts.add') }}"
-                               @click="sidebarOpen = false; userMenu = false"
-                               class="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium text-accent hover:bg-surface-muted transition-colors">
-                                <i data-lucide="user-plus" class="h-4 w-4"></i>
-                                Add account
-                            </a>
+                            @if ($switchableAccounts->count() < \App\Services\LinkedAccountService::MAX_ACCOUNTS)
+                                <a href="{{ route('accounts.add') }}"
+                                   @click="sidebarOpen = false; userMenu = false"
+                                   class="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium text-accent hover:bg-surface-muted transition-colors">
+                                    <i data-lucide="user-plus" class="h-4 w-4"></i>
+                                    Add account
+                                </a>
+                            @endif
                         </div>
                         <hr class="my-1 border-line">
 

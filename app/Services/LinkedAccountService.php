@@ -14,6 +14,14 @@ class LinkedAccountService
 {
     protected const SESSION_KEY = 'linked_accounts';
 
+    public const int MAX_ACCOUNTS = 2;
+
+    /** Whether another account can be added to this session. */
+    public function canAdd(Request $request): bool
+    {
+        return count($request->session()->get(self::SESSION_KEY, [])) < self::MAX_ACCOUNTS;
+    }
+
     /** Remember a user as switchable in this session, most-recent first. */
     public function remember(Request $request, User $user): void
     {
