@@ -615,6 +615,12 @@
         @include('components.auth-modal')
     @endguest
 
+    {{-- Floating focus pill — live session survives navigation; the timer
+         page renders its own full UI instead --}}
+    @unless (request()->routeIs('timer.*'))
+        @include('layouts._focus-pill')
+    @endunless
+
     {{-- Mobile Bottom Navigation --}}
     <x-mobile-bottom-nav />
 

@@ -273,8 +273,9 @@
             </div>
         </div>
 
-        {{-- Ambient sound is synthesised in-browser via the Web Audio API (see pomodoroTimer);
-             no audio files are shipped or fetched. --}}
+        {{-- Ambient sound is synthesised in-browser via the Web Audio API
+             (shared AmbientSound engine in resources/js/ambient-sound.js,
+             also used by the floating focus pill). --}}
     </div>
 
     @push('scripts')
@@ -296,6 +297,8 @@
                     totalSeconds: 25 * 60,
                     currentSession: 0,         // completed focus sessions in the current cycle
                     intervalId: null,
+                    endsAt: null,              // epoch-ms deadline while running — survives
+                                               // background-tab throttling and page navigations
                     sessionStartedAt: null,
                     transitionMessage: '',
                     circumference: 2 * Math.PI * 100,
@@ -304,6 +307,7 @@
                     todaySessions: {{ (int) ($todaySessions ?? 0) }},
                     todayFocusMinutes: {{ (int) ($todayFocusTime ?? 0) }},
                     isAuthenticated: {{ auth()->check() ? 'true' : 'false' }},
+                    uid: {{ auth()->id() ?? 0 }},
 
                     // ── Sound ──
                     activeSound: 'silent',
@@ -321,17 +325,50 @@
                     // ── Internal ──
                     csrf: '',
                     _settingsTimer: null,
-                    _actx: null,          // shared AudioContext (ambient + chime)
-                    _masterGain: null,    // volume node for ambient sound
-                    _ambientNodes: [],    // live Web Audio nodes for the active sound
-                    _noiseBuf: null,      // cached brown-noise buffer
-                    _mp3Buf: null,        // cached decoded buffer for quietplease.m4a
 
                     // ── Lifecycle ──
                     init() {
+                        this.csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+                        // Restore a session that survived a page navigation
+                        // (see FocusSession in app.js). A session started by
+                        // a different account is discarded.
+                        const stored = window.FocusSession.read();
+                        if (stored && Number(stored.uid || 0) !== this.uid) window.FocusSession.clear();
+                        const restored = stored ? window.FocusSession.sync() : null;
+                        if (restored) {
+                            this.restoreSession(restored);
+                            return;
+                        }
+
                         this.totalSeconds = this.focusMinutes * 60;
                         this.remainingSeconds = this.totalSeconds;
-                        this.csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                    },
+                    restoreSession(s) {
+                        // The stored snapshot wins over server-rendered settings
+                        // so mid-phase math stays consistent with the anchor.
+                        this.focusMinutes = s.focusMinutes;
+                        this.shortBreakMinutes = s.shortBreakMinutes;
+                        this.longBreakMinutes = s.longBreakMinutes;
+                        this.sessionsBeforeLongBreak = s.sessionsBeforeLongBreak;
+                        this.activeSound = s.activeSound;
+                        this.volume = s.volume;
+                        this.phase = s.live.phase;
+                        this.currentSession = s.live.currentSession;
+                        this.totalSeconds = s.live.totalSeconds;
+                        this.remainingSeconds = s.live.remainingSeconds;
+                        const started = s.live.sessionStartedAt ?? s.sessionStartedAt;
+                        this.sessionStartedAt = started ? new Date(started) : null;
+                        if (s.isRunning) {
+                            this.isRunning = true;
+                            this.endsAt = s.live.endsAt;
+                            this.startTimer();
+                            // Sound stays muted on return, even mid-session —
+                            // only an explicit tap (clicking the active sound
+                            // in the list) resumes it.
+                        } else {
+                            this.isPaused = true;
+                        }
                     },
                     destroy() {
                         clearInterval(this.intervalId);
@@ -393,6 +430,30 @@
                         return 'bg-transparent border-2 border-accent/40';
                     },
 
+                    // ── Session persistence (survives page navigations) ──
+                    persistState(over = {}) {
+                        const s = {
+                            uid: this.uid,
+                            auth: this.isAuthenticated,
+                            phase: this.phase,
+                            isRunning: this.isRunning,
+                            endsAt: this.endsAt,
+                            remainingSeconds: this.remainingSeconds,
+                            totalSeconds: this.totalSeconds,
+                            currentSession: this.currentSession,
+                            sessionStartedAt: this.sessionStartedAt ? this.sessionStartedAt.getTime() : null,
+                            focusMinutes: this.focusMinutes,
+                            shortBreakMinutes: this.shortBreakMinutes,
+                            longBreakMinutes: this.longBreakMinutes,
+                            sessionsBeforeLongBreak: this.sessionsBeforeLongBreak,
+                            activeSound: this.activeSound,
+                            volume: this.volume,
+                            ...over,
+                        };
+                        if (s.phase === 'ready') { window.FocusSession.clear(); return; }
+                        window.FocusSession.write(s);
+                    },
+
                     // ── Timer actions ──
                     toggle() {
                         if (this.transitionMessage) return;
@@ -409,28 +470,35 @@
                             : this.longBreakMinutes;
                         this.totalSeconds = mins * 60;
                         this.remainingSeconds = this.totalSeconds;
+                        this.endsAt = Date.now() + this.totalSeconds * 1000;
                         if (phase === 'focus') this.sessionStartedAt = new Date();
                         this.startTimer();
                         this.playAmbient();
+                        this.persistState();
                     },
                     resume() {
                         this.isPaused = false;
                         this.isRunning = true;
+                        this.endsAt = Date.now() + this.remainingSeconds * 1000;
                         this.startTimer();
                         this.playAmbient();
+                        this.persistState();
                     },
                     pause() {
                         this.isRunning = false;
                         this.isPaused = true;
                         clearInterval(this.intervalId);
                         this.pauseAmbient();
+                        this.persistState();
                     },
                     startTimer() {
                         clearInterval(this.intervalId);
                         this.intervalId = setInterval(() => this.tick(), 1000);
                     },
                     tick() {
-                        if (this.remainingSeconds > 0) this.remainingSeconds--;
+                        // Derive from the deadline, not a decrement — immune to
+                        // background-tab interval throttling.
+                        this.remainingSeconds = Math.max(0, Math.ceil((this.endsAt - Date.now()) / 1000));
                         if (this.remainingSeconds <= 0) this.handleComplete();
                     },
                     handleComplete() {
@@ -451,6 +519,26 @@
                             next = 'ready';
                             msg = 'Great work!';
                             this.currentSession = 0;
+                        }
+
+                        // Advance the stored anchor now — the 2s transition pause
+                        // is cosmetic, and navigating away mid-transition (or the
+                        // pill syncing in parallel) must see the next phase, not a
+                        // stale expired one (which would double-post the session).
+                        if (next === 'ready') {
+                            window.FocusSession.clear();
+                        } else {
+                            const mins = next === 'focus' ? this.focusMinutes
+                                : next === 'short_break' ? this.shortBreakMinutes
+                                : this.longBreakMinutes;
+                            this.persistState({
+                                phase: next,
+                                isRunning: true,
+                                endsAt: Date.now() + mins * 60000,
+                                totalSeconds: mins * 60,
+                                remainingSeconds: mins * 60,
+                                sessionStartedAt: next === 'focus' ? Date.now() : null,
+                            });
                         }
 
                         this.transitionMessage = msg;
@@ -478,15 +566,21 @@
                     },
                     reset() {
                         this.remainingSeconds = this.totalSeconds;
-                        if (this.isRunning) this.startTimer();
+                        if (this.isRunning) {
+                            this.endsAt = Date.now() + this.totalSeconds * 1000;
+                            this.startTimer();
+                        }
+                        if (this.phase !== 'ready') this.persistState();
                     },
                     goReady() {
                         this.phase = 'ready';
                         this.isRunning = false;
                         this.isPaused = false;
+                        this.endsAt = null;
                         this.totalSeconds = this.focusMinutes * 60;
                         this.remainingSeconds = this.totalSeconds;
                         this.stopAllAudio();
+                        window.FocusSession.clear();
                     },
 
                     // ── Server sync (auth only) ──
@@ -539,6 +633,10 @@
 
                         clearTimeout(this._settingsTimer);
                         this._settingsTimer = setTimeout(() => this.persistSettings(), 500);
+
+                        // Keep the stored session's settings snapshot current so
+                        // the pill and a later restore use the same durations.
+                        if (this.phase !== 'ready') this.persistState();
                     },
                     persistSettings() {
                         if (!this.isAuthenticated) return;
@@ -564,252 +662,30 @@
                         return Math.min(max, Math.max(min, Math.round(v)));
                     },
 
-                    // ── Sound (synthesised in-browser via Web Audio — no files) ──
-                    ensureAudio() {
-                        const Ctx = window.AudioContext || window.webkitAudioContext;
-                        if (!Ctx) return null;
-                        if (!this._actx) this._actx = new Ctx();
-                        if (this._actx.state === 'suspended') this._actx.resume();
-                        if (!this._masterGain) {
-                            this._masterGain = this._actx.createGain();
-                            this._masterGain.gain.value = this.volume / 100;
-                            this._masterGain.connect(this._actx.destination);
-                        }
-                        return this._actx;
-                    },
-                    noiseBuffer(ctx) {
-                        if (this._noiseBuf) return this._noiseBuf;
-                        const len = ctx.sampleRate * 2;            // 2s loop
-                        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                        const data = buf.getChannelData(0);
-                        let last = 0;                              // brown noise (integrated white)
-                        for (let i = 0; i < len; i++) {
-                            const white = Math.random() * 2 - 1;
-                            last = (last + 0.02 * white) / 1.02;
-                            data[i] = last * 3.5;
-                        }
-                        this._noiseBuf = buf;
-                        return buf;
-                    },
-                    startAmbient(name) {
-                        const ctx = this.ensureAudio();
-                        if (!ctx) return;
-                        this.stopAmbient();
-                        const master = this._masterGain;
-                        const nodes = [];
-
-                        if (name === 'quietplease') {
-                            const loadAndPlay = async () => {
-                                if (!this._mp3Buf) {
-                                    const res = await fetch('{{ asset('sound/quietplease.m4a') }}');
-                                    const ab = await res.arrayBuffer();
-                                    this._mp3Buf = await ctx.decodeAudioData(ab);
-                                }
-                                if (this.activeSound !== 'quietplease') return;
-                                const src = ctx.createBufferSource();
-                                src.buffer = this._mp3Buf;
-                                src.loop = true;
-                                const g = ctx.createGain();
-                                g.gain.value = 0.8;
-                                src.connect(g); g.connect(master);
-                                this._ambientNodes = [src, g];
-                                src.start();
-                            };
-                            loadAndPlay();
-                            return;
-                        } else if (name === 'ocean') {
-                            // Slow deep swell: dark lowpass, gentle LFO, low gain
-                            const src = ctx.createBufferSource();
-                            src.buffer = this.noiseBuffer(ctx);
-                            src.loop = true;
-                            const lp = ctx.createBiquadFilter();
-                            lp.type = 'lowpass';
-                            lp.frequency.value = 500;
-                            const lp2 = ctx.createBiquadFilter();
-                            lp2.type = 'lowpass';
-                            lp2.frequency.value = 500;
-                            const lfo = ctx.createOscillator();
-                            lfo.type = 'sine';
-                            lfo.frequency.value = 0.07;
-                            const lfoGain = ctx.createGain();
-                            lfoGain.gain.value = 0.12;
-                            const g = ctx.createGain();
-                            g.gain.value = 0.35;
-                            lfo.connect(lfoGain);
-                            lfoGain.connect(g.gain);
-                            src.connect(lp); lp.connect(lp2); lp2.connect(g); g.connect(master);
-                            lfo.start(); src.start();
-                            nodes.push(src, lp, lp2, lfo, lfoGain, g);
-                        } else if (name === 'forest') {
-                            const g = ctx.createGain();
-                            g.gain.value = 0.5;
-                            g.connect(master);
-                            nodes.push(g);
-                            const chirp = () => {
-                                if (!this._forestInterval) return;
-                                const osc = ctx.createOscillator();
-                                const cg = ctx.createGain();
-                                osc.type = 'sine';
-                                const base = 2000 + Math.random() * 3000;
-                                osc.frequency.setValueAtTime(base, ctx.currentTime);
-                                osc.frequency.linearRampToValueAtTime(base + 800 * (Math.random() > 0.5 ? 1 : -1), ctx.currentTime + 0.08);
-                                cg.gain.setValueAtTime(0.0001, ctx.currentTime);
-                                cg.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
-                                cg.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
-                                osc.connect(cg); cg.connect(g);
-                                osc.start(); osc.stop(ctx.currentTime + 0.2);
-                            };
-                            this._forestInterval = setInterval(chirp, 300 + Math.random() * 600);
-                            chirp();
-                            const src = ctx.createBufferSource();
-                            src.buffer = this.noiseBuffer(ctx);
-                            src.loop = true;
-                            const lp = ctx.createBiquadFilter();
-                            lp.type = 'lowpass';
-                            lp.frequency.value = 400;
-                            const bg = ctx.createGain();
-                            bg.gain.value = 0.15;
-                            src.connect(lp); lp.connect(bg); bg.connect(g);
-                            src.start();
-                            nodes.push(src, lp, bg);
-                        } else if (name === 'binaural') {
-                            const g = ctx.createGain();
-                            g.gain.value = 0.22;
-                            g.connect(master);
-                            nodes.push(g);
-                            [[200, -1], [207, 1]].forEach(([freq, pan]) => {
-                                const osc = ctx.createOscillator();
-                                osc.type = 'sine';
-                                osc.frequency.value = freq;
-                                if (ctx.createStereoPanner) {
-                                    const panner = ctx.createStereoPanner();
-                                    panner.pan.value = pan;
-                                    osc.connect(panner); panner.connect(g);
-                                    nodes.push(panner);
-                                } else {
-                                    osc.connect(g);
-                                }
-                                osc.start();
-                                nodes.push(osc);
-                            });
-                        } else if (name === 'lofi') {
-                            const g = ctx.createGain();
-                            g.gain.value = 0.35;
-                            g.connect(master);
-                            nodes.push(g);
-                            [261.63, 329.63, 392.00].forEach((freq) => {
-                                const osc = ctx.createOscillator();
-                                osc.type = 'sine';
-                                osc.frequency.value = freq;
-                                const og = ctx.createGain();
-                                og.gain.value = 0.18;
-                                osc.connect(og); og.connect(g);
-                                osc.start();
-                                nodes.push(osc, og);
-                            });
-                            const src = ctx.createBufferSource();
-                            src.buffer = this.noiseBuffer(ctx);
-                            src.loop = true;
-                            const hp = ctx.createBiquadFilter();
-                            hp.type = 'highpass';
-                            hp.frequency.value = 5000;
-                            const crackle = ctx.createGain();
-                            crackle.gain.value = 0.06;
-                            src.connect(hp); hp.connect(crackle); crackle.connect(g);
-                            src.start();
-                            nodes.push(src, hp, crackle);
-                            const lfo = ctx.createOscillator();
-                            lfo.type = 'sine';
-                            lfo.frequency.value = 0.5;
-                            const lfoG = ctx.createGain();
-                            lfoG.gain.value = 0.03;
-                            lfo.connect(lfoG); lfoG.connect(g.gain);
-                            lfo.start();
-                            nodes.push(lfo, lfoG);
-                        } else if (name === 'piano') {
-                            const g = ctx.createGain();
-                            g.gain.value = 0.3;
-                            g.connect(master);
-                            nodes.push(g);
-                            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
-                            let idx = 0;
-                            const playNote = () => {
-                                if (!this._pianoInterval) return;
-                                const freq = notes[idx % notes.length];
-                                idx++;
-                                const osc = ctx.createOscillator();
-                                osc.type = 'triangle';
-                                osc.frequency.value = freq;
-                                const ng = ctx.createGain();
-                                const now = ctx.currentTime;
-                                ng.gain.setValueAtTime(0.0001, now);
-                                ng.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
-                                ng.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
-                                osc.connect(ng); ng.connect(g);
-                                osc.start(now); osc.stop(now + 2.6);
-                                const osc2 = ctx.createOscillator();
-                                osc2.type = 'sine';
-                                osc2.frequency.value = freq * 2;
-                                const ng2 = ctx.createGain();
-                                ng2.gain.setValueAtTime(0.0001, now);
-                                ng2.gain.exponentialRampToValueAtTime(0.06, now + 0.01);
-                                ng2.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
-                                osc2.connect(ng2); ng2.connect(g);
-                                osc2.start(now); osc2.stop(now + 1.3);
-                            };
-                            this._pianoInterval = setInterval(playNote, 1800 + Math.random() * 1200);
-                            playNote();
-                        }
-                        this._ambientNodes = nodes;
-                    },
-                    stopAmbient() {
-                        clearInterval(this._forestInterval);
-                        clearInterval(this._pianoInterval);
-                        this._forestInterval = null;
-                        this._pianoInterval = null;
-                        (this._ambientNodes || []).forEach((n) => {
-                            try { if (n.stop) n.stop(); } catch (e) { /* already stopped */ }
-                            try { n.disconnect(); } catch (e) { /* ignore */ }
-                        });
-                        this._ambientNodes = [];
-                    },
+                    // ── Sound (delegates to the shared AmbientSound engine in
+                    //    resources/js/ambient-sound.js, also used by the pill) ──
                     setSound(name) {
-                        this.stopAmbient();
                         this.activeSound = name;
-                        if (name !== 'silent' && this.isRunning) this.startAmbient(name);
+                        if (name === 'silent' || !this.isRunning) window.AmbientSound.stop();
+                        else window.AmbientSound.start(name, this.volume);
+                        if (this.phase !== 'ready') this.persistState();
                     },
                     setVolume(value) {
                         this.volume = value;
-                        if (this._masterGain) this._masterGain.gain.value = value / 100;
+                        window.AmbientSound.setVolume(value);
+                        if (this.phase !== 'ready') this.persistState();
                     },
                     playAmbient() {
-                        if (this.activeSound !== 'silent') this.startAmbient(this.activeSound);
+                        if (this.activeSound !== 'silent') window.AmbientSound.start(this.activeSound, this.volume);
                     },
                     pauseAmbient() {
-                        this.stopAmbient();
+                        window.AmbientSound.stop();
                     },
                     stopAllAudio() {
-                        this.stopAmbient();
+                        window.AmbientSound.stop();
                     },
                     playChime() {
-                        const ctx = this.ensureAudio();
-                        if (!ctx) return;
-                        try {
-                            const now = ctx.currentTime;
-                            [880, 1320].forEach((freq, i) => {
-                                const osc = ctx.createOscillator();
-                                const gain = ctx.createGain();
-                                osc.type = 'sine';
-                                osc.frequency.value = freq;
-                                const t = now + i * 0.18;
-                                gain.gain.setValueAtTime(0.0001, t);
-                                gain.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
-                                gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-                                osc.connect(gain).connect(ctx.destination);
-                                osc.start(t);
-                                osc.stop(t + 0.4);
-                            });
-                        } catch (e) { /* ignore */ }
+                        window.AmbientSound.playChime();
                     },
                 };
             }

@@ -12,6 +12,8 @@ if (import.meta.env.VITE_PUSHER_APP_KEY) {
     });
 }
 import collapse from "@alpinejs/collapse";
+import AmbientSound from "./ambient-sound";
+window.AmbientSound = AmbientSound;
 import {
     createIcons,
     // Layout
@@ -55,6 +57,7 @@ import {
     Pause,
     SkipForward,
     Volume2,
+    VolumeX,
     ChevronDown,
     Lock,
     AudioLines,
@@ -165,6 +168,7 @@ const icons = {
     Pause,
     SkipForward,
     Volume2,
+    VolumeX,
     ChevronDown,
     Lock,
     AudioLines,
@@ -1551,6 +1555,349 @@ Alpine.data("notificationBell", (opts = {}) => ({
         }
     },
 }));
+
+// ── Focus session persistence ──
+// The pomodoro timer lives on a server-rendered page, so navigating to Quiz
+// or Exams destroys its JS state. The running session is anchored in
+// localStorage as timestamps (endsAt, not a countdown), letting any page
+// re-derive the live phase. The floating pill (focusPill below) renders it
+// on every page except the timer itself.
+const FOCUS_SESSION_KEY = "focusSession";
+const FOCUS_SESSION_URL = "/timer/sessions"; // route('timer.store')
+
+window.FocusSession = {
+    read() {
+        try {
+            const raw = localStorage.getItem(FOCUS_SESSION_KEY);
+            if (!raw) return null;
+            const s = JSON.parse(raw);
+            if (!s || s.v !== 1 || !s.phase || s.phase === "ready") return null;
+            return s;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    write(state) {
+        try {
+            localStorage.setItem(
+                FOCUS_SESSION_KEY,
+                JSON.stringify({ ...state, v: 1, updatedAt: Date.now() }),
+            );
+        } catch (e) { /* storage unavailable — session just won't survive nav */ }
+    },
+
+    clear() {
+        try { localStorage.removeItem(FOCUS_SESSION_KEY); } catch (e) { /* ignore */ }
+    },
+
+    active() {
+        return !!this.read();
+    },
+
+    // Pure fast-forward: walk the pomodoro sequence from the stored anchor
+    // to `now`. Returns the live phase plus any focus sessions that finished
+    // while no timer page was open. Never touches storage.
+    project(state, now = Date.now()) {
+        if (!state.isRunning) {
+            return {
+                finished: false,
+                phase: state.phase,
+                endsAt: null,
+                remainingSeconds: state.remainingSeconds,
+                totalSeconds: state.totalSeconds,
+                currentSession: state.currentSession,
+                sessionStartedAt: state.sessionStartedAt ?? null,
+                completions: [],
+            };
+        }
+        let phase = state.phase;
+        let endsAt = state.endsAt;
+        let session = state.currentSession;
+        let totalSeconds = state.totalSeconds;
+        let phaseStart = endsAt - totalSeconds * 1000;
+        const completions = [];
+        let guard = 0;
+        while (now >= endsAt) {
+            if (++guard > 200) return { finished: true, completions, currentSession: 0 };
+            if (phase === "focus") {
+                session += 1;
+                completions.push({ startedAt: phaseStart, endedAt: endsAt, minutes: state.focusMinutes });
+                phase = session >= state.sessionsBeforeLongBreak ? "long_break" : "short_break";
+            } else if (phase === "short_break") {
+                phase = "focus";
+            } else {
+                // long break over — cycle complete, session ends
+                return { finished: true, completions, currentSession: 0 };
+            }
+            const mins = phase === "focus" ? state.focusMinutes
+                : phase === "short_break" ? state.shortBreakMinutes
+                : state.longBreakMinutes;
+            phaseStart = endsAt;
+            totalSeconds = mins * 60;
+            endsAt = phaseStart + totalSeconds * 1000;
+        }
+        return {
+            finished: false,
+            phase,
+            endsAt,
+            remainingSeconds: Math.max(0, Math.ceil((endsAt - now) / 1000)),
+            totalSeconds,
+            currentSession: session,
+            sessionStartedAt: phase === "focus" ? phaseStart : (state.sessionStartedAt ?? null),
+            completions,
+        };
+    },
+
+    // Advance the stored anchor to the projected state and report any focus
+    // sessions completed while away. The anchor is rewritten before posting
+    // so a second open tab can't re-post the same completions.
+    sync() {
+        const state = this.read();
+        if (!state) return null;
+        const live = this.project(state);
+        if (live.finished) {
+            this.clear();
+            this._postCompleted(state, live.completions);
+            return null;
+        }
+        if (live.completions.length) {
+            this.write({
+                ...state,
+                phase: live.phase,
+                endsAt: live.endsAt,
+                remainingSeconds: live.remainingSeconds,
+                totalSeconds: live.totalSeconds,
+                currentSession: live.currentSession,
+                sessionStartedAt: live.sessionStartedAt,
+            });
+            this._postCompleted(state, live.completions);
+        }
+        return { ...this.read(), live };
+    },
+
+    // End the session deliberately (user confirmed leaving to the Feed).
+    // Settles overdue completions, credits a partial focus session, clears.
+    end() {
+        const state = this.read();
+        if (!state) return;
+        const live = this.project(state);
+        this._postCompleted(state, live.completions);
+        if (!live.finished && live.phase === "focus" && state.isRunning) {
+            const startedAt = live.sessionStartedAt ?? Date.now();
+            this._post(state, {
+                planned_duration: state.focusMinutes,
+                actual_duration: Math.max(0, Math.round((Date.now() - startedAt) / 60000)),
+                completed: false,
+                started_at: new Date(startedAt).toISOString(),
+                ended_at: new Date().toISOString(),
+            });
+        }
+        this.clear();
+    },
+
+    _postCompleted(state, completions) {
+        (completions || []).forEach((c) => {
+            this._post(state, {
+                planned_duration: c.minutes,
+                actual_duration: c.minutes,
+                completed: true,
+                started_at: new Date(c.startedAt).toISOString(),
+                ended_at: new Date(c.endedAt).toISOString(),
+            });
+        });
+    },
+
+    _post(state, payload) {
+        if (!state.auth) return;
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+        fetch(FOCUS_SESSION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": csrf,
+            },
+            body: JSON.stringify(payload),
+            keepalive: true, // survives an immediately-following navigation
+        }).catch(() => {});
+    },
+};
+
+// ── Floating focus pill (bottom-right, every page except the timer) ──
+Alpine.data("focusPill", () => ({
+    state: null,
+    live: null,
+    now: Date.now(),
+    _interval: null,
+    _onStorage: null,
+
+    init() {
+        // A stored session belongs to whoever started it — don't show or
+        // post it under a different account (or after logout).
+        const uid = Number(this.$root.dataset.uid || 0);
+        const stored = window.FocusSession.read();
+        if (stored && Number(stored.uid || 0) !== uid) window.FocusSession.clear();
+
+        this.refresh();
+
+        // Sound stays muted on every (re)load, including returning from
+        // another tab — never auto-start. Resume is only via toggleSound(),
+        // an explicit tap on the pill's speaker icon.
+
+        this._interval = setInterval(() => this.refresh(), 1000);
+        this._onStorage = (e) => {
+            if (e.key === FOCUS_SESSION_KEY) this.refresh();
+        };
+        window.addEventListener("storage", this._onStorage);
+    },
+
+    destroy() {
+        clearInterval(this._interval);
+        window.removeEventListener("storage", this._onStorage);
+    },
+
+    refresh() {
+        const s = window.FocusSession.sync();
+        if (!s) {
+            if (this.state) window.AmbientSound.stop();
+            this.state = null;
+            this.live = null;
+            return;
+        }
+        this.state = s;
+        this.live = s.live;
+        this.now = Date.now();
+        // Paused (possibly from another tab) — no sound.
+        if (!s.isRunning || s.activeSound === "silent") window.AmbientSound.stop();
+    },
+
+    get visible() { return !!this.state; },
+    get running() { return !!this.state?.isRunning; },
+    get displayTime() {
+        const s = Math.max(0, this.live?.remainingSeconds ?? 0);
+        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    },
+    get phaseLabel() {
+        if (!this.state) return "";
+        if (!this.state.isRunning) return "Paused";
+        switch (this.live?.phase) {
+            case "focus":       return "Focus";
+            case "short_break": return "Short break";
+            case "long_break":  return "Long break";
+            default:            return "";
+        }
+    },
+    get hasSound() {
+        return this.running && this.state.activeSound !== "silent";
+    },
+    get audible() {
+        void this.now; // re-evaluated each tick; AmbientSound isn't reactive
+        return window.AmbientSound.isAudible();
+    },
+
+    toggleSound() {
+        if (window.AmbientSound.isAudible()) {
+            window.AmbientSound.stop();
+        } else if (this.hasSound) {
+            window.AmbientSound.start(this.state.activeSound, this.state.volume);
+        }
+        this.now = Date.now();
+    },
+}));
+
+// ── Focus-session navigation whitelist ──
+// While a session is active, only Focus, Exams, and Quiz are reachable
+// without confirmation — every other internal destination (Feed, New Post,
+// Notifications, Bookmarks, Settings, Profile, admin, …) prompts first.
+// Path-based rather than per-link tagging, so new nav entries are covered
+// automatically instead of needing an attribute added by hand.
+const FOCUS_ALLOWED_PATH_PREFIXES = ["/timer", "/exams", "/quiz"];
+
+function focusPathAllowed(pathname) {
+    return FOCUS_ALLOWED_PATH_PREFIXES.some(
+        (p) => pathname === p || pathname.startsWith(p + "/"),
+    );
+}
+
+async function confirmEndFocusSession() {
+    return window.confirmDialog({
+        title: "End focus session?",
+        message: "Leaving Focus, Exams, or Quiz will end your current focus session and stop the sound.",
+        confirmLabel: "End session",
+        danger: true,
+    });
+}
+
+document.addEventListener(
+    "click",
+    async (e) => {
+        const anchor = e.target.closest("a[href]");
+        if (!anchor) return;
+        if (anchor.hasAttribute("download")) return;
+        // Modifier/middle clicks open a new tab — the session continues there.
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (!window.FocusSession.active()) return;
+
+        const href = anchor.getAttribute("href");
+        if (!href) return;
+        let url;
+        try {
+            url = new URL(href, window.location.origin);
+        } catch {
+            return;
+        }
+        // External links are handled by the dedicated leaving-the-site dialog above.
+        if (url.origin !== window.location.origin) return;
+        if (focusPathAllowed(url.pathname)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const confirmed = await confirmEndFocusSession();
+        if (!confirmed) return;
+
+        window.FocusSession.end();
+        window.AmbientSound.stop();
+        window.location.href = href;
+    },
+    true,
+);
+
+// Same guard for GET forms that navigate away (mobile top-bar search → Feed).
+document.addEventListener(
+    "submit",
+    async (e) => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (form.dataset.focusConfirmed) {
+            delete form.dataset.focusConfirmed;
+            return;
+        }
+        if ((form.method || "get").toLowerCase() !== "get") return;
+        if (!window.FocusSession.active()) return;
+
+        let url;
+        try {
+            url = new URL(form.action, window.location.origin);
+        } catch {
+            return;
+        }
+        if (focusPathAllowed(url.pathname)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const confirmed = await confirmEndFocusSession();
+        if (!confirmed) return;
+
+        window.FocusSession.end();
+        window.AmbientSound.stop();
+        form.dataset.focusConfirmed = "1";
+        form.requestSubmit();
+    },
+    true,
+);
 
 document.addEventListener("alpine:initialized", () => {
     createIcons({ icons });
