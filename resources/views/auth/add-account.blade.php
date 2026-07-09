@@ -21,8 +21,15 @@
                 <x-input-error :messages="$errors->get('login')" class="mt-1.5 px-0.5" />
 
                 <label class="mb-1.5 mt-4 block pl-0.5 text-[11px] font-semibold text-content/80">Password</label>
-                <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
-                       class="w-full rounded-xl border border-line bg-surface py-2 px-4 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                <div class="relative" x-data="{ show: false }">
+                    <input :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password" placeholder="••••••••"
+                           class="w-full rounded-xl border border-line bg-surface py-2 px-4 pr-10 text-sm text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+                    <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-3 flex items-center text-muted hover:text-content transition-colors">
+                        <i x-show="!show" data-lucide="eye" class="w-4 h-4"></i>
+                        <i x-show="show" data-lucide="eye-off" class="w-4 h-4"></i>
+                    </button>
+                </div>
                 <x-input-error :messages="$errors->get('login_password')" class="mt-1.5 px-0.5" />
 
                 <button type="submit" data-loading-text="Signing in…"
