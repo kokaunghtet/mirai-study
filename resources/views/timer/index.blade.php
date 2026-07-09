@@ -185,9 +185,9 @@
                     {{-- Suspended users can't persist settings (not-banned middleware blocks
                          the PATCH), so dim + disable the inputs and point them at the appeal. --}}
                     <div class="relative">
-                        <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3 {{ $suspended ? 'opacity-50 select-none pointer-events-none' : '' }}">
-                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Focus</span>
+                        <div class="px-4 py-3 grid grid-cols-1 lg:grid-cols-5 gap-3 {{ $suspended ? 'opacity-50 select-none pointer-events-none' : '' }}">
+                            <label class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Focus</span>
                                 <span class="flex items-center gap-1.5">
                                     <input type="number" min="1" max="120" @disabled($suspended)
                                            x-model.number="focusMinutes" @input="onSettingChange()"
@@ -195,8 +195,8 @@
                                     <span class="text-xs text-muted w-6">min</span>
                                 </span>
                             </label>
-                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Short break</span>
+                            <label class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Short break</span>
                                 <span class="flex items-center gap-1.5">
                                     <input type="number" min="1" max="60" @disabled($suspended)
                                            x-model.number="shortBreakMinutes" @input="onSettingChange()"
@@ -204,8 +204,8 @@
                                     <span class="text-xs text-muted w-6">min</span>
                                 </span>
                             </label>
-                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Long break</span>
+                            <label class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Long break</span>
                                 <span class="flex items-center gap-1.5">
                                     <input type="number" min="1" max="120" @disabled($suspended)
                                            x-model.number="longBreakMinutes" @input="onSettingChange()"
@@ -213,8 +213,8 @@
                                     <span class="text-xs text-muted w-6">min</span>
                                 </span>
                             </label>
-                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Sessions / cycle</span>
+                            <label class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Sessions / cycle</span>
                                 <span class="flex items-center gap-1.5">
                                     <input type="number" min="1" max="10" @disabled($suspended)
                                            x-model.number="sessionsBeforeLongBreak" @input="onSettingChange()"
@@ -222,8 +222,8 @@
                                     <span class="w-6" aria-hidden="true"></span>
                                 </span>
                             </label>
-                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>
+                            <label class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Daily goal</span>
                                 <span class="flex items-center gap-1.5">
                                     <input type="number" min="1" max="24" @disabled($suspended)
                                            x-model.number="dailyGoalSessions" @input="onSettingChange()"
@@ -246,18 +246,41 @@
                 @else
                     {{-- Guests: static values + lock --}}
                     <div class="relative">
-                        <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3 opacity-50 select-none pointer-events-none">
-                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Focus</span>                                <span class="text-muted">25 min</span>
+                        <div class="px-4 py-3 grid grid-cols-1 lg:grid-cols-5 gap-3 opacity-50 select-none pointer-events-none">
+                            <div class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Focus</span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-16 text-right text-sm text-muted">25</span>
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
                             </div>
-                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Short break</span>                                <span class="text-muted">5 min</span>
+                            <div class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Short break</span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-16 text-right text-sm text-muted">5</span>
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
                             </div>
-                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Long break</span>                                <span class="text-muted">15 min</span>
+                            <div class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Long break</span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-16 text-right text-sm text-muted">15</span>
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
                             </div>
-                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                                <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>                                <span class="text-muted">8 sessions</span>
+                            <div class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Sessions / cycle</span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-16 text-right text-sm text-muted">4</span>
+                                    <span class="w-6" aria-hidden="true"></span>
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 lg:py-0 text-sm lg:flex-col lg:items-start lg:justify-start lg:gap-1.5">
+                                <span class="text-content lg:text-muted lg:text-xs">Daily goal</span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-16 text-right text-sm text-muted">8</span>
+                                    <span class="w-6" aria-hidden="true"></span>
+                                </span>
                             </div>
                         </div>
                         <div class="absolute inset-0 grid place-items-center bg-surface/40">
