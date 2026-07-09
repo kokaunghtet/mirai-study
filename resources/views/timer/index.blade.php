@@ -565,6 +565,10 @@
                         }
                     },
                     reset() {
+                        const mins = this.phase === 'focus' ? this.focusMinutes
+                            : this.phase === 'short_break' ? this.shortBreakMinutes
+                            : this.longBreakMinutes;
+                        this.totalSeconds = mins * 60;
                         this.remainingSeconds = this.totalSeconds;
                         if (this.isRunning) {
                             this.endsAt = Date.now() + this.totalSeconds * 1000;
