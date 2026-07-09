@@ -105,8 +105,10 @@
                             <i data-lucide="volume-2" class="w-4 h-4 text-muted"></i>
                             Sounds
                         </span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
-                           :class="open ? 'rotate-180' : ''"></i>
+                        <span class="inline-flex w-4 h-4 transition-transform lg:hidden"
+                              :class="open ? 'rotate-180' : ''">
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted"></i>
+                        </span>
                     </button>
 
                     <div x-show="open" class="lg:!block p-2">
@@ -138,8 +140,10 @@
                         <button type="button" @click="open = !open"
                                 class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                             <span>Today</span>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
-                               :class="open ? 'rotate-180' : ''"></i>
+                            <span class="inline-flex w-4 h-4 transition-transform lg:hidden"
+                                  :class="open ? 'rotate-180' : ''">
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-muted"></i>
+                            </span>
                         </button>
                         <div x-show="open" class="lg:!flex flex flex-col gap-3 p-3 lg:flex-1">
                             <div class="p-4 rounded-lg bg-surface-muted flex flex-col justify-center gap-1.5 lg:flex-1">
@@ -167,8 +171,10 @@
                     <i data-lucide="settings" class="w-4 h-4 text-muted"></i>
                     Settings
                 </span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
-                   :class="open ? 'rotate-180' : ''"></i>
+                <span class="inline-flex w-4 h-4 transition-transform lg:hidden"
+                      :class="open ? 'rotate-180' : ''">
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-muted"></i>
+                </span>
             </button>
 
             <div x-show="open" x-collapse.duration.300ms>
