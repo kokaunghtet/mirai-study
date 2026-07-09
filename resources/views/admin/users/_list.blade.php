@@ -172,7 +172,8 @@
                                         </div>
                                         <div x-data="{ loading: false, done: {{ $user->status === 'suspended' ? 'false' : 'true'}}, reason: '' }"
                                              x-show="!done"
-                                             x-on:unsuspend-{{ $user->id }}.window="done = false">
+                                             x-on:unsuspend-{{ $user->id }}.window="done = false"
+                                             x-on:ban-{{ $user->id }}.window="done = true">
                                             <button @click="
                                                         if (loading) return;
                                                         loading = true;
@@ -207,7 +208,7 @@
                                             </button>
                                         </div>
                                     @else
-                                        <div x-data="unbanDialog({{ $user->id }}, 'unban')" @keydown.escape.window="open = false" @scroll.window="open = false">
+                                        <div x-data="unbanDialog({{ $user->id }}, 'unban')" x-show="!done" @keydown.escape.window="open = false" @scroll.window="open = false">
                                             <button @click="toggle($event)" :disabled="loading"
                                                     class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
                                                 Unban

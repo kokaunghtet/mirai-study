@@ -163,6 +163,7 @@ function banMenu(userId) {
                 }
 
                 this.banned = true;
+                window.dispatchEvent(new CustomEvent('ban-' + this.userId));
                 this.notify('User banned.', 'success');
                 this.open = false;
                 this.reason = '';
@@ -219,6 +220,7 @@ function unbanDialog(userId, type) {
         type,
         loading: false,
         open: false,
+        done: false,
         reason: '',
         dropX: 0,
         dropY: 0,
@@ -268,6 +270,7 @@ function unbanDialog(userId, type) {
 
                 const label = this.type === 'unsuspend' ? 'User unsuspended.' : 'User unbanned.';
                 this.notify(label, 'success');
+                this.done = true;
                 this.open = false;
                 this.reason = '';
             } catch (e) {
