@@ -170,36 +170,42 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if ($user->status === 'suspended')
-                                            <div x-data="unbanDialog({{ $user->id }}, 'unsuspend')" @keydown.escape.window="open = false" @scroll.window="open = false">
-                                                <button @click="toggle($event)" :disabled="loading"
-                                                        class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
-                                                    Unsuspend
-                                                </button>
-
-                                                <div x-show="open" x-cloak @click.outside="open = false"
-                                                     x-transition
-                                                     :style="'position:fixed; left:' + dropX + 'px; top:' + dropY + 'px;'"
-                                                     class="z-50 w-56 rounded-xl border border-line bg-surface p-3 text-left shadow-lg">
-                                                    <p class="mb-2 text-[10px] font-bold text-content">Unsuspend user</p>
-                                                    <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
-                                                    <input type="text" x-model="reason" maxlength="200"
-                                                           placeholder="Brief reason…"
-                                                           class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
-                                                    <div class="flex gap-1.5">
-                                                        <button @click="confirm()" :disabled="loading"
-                                                                class="flex-1 rounded-lg bg-green-100 py-1 text-[10px] font-bold text-green-700 transition-colors hover:bg-green-200 disabled:opacity-40 dark:bg-green-900/30 dark:text-green-400">
-                                                            <span x-show="!loading">Confirm</span>
-                                                            <span x-show="loading">…</span>
-                                                        </button>
-                                                        <button @click="open = false"
-                                                                class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
-                                                            Cancel
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
+                                        <div x-data="{ loading: false, done: {{ $user->status === 'suspended' ? 'false' : 'true'}}, reason: '' }"
+                                             x-show="!done"
+                                             x-on:unsuspend-{{ $user->id }}.window="done = false">
+                                            <button @click="
+                                                        if (loading) return;
+                                                        loading = true;
+                                                        try {
+                                                            const res = await fetch('/admin/users/{{ $user->id }}/status', {
+                                                                method: 'PATCH',
+                                                                headers: {
+                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                                    'Content-Type': 'application/json',
+                                                                    'Accept': 'application/json',
+                                                                },
+                                                                body: JSON.stringify({ status: 'active' }),
+                                                            });
+                                                            if (!res.ok) throw new Error('HTTP ' + res.status);
+                                                            const badge = document.getElementById('status-badge-{{ $user->id }}');
+                                                            if (badge) {
+                                                                badge.textContent = 'Active';
+                                                                badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+                                                            }
+                                                            done = true;
+                                                            window._snackbarComponent ? window._snackbarComponent.show({ message: 'User unsuspended.', type: 'success' }) : window._snackbarQueue.push({ message: 'User unsuspended.', type: 'success' });
+                                                        } catch (e) {
+                                                            window._snackbarComponent ? window._snackbarComponent.show({ message: 'Network error. Try again.', type: 'error' }) : window._snackbarQueue.push({ message: 'Network error. Try again.', type: 'error' });
+                                                        } finally {
+                                                            loading = false;
+                                                        }
+                                                    "
+                                                    :disabled="loading"
+                                                    class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
+                                                <span x-show="!loading">Unsuspend</span>
+                                                <span x-show="loading">…</span>
+                                            </button>
+                                        </div>
                                     @else
                                         <div x-data="unbanDialog({{ $user->id }}, 'unban')" @keydown.escape.window="open = false" @scroll.window="open = false">
                                             <button @click="toggle($event)" :disabled="loading"

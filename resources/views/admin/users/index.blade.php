@@ -93,11 +93,7 @@ function suspendMenu(userId) {
                     badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
                 }
 
-                const toggleBtn = document.getElementById('toggle-btn-' + this.userId);
-                if (toggleBtn) {
-                    toggleBtn.textContent = 'Unban';
-                    toggleBtn.setAttribute('onclick', `toggleUserStatus(${this.userId}, 'suspended')`);
-                }
+                window.dispatchEvent(new CustomEvent('unsuspend-' + this.userId));
 
                 this.notify('User suspended for ' + this.duration + ' day' + (this.duration > 1 ? 's' : '') + '.', 'success');
                 this.open = false;
