@@ -113,6 +113,110 @@ function suspendMenu(userId) {
     };
 }
 
+function banMenu(userId) {
+    return {
+        userId,
+        loading: false,
+        open: false,
+        banned: false,
+        reason: '',
+        dropX: 0,
+        dropY: 0,
+
+        toggle(event) {
+            if (this.open) {
+                this.open = false;
+                return;
+            }
+            const rect = event.currentTarget.getBoundingClientRect();
+            this.dropX = rect.right - 224; // w-56 = 224px
+            this.dropY = rect.bottom + 6;
+            this.open = true;
+        },
+
+        notify(message, type) {
+            const detail = { message, type };
+            window._snackbarComponent ? window._snackbarComponent.show(detail) : window._snackbarQueue.push(detail);
+        },
+
+        async confirm() {
+            if (this.loading || !this.reason.trim()) return;
+            this.loading = true;
+
+            try {
+                const res = await fetch(`/admin/users/${this.userId}/ban`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ type: 'perm', reason: this.reason.trim() }),
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    this.notify(err.message || 'Ban failed (HTTP ' + res.status + ')', 'error');
+                    return;
+                }
+
+                const badge = document.getElementById('status-badge-' + this.userId);
+                if (badge) {
+                    badge.textContent = 'Banned';
+                    badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+                }
+
+                this.banned = true;
+                this.notify('User banned.', 'success');
+                this.open = false;
+                this.reason = '';
+            } catch (e) {
+                console.error('Failed to ban user:', e);
+                this.notify('Network error. Try again.', 'error');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async unban() {
+            if (this.loading) return;
+            this.loading = true;
+
+            try {
+                const res = await fetch(`/admin/users/${this.userId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ status: 'active' }),
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    this.notify(err.message || 'Unban failed (HTTP ' + res.status + ')', 'error');
+                    return;
+                }
+
+                const badge = document.getElementById('status-badge-' + this.userId);
+                if (badge) {
+                    badge.textContent = 'Active';
+                    badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+                }
+
+                this.banned = false;
+                this.notify('User unbanned.', 'success');
+            } catch (e) {
+                console.error('Failed to unban user:', e);
+                this.notify('Network error. Try again.', 'error');
+            } finally {
+                this.loading = false;
+            }
+        },
+    };
+}
+
 function adminFilter() {
     return {
         _st: null,
