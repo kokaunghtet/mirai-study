@@ -48,18 +48,20 @@
                 <div x-show="showCustom" x-transition class="mt-3 flex items-center gap-3 flex-wrap">
                     <label class="text-xs text-muted">From</label>
                     <input type="date" x-model="customFrom"
+                           :max="customTo || '{{ now()->format('Y-m-d') }}'"
                            class="h-10 rounded-xl border border-line bg-surface px-3 text-sm text-content
                                   focus:border-accent focus:ring-1 focus:ring-accent/30" />
                     <label class="text-xs text-muted">To</label>
                     <input type="date" x-model="customTo"
+                           :min="customFrom"
+                           max="{{ now()->format('Y-m-d') }}"
                            class="h-10 rounded-xl border border-line bg-surface px-3 text-sm text-content
                                   focus:border-accent focus:ring-1 focus:ring-accent/30" />
                     <button @click="applyCustomRange()"
                             class="h-10 rounded-xl bg-gradient-to-tr from-accent-from to-accent-to px-4 text-sm font-bold text-white hover:opacity-90 transition-colors disabled:opacity-50"
-                            :disabled="!customFrom || !customTo || loading">
+                            :disabled="!customRangeValid">
                         Apply Range
                     </button>
-                    <span x-show="dateError" x-text="dateError" class="text-xs text-red-600"></span>
                 </div>
             </div>
 
@@ -244,12 +246,24 @@
             customFrom: '',
             customTo: '',
             loading: false,
-            dateError: null,
             kpis: @json($initialData['kpis']),
             chartsReady: false,
             chartType: 'bar',
 
             // --- CSS variable helper ---
+            get customRangeValid() {
+                if (!this.customFrom || !this.customTo || this.loading) return false;
+                const d = new Date();
+                const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                if (this.customFrom > today || this.customTo > today) return false;
+                if (this.customTo < this.customFrom) return false;
+                const from = new Date(this.customFrom + 'T00:00:00');
+                const to   = new Date(this.customTo + 'T00:00:00');
+                const diffDays = Math.round((to - from) / (1000 * 60 * 60 * 24));
+                if (diffDays > 365) return false;
+                return true;
+            },
+
             getCSSColor(varName) {
                 return `rgb(${getComputedStyle(document.documentElement).getPropertyValue(varName).trim()})`;
             },
@@ -462,7 +476,6 @@
             // --- AJAX fetch ---
             async fetchData() {
                 this.loading = true;
-                this.error = null;
                 const params = this.range === 'custom'
                     ? `from=${this.customFrom}&to=${this.customTo}`
                     : `range=${this.range}`;
@@ -470,7 +483,11 @@
                     const res = await fetch(`/admin/analytics/data?${params}`, {
                         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
                     });
-                    if (!res.ok) throw new Error(`Server error ${res.status}`);
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        const msg = err.message || Object.values(err.errors || {}).flat().join('. ') || `Server error ${res.status}`;
+                        throw new Error(msg);
+                    }
                     const data = await res.json();
                     this.kpis = data.kpis;
                     this.updateCharts(data);
@@ -478,7 +495,7 @@
                 } catch (err) {
                     console.error('[analytics fetchData]', err);
                     window.dispatchEvent(new CustomEvent('show-snackbar', {
-                        detail: { message: 'Could not load analytics data. Please try again.', type: 'error', duration: 5000 }
+                        detail: { message: err.message || 'Could not load analytics data. Please try again.', type: 'error', duration: 5000 }
                     }));
                 } finally {
                     this.loading = false;
@@ -489,25 +506,12 @@
             setRange(r) {
                 this.range = r;
                 this.showCustom = (r === 'custom');
-                this.dateError = null;
                 if (r !== 'custom') this.fetchData();
             },
 
-            // --- Custom range validation + fetch ---
+            // --- Custom range fetch ---
             applyCustomRange() {
-                this.dateError = null;
-                if (!this.customFrom || !this.customTo) return;
-                const from = new Date(this.customFrom);
-                const to   = new Date(this.customTo);
-                if (to < from) {
-                    this.dateError = 'End date must be after start date.';
-                    return;
-                }
-                const diffDays = Math.round((to - from) / (1000 * 60 * 60 * 24));
-                if (diffDays > 365) {
-                    this.dateError = 'Custom range cannot exceed 365 days.';
-                    return;
-                }
+                if (!this.customRangeValid) return;
                 this.range = 'custom';
                 this.fetchData();
             },
