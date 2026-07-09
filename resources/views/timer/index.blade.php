@@ -2,7 +2,7 @@
     <x-slot:title>Focus Timer</x-slot:title>
 
     <div class="px-4" x-data="pomodoroTimer()" x-cloak>
-        <div class="grid gap-6 items-start lg:grid-cols-[1fr_280px]">
+        <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
 
             {{-- ════════════════════════════════════════════
                  LEFT COLUMN — Timer
@@ -94,11 +94,11 @@
             {{-- ════════════════════════════════════════════
                  RIGHT COLUMN — Panels
             ════════════════════════════════════════════ --}}
-            <div class="space-y-4">
+            <div class="flex flex-col gap-4">
 
                 {{-- ── Sounds ── --}}
-                <div class="rounded-xl border border-line bg-surface overflow-hidden"
-                     x-data="{ open: false }">
+                <div class="rounded-xl border border-line bg-surface overflow-hidden @guest lg:flex-1 lg:flex lg:flex-col @endguest"
+                     x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
                     <button type="button" @click="open = !open"
                             class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                         <span class="flex items-center gap-2">
@@ -133,115 +133,120 @@
 
                 {{-- ── Today (auth only) ── --}}
                 @auth
-                    <div class="rounded-xl border border-line bg-surface overflow-hidden"
-                         x-data="{ open: false }">
+                    <div class="rounded-xl border border-line bg-surface overflow-hidden lg:flex-1 lg:flex lg:flex-col"
+                         x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
                         <button type="button" @click="open = !open"
                                 class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                             <span>Today</span>
                             <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
                                :class="open ? 'rotate-180' : ''"></i>
                         </button>
-                        <div x-show="open" class="lg:!grid grid grid-cols-2 gap-3 p-3">
-                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col gap-1.5">
+                        <div x-show="open" class="flex flex-col gap-3 p-3 lg:flex-1">
+                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col justify-center gap-1.5 lg:flex-1">
                                 <div class="text-xl font-semibold text-content" x-text="todaySessions">0</div>
                                 <div class="text-xs text-muted">Sessions</div>
                             </div>
-                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col gap-1.5">
+                            <div class="p-4 rounded-lg bg-surface-muted flex flex-col justify-center gap-1.5 lg:flex-1">
                                 <div class="text-xl font-semibold text-content" x-text="todayFocusLabel">0m</div>
                                 <div class="text-xs text-muted">Focus time</div>
                             </div>
                         </div>
                     </div>
                 @endauth
+            </div>
+        </div>
 
-                {{-- ── Settings ── --}}
-                <div class="rounded-xl border border-line bg-surface overflow-hidden"
-                     x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
-                    <button type="button" @click="open = !open"
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
-                        <span>Settings</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
-                           :class="open ? 'rotate-180' : ''"></i>
-                    </button>
+        {{-- ════════════════════════════════════════════
+             SETTINGS — full width, horizontal
+        ════════════════════════════════════════════ --}}
+        <div class="mt-6 rounded-xl border border-line bg-surface overflow-hidden"
+             x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
+            <button type="button" @click="open = !open"
+                    class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
+                <span class="flex items-center gap-2">
+                    <i data-lucide="settings" class="w-4 h-4 text-muted"></i>
+                    Settings
+                </span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
+                   :class="open ? 'rotate-180' : ''"></i>
+            </button>
 
-                    <div x-show="open" x-collapse.duration.300ms>
-                        @auth
-                            <div class="p-2.5 space-y-0.5">
-                                <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                    <span class="text-content">Focus</span>
-                                    <span class="flex items-center gap-1.5">
-                                        <input type="number" min="1" max="120"
-                                               x-model.number="focusMinutes" @input="onSettingChange()"
-                                               class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                        <span class="text-xs text-muted w-7">min</span>
-                                    </span>
-                                </label>
-                                <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                    <span class="text-content">Short break</span>
-                                    <span class="flex items-center gap-1.5">
-                                        <input type="number" min="1" max="60"
-                                               x-model.number="shortBreakMinutes" @input="onSettingChange()"
-                                               class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                        <span class="text-xs text-muted w-7">min</span>
-                                    </span>
-                                </label>
-                                <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                    <span class="text-content">Long break</span>
-                                    <span class="flex items-center gap-1.5">
-                                        <input type="number" min="1" max="120"
-                                               x-model.number="longBreakMinutes" @input="onSettingChange()"
-                                               class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                        <span class="text-xs text-muted w-7">min</span>
-                                    </span>
-                                </label>
-                                <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                    <span class="text-content">Sessions / cycle</span>
-                                    <span class="flex items-center gap-1.5">
-                                        <input type="number" min="1" max="10"
-                                               x-model.number="sessionsBeforeLongBreak" @input="onSettingChange()"
-                                               class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                        <span class="text-xs text-muted w-7"></span>
-                                    </span>
-                                </label>
-                                <label class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                    <span class="text-content">Daily goal</span>
-                                    <span class="flex items-center gap-1.5">
-                                        <input type="number" min="1" max="24"
-                                               x-model.number="dailyGoalSessions" @input="onSettingChange()"
-                                               class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                        <span class="text-xs text-muted w-7"></span>
-                                    </span>
-                                </label>
-                            </div>
-                        @else
-                            {{-- Guests: static values + lock --}}
-                            <div class="relative">
-                                <div class="p-2.5 space-y-0.5 opacity-50 select-none pointer-events-none">
-                                    <div class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                        <span class="text-content">Focus</span><span class="text-muted">25 min</span>
-                                    </div>
-                                    <div class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                        <span class="text-content">Short break</span><span class="text-muted">5 min</span>
-                                    </div>
-                                    <div class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                        <span class="text-content">Long break</span><span class="text-muted">15 min</span>
-                                    </div>
-                                    <div class="flex items-center justify-between px-1.5 py-1.5 text-sm">
-                                        <span class="text-content">Daily goal</span><span class="text-muted">8 sessions</span>
-                                    </div>
-                                </div>
-                                <div class="absolute inset-0 grid place-items-center bg-surface/40">
-                                    <button type="button"
-                                            @click="$dispatch('open-auth-modal')"
-                                            class="flex items-center gap-2 text-sm font-medium text-content bg-surface border border-line rounded-lg px-3.5 py-2 shadow-sm hover:border-accent/40 transition-colors">
-                                        <i data-lucide="lock" class="w-4 h-4 text-muted"></i>
-                                        Log in to customize
-                                    </button>
-                                </div>
-                            </div>
-                        @endauth
+            <div x-show="open" x-collapse.duration.300ms>
+                @auth
+                    <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3">
+                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                            <span class="text-content sm:text-muted sm:text-xs">Focus</span>
+                            <span class="flex items-center gap-1.5">
+                                <input type="number" min="1" max="120"
+                                       x-model.number="focusMinutes" @input="onSettingChange()"
+                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                <span class="text-xs text-muted w-6">min</span>
+                            </span>
+                        </label>
+                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                            <span class="text-content sm:text-muted sm:text-xs">Short break</span>
+                            <span class="flex items-center gap-1.5">
+                                <input type="number" min="1" max="60"
+                                       x-model.number="shortBreakMinutes" @input="onSettingChange()"
+                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                <span class="text-xs text-muted w-6">min</span>
+                            </span>
+                        </label>
+                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                            <span class="text-content sm:text-muted sm:text-xs">Long break</span>
+                            <span class="flex items-center gap-1.5">
+                                <input type="number" min="1" max="120"
+                                       x-model.number="longBreakMinutes" @input="onSettingChange()"
+                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                <span class="text-xs text-muted w-6">min</span>
+                            </span>
+                        </label>
+                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                            <span class="text-content sm:text-muted sm:text-xs">Sessions / cycle</span>
+                            <span class="flex items-center gap-1.5">
+                                <input type="number" min="1" max="10"
+                                       x-model.number="sessionsBeforeLongBreak" @input="onSettingChange()"
+                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                <span class="w-6" aria-hidden="true"></span>
+                            </span>
+                        </label>
+                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                            <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>
+                            <span class="flex items-center gap-1.5">
+                                <input type="number" min="1" max="24"
+                                       x-model.number="dailyGoalSessions" @input="onSettingChange()"
+                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                <span class="w-6" aria-hidden="true"></span>
+                            </span>
+                        </label>
                     </div>
-                </div>
+                @else
+                    {{-- Guests: static values + lock --}}
+                    <div class="relative">
+                        <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3 opacity-50 select-none pointer-events-none">
+                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Focus</span>                                <span class="text-muted">25 min</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Short break</span>                                <span class="text-muted">5 min</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Long break</span>                                <span class="text-muted">15 min</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>                                <span class="text-muted">8 sessions</span>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 grid place-items-center bg-surface/40">
+                            <button type="button"
+                                    @click="$dispatch('open-auth-modal')"
+                                    class="flex items-center gap-2 text-sm font-medium text-content bg-surface border border-line rounded-lg px-3.5 py-2 shadow-sm hover:border-accent/40 transition-colors">
+                                <i data-lucide="lock" class="w-4 h-4 text-muted"></i>
+                                Log in to customize
+                            </button>
+                        </div>
+                    </div>
+                @endauth
             </div>
         </div>
 
