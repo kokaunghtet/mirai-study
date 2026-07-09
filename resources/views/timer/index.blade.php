@@ -141,7 +141,7 @@
                             <i data-lucide="chevron-down" class="w-4 h-4 text-muted transition-transform lg:hidden"
                                :class="open ? 'rotate-180' : ''"></i>
                         </button>
-                        <div x-show="open" class="flex flex-col gap-3 p-3 lg:flex-1">
+                        <div x-show="open" class="lg:!flex flex flex-col gap-3 p-3 lg:flex-1">
                             <div class="p-4 rounded-lg bg-surface-muted flex flex-col justify-center gap-1.5 lg:flex-1">
                                 <div class="text-xl font-semibold text-content" x-text="todaySessions">0</div>
                                 <div class="text-xs text-muted">Sessions</div>
