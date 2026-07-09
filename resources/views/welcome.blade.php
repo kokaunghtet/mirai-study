@@ -390,7 +390,7 @@
             <a href="{{ route('exams.index') }}"><i data-lucide="file-text"></i><span>Papers</span><span class="nav-indicator"></span></a>
             <a href="{{ route('quiz.index') }}"><i data-lucide="brain"></i><span>Quiz</span><span class="nav-indicator"></span></a>
             <a href="{{ route('timer.index') }}"><i data-lucide="clock"></i><span>Focus</span><span class="nav-indicator"></span></a>
-            <a href="https://github.com/kokaunghtet/mirai-study.git" target="_blank"><i data-lucide="git-branch"></i><span>GitHub</span><span class="nav-indicator"></span></a>
+            <a href="https://github.com/kokaunghtet/mirai-study" target="_blank"><i data-lucide="git-branch"></i><span>GitHub</span><span class="nav-indicator"></span></a>
         </nav>
 
         <div class="welcome-sidebar-footer">
@@ -443,7 +443,7 @@
                         <i data-lucide="graduation-cap" class="w-5 h-5 icon-spin"></i>
                         <span>Start Learning Free</span>
                     </a>
-                    <a href="https://github.com/kokaunghtet/mirai-study.git" target="_blank" class="btn-secondary font-medium px-6 py-3.5 rounded-xl inline-flex items-center gap-2 text-sm sm:text-base">
+                    <a href="https://github.com/kokaunghtet/mirai-study" target="_blank" class="btn-secondary font-medium px-6 py-3.5 rounded-xl inline-flex items-center gap-2 text-sm sm:text-base">
                         <i data-lucide="git-branch" class="w-5 h-5"></i>
                         <span>View on GitHub</span>
                     </a>
@@ -802,7 +802,7 @@
                     </a>
                     <p class="text-gray-500 text-xs max-w-xs leading-relaxed">Free, open-source platform for ITPEC and JLPT exam preparation.</p>
                     <div class="flex space-x-4 mt-4">
-                        <a href="https://github.com/kokaunghtet/mirai-study.git" target="_blank" class="text-gray-400 hover:text-mirai-lime transition-colors text-lg"><i data-lucide="git-branch" class="w-5 h-5"></i></a>
+                        <a href="https://github.com/kokaunghtet/mirai-study" target="_blank" class="text-gray-400 hover:text-mirai-lime transition-colors text-lg"><i data-lucide="git-branch" class="w-5 h-5"></i></a>
                         <a href="#" class="text-gray-400 hover:text-mirai-lime transition-colors text-lg"><i data-lucide="globe" class="w-5 h-5"></i></a>
                         <a href="#" class="text-gray-400 hover:text-mirai-lime transition-colors text-lg"><i data-lucide="play-circle" class="w-5 h-5"></i></a>
                         <a href="#" class="text-gray-400 hover:text-mirai-lime transition-colors text-lg"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
@@ -977,6 +977,8 @@
         });
     })();
     </script>
+
+    @include('components.confirm-modal')
 
 </body>
 </html>
