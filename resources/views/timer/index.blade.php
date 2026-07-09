@@ -173,52 +173,66 @@
 
             <div x-show="open" x-collapse.duration.300ms>
                 @auth
-                    <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3">
-                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                            <span class="text-content sm:text-muted sm:text-xs">Focus</span>
-                            <span class="flex items-center gap-1.5">
-                                <input type="number" min="1" max="120"
-                                       x-model.number="focusMinutes" @input="onSettingChange()"
-                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                <span class="text-xs text-muted w-6">min</span>
-                            </span>
-                        </label>
-                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                            <span class="text-content sm:text-muted sm:text-xs">Short break</span>
-                            <span class="flex items-center gap-1.5">
-                                <input type="number" min="1" max="60"
-                                       x-model.number="shortBreakMinutes" @input="onSettingChange()"
-                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                <span class="text-xs text-muted w-6">min</span>
-                            </span>
-                        </label>
-                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                            <span class="text-content sm:text-muted sm:text-xs">Long break</span>
-                            <span class="flex items-center gap-1.5">
-                                <input type="number" min="1" max="120"
-                                       x-model.number="longBreakMinutes" @input="onSettingChange()"
-                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                <span class="text-xs text-muted w-6">min</span>
-                            </span>
-                        </label>
-                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                            <span class="text-content sm:text-muted sm:text-xs">Sessions / cycle</span>
-                            <span class="flex items-center gap-1.5">
-                                <input type="number" min="1" max="10"
-                                       x-model.number="sessionsBeforeLongBreak" @input="onSettingChange()"
-                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                <span class="w-6" aria-hidden="true"></span>
-                            </span>
-                        </label>
-                        <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
-                            <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>
-                            <span class="flex items-center gap-1.5">
-                                <input type="number" min="1" max="24"
-                                       x-model.number="dailyGoalSessions" @input="onSettingChange()"
-                                       class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
-                                <span class="w-6" aria-hidden="true"></span>
-                            </span>
-                        </label>
+                    {{-- Suspended users can't persist settings (not-banned middleware blocks
+                         the PATCH), so dim + disable the inputs and point them at the appeal. --}}
+                    <div class="relative">
+                        <div class="px-4 py-2 sm:p-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-3 {{ $suspended ? 'opacity-50 select-none pointer-events-none' : '' }}">
+                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Focus</span>
+                                <span class="flex items-center gap-1.5">
+                                    <input type="number" min="1" max="120" @disabled($suspended)
+                                           x-model.number="focusMinutes" @input="onSettingChange()"
+                                           class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Short break</span>
+                                <span class="flex items-center gap-1.5">
+                                    <input type="number" min="1" max="60" @disabled($suspended)
+                                           x-model.number="shortBreakMinutes" @input="onSettingChange()"
+                                           class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Long break</span>
+                                <span class="flex items-center gap-1.5">
+                                    <input type="number" min="1" max="120" @disabled($suspended)
+                                           x-model.number="longBreakMinutes" @input="onSettingChange()"
+                                           class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                    <span class="text-xs text-muted w-6">min</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Sessions / cycle</span>
+                                <span class="flex items-center gap-1.5">
+                                    <input type="number" min="1" max="10" @disabled($suspended)
+                                           x-model.number="sessionsBeforeLongBreak" @input="onSettingChange()"
+                                           class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                    <span class="w-6" aria-hidden="true"></span>
+                                </span>
+                            </label>
+                            <label class="flex items-center justify-between py-2 sm:py-0 text-sm sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                                <span class="text-content sm:text-muted sm:text-xs">Daily goal</span>
+                                <span class="flex items-center gap-1.5">
+                                    <input type="number" min="1" max="24" @disabled($suspended)
+                                           x-model.number="dailyGoalSessions" @input="onSettingChange()"
+                                           class="w-16 text-right text-sm rounded-md border-line bg-surface text-content focus:border-accent focus:ring-accent py-1">
+                                    <span class="w-6" aria-hidden="true"></span>
+                                </span>
+                            </label>
+                        </div>
+                        @if ($suspended)
+                            <div class="absolute inset-0 grid place-items-center bg-surface/40">
+                                <button type="button"
+                                        @click="$dispatch('open-appeal-modal')"
+                                        class="flex items-center gap-2 text-sm font-medium text-content bg-surface border border-line rounded-lg px-3.5 py-2 shadow-sm hover:border-accent/40 transition-colors">
+                                    <i data-lucide="lock" class="w-4 h-4 text-muted"></i>
+                                    Account suspended — settings locked
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 @else
                     {{-- Guests: static values + lock --}}

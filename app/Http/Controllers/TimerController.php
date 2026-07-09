@@ -13,15 +13,20 @@ class TimerController extends Controller
         $settings = null;
         $todaySessions = 0;
         $todayFocusTime = 0;
+        $suspended = false;
 
         if ($request->user()) {
             $settings = $request->user()->pomodoroSettings
                 ?? PomodoroSetting::create(['user_id' => $request->user()->id]);
 
             [$todaySessions, $todayFocusTime] = $this->todayStats($request->user());
+
+            // Suspended/banned users can't persist settings (not-banned middleware
+            // 403s the PATCH), so the view dims and locks the inputs instead.
+            $suspended = $request->user()->isBannedNow();
         }
 
-        return view('timer.index', compact('settings', 'todaySessions', 'todayFocusTime'));
+        return view('timer.index', compact('settings', 'todaySessions', 'todayFocusTime', 'suspended'));
     }
 
     // Only auth users can store sessions
