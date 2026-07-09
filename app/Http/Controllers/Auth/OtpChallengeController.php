@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\View;
 
 class OtpChallengeController extends Controller
@@ -70,8 +71,16 @@ class OtpChallengeController extends Controller
 
         // Permanently banned: don't authenticate — show appeal on the login page instead
         if ($user->isBanned()) {
-            $ban = $user->activeBan();
             $request->session()->forget('otp_challenge');
+
+            // Add-account flow: the browser still holds the original user's session, so
+            // don't stash a ban appeal in it or bounce through the guest-only login page.
+            if ($request->user()) {
+                return redirect()->route('accounts.add')
+                    ->withErrors(['login' => 'This account can\'t be added right now.']);
+            }
+
+            $ban = $user->activeBan();
             $request->session()->put('ban_appeal', [
                 'user_id' => $user->id,
                 'ban_reason' => $ban?->reason,
@@ -82,12 +91,29 @@ class OtpChallengeController extends Controller
             return redirect()->route('login');
         }
 
+        $addingAccount = (bool) ($challenge['add_account'] ?? false);
+
+        // Re-check the cap for add-account challenges: it passed when the challenge was
+        // issued, but another account may have been linked from a parallel tab since.
+        if ($addingAccount && ! $this->linkedAccounts->canAdd($request, $user->id)) {
+            $request->session()->forget('otp_challenge');
+
+            return redirect()->route('accounts.add')
+                ->withErrors(['login' => 'You can only add up to '.LinkedAccountService::MAX_ACCOUNTS.' accounts per session.']);
+        }
+
         Auth::login($user, (bool) ($challenge['remember'] ?? false));
 
         $request->session()->forget('otp_challenge');
         $request->session()->regenerate();
 
         $this->linkedAccounts->remember($request, $user);
+
+        // Adding an account signs in without "remember me" — drop any recaller cookie left
+        // by the previous account so an expired session doesn't silently revert to it.
+        if ($addingAccount) {
+            Cookie::queue(Cookie::forget(Auth::guard()->getRecallerName()));
+        }
 
         $default = match (true) {
             $user->isAdmin() => route('admin.dashboard', absolute: false),

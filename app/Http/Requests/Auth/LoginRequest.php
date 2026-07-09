@@ -74,7 +74,10 @@ class LoginRequest extends FormRequest
         // No valid credentials — rate limit, then report which field was wrong.
         RateLimiter::hit($this->throttleKey());
 
-        $user = User::where($field, $login)->first();
+        // $deletedUser first: the default scope hides soft-deleted users, so without it a
+        // deletion-scheduled user who typos their password would be told "account not found"
+        // and think the account is gone, when re-login (with the right password) restores it.
+        $user = $deletedUser ?? User::where($field, $login)->first();
 
         if (! $user) {
             throw ValidationException::withMessages([

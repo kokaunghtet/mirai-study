@@ -16,10 +16,21 @@ class LinkedAccountService
 
     public const int MAX_ACCOUNTS = 2;
 
-    /** Whether another account can be added to this session. */
-    public function canAdd(Request $request): bool
+    /**
+     * Whether another account can be added to this session. Counts only accounts that
+     * still resolve to real, unbanned users — a linked account that was since banned or
+     * deleted must not occupy a slot forever. Re-authenticating an account that is
+     * already linked never needs a free slot, so pass its id when known.
+     */
+    public function canAdd(Request $request, ?int $userId = null): bool
     {
-        return count($request->session()->get(self::SESSION_KEY, [])) < self::MAX_ACCOUNTS;
+        $accounts = $this->accounts($request);
+
+        if ($userId !== null && $accounts->contains('id', $userId)) {
+            return true;
+        }
+
+        return $accounts->count() < self::MAX_ACCOUNTS;
     }
 
     /** Remember a user as switchable in this session, most-recent first. */
@@ -65,9 +76,16 @@ class LinkedAccountService
 
         $users = User::whereIn('id', $ids)->get()->keyBy('id');
 
-        return collect($ids)
+        $accounts = collect($ids)
             ->map(fn ($id) => $users->get($id))
             ->filter(fn (?User $user) => $user && ! $user->isBanned())
             ->values();
+
+        // Write the surviving ids back: banned/deleted accounts would otherwise hold a
+        // MAX_ACCOUNTS slot forever — they're hidden from the switcher, so their remove
+        // button never renders, and route binding 404s on soft-deleted users anyway.
+        $request->session()->put(self::SESSION_KEY, $accounts->pluck('id')->all());
+
+        return $accounts;
     }
 }

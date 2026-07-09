@@ -10,6 +10,7 @@ use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\View;
 
 /**
@@ -33,11 +34,13 @@ class SwitchAccountController extends Controller
      */
     public function store(LoginRequest $request, OtpService $otp): RedirectResponse
     {
-        if (! $this->accounts->canAdd($request)) {
+        $user = $request->authenticateCredentials();
+
+        // Cap check after credentials so re-authenticating an already-linked account
+        // (which needs no free slot) isn't rejected at the limit.
+        if (! $this->accounts->canAdd($request, $user->id)) {
             return back()->withErrors(['login' => 'You can only add up to '.LinkedAccountService::MAX_ACCOUNTS.' accounts per session.']);
         }
-
-        $user = $request->authenticateCredentials();
 
         if ($user->isBanned()) {
             return back()->withErrors(['login' => 'This account can\'t be added right now.']);
@@ -61,6 +64,8 @@ class SwitchAccountController extends Controller
 
         $request->session()->regenerate();
 
+        $this->forgetRecallerCookie();
+
         return redirect()->route('feed.index')->with('success', "Signed in as {$user->display_name}.");
     }
 
@@ -82,6 +87,8 @@ class SwitchAccountController extends Controller
         $this->accounts->remember($request, $user);
 
         $request->session()->regenerate();
+
+        $this->forgetRecallerCookie();
 
         return redirect()->route('feed.index')->with('success', "Switched to {$user->display_name}.");
     }
@@ -115,8 +122,20 @@ class SwitchAccountController extends Controller
             'user_id' => $user->id,
             'purpose' => $purpose,
             'remember' => false,
+            // Marks this as an add-account challenge so OtpChallengeController re-checks
+            // the MAX_ACCOUNTS cap at verify time and skips the guest-only ban-appeal path.
+            'add_account' => true,
         ]);
 
         return redirect()->route('otp.challenge');
+    }
+
+    /**
+     * Switching signs in without "remember me" — drop any recaller cookie left by the
+     * previous account, or an expired session would silently log the browser back into it.
+     */
+    protected function forgetRecallerCookie(): void
+    {
+        Cookie::queue(Cookie::forget(Auth::guard()->getRecallerName()));
     }
 }
