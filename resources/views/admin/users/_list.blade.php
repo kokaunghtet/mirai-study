@@ -140,7 +140,7 @@
                                             </div>
                                         </div>
                                     @endif
-                                    @if ($user->status === 'active')
+                                    @if ($user->status !== 'banned')
                                         <div x-data="banMenu({{ $user->id }})" @keydown.escape.window="open = false" @scroll.window="open = false">
                                             <button @click="banned ? unban() : toggle($event)" :disabled="loading"
                                                     id="ban-btn-{{ $user->id }}"
@@ -170,13 +170,65 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if ($user->status === 'suspended')
+                                            <div x-data="unbanDialog({{ $user->id }}, 'unsuspend')" @keydown.escape.window="open = false" @scroll.window="open = false">
+                                                <button @click="toggle($event)" :disabled="loading"
+                                                        class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
+                                                    Unsuspend
+                                                </button>
+
+                                                <div x-show="open" x-cloak @click.outside="open = false"
+                                                     x-transition
+                                                     :style="'position:fixed; left:' + dropX + 'px; top:' + dropY + 'px;'"
+                                                     class="z-50 w-56 rounded-xl border border-line bg-surface p-3 text-left shadow-lg">
+                                                    <p class="mb-2 text-[10px] font-bold text-content">Unsuspend user</p>
+                                                    <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
+                                                    <input type="text" x-model="reason" maxlength="200"
+                                                           placeholder="Brief reason…"
+                                                           class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
+                                                    <div class="flex gap-1.5">
+                                                        <button @click="confirm()" :disabled="loading"
+                                                                class="flex-1 rounded-lg bg-green-100 py-1 text-[10px] font-bold text-green-700 transition-colors hover:bg-green-200 disabled:opacity-40 dark:bg-green-900/30 dark:text-green-400">
+                                                            <span x-show="!loading">Confirm</span>
+                                                            <span x-show="loading">…</span>
+                                                        </button>
+                                                        <button @click="open = false"
+                                                                class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @else
-                                        <button
-                                            onclick="toggleUserStatus({{ $user->id }}, '{{ $user->status }}')"
-                                            id="toggle-btn-{{ $user->id }}"
-                                            class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface">
-                                            Unban
-                                        </button>
+                                        <div x-data="unbanDialog({{ $user->id }}, 'unban')" @keydown.escape.window="open = false" @scroll.window="open = false">
+                                            <button @click="toggle($event)" :disabled="loading"
+                                                    class="rounded-lg border border-line bg-surface-muted px-3 py-1 text-xs font-semibold text-content transition-colors hover:bg-surface disabled:opacity-50">
+                                                Unban
+                                            </button>
+
+                                            <div x-show="open" x-cloak @click.outside="open = false"
+                                                 x-transition
+                                                 :style="'position:fixed; left:' + dropX + 'px; top:' + dropY + 'px;'"
+                                                 class="z-50 w-56 rounded-xl border border-line bg-surface p-3 text-left shadow-lg">
+                                                <p class="mb-2 text-[10px] font-bold text-content">Unban user</p>
+                                                <label class="mb-1 block text-[10px] text-muted">Reason <span class="text-muted/60">(optional)</span></label>
+                                                <input type="text" x-model="reason" maxlength="200"
+                                                       placeholder="Brief reason…"
+                                                       class="mb-2 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-xs text-content placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/20">
+                                                <div class="flex gap-1.5">
+                                                    <button @click="confirm()" :disabled="loading"
+                                                            class="flex-1 rounded-lg bg-green-100 py-1 text-[10px] font-bold text-green-700 transition-colors hover:bg-green-200 disabled:opacity-40 dark:bg-green-900/30 dark:text-green-400">
+                                                        <span x-show="!loading">Confirm</span>
+                                                        <span x-show="loading">…</span>
+                                                    </button>
+                                                    <button @click="open = false"
+                                                            class="rounded-lg border border-line px-2.5 py-1 text-[10px] text-muted hover:text-content transition-colors">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                     @include('admin.partials._role-action-dropdown', ['user' => $user])
                                 @endif
@@ -195,46 +247,3 @@
         </div>
     @endif
 @endif
-
-<script>
-async function toggleUserStatus(userId, currentStatus) {
-    const next   = currentStatus === 'active' ? 'banned' : 'active';
-    const btn    = document.getElementById('toggle-btn-' + userId);
-    const badge  = document.getElementById('status-badge-' + userId);
-    if (!btn || !badge) return;
-
-    btn.disabled = true;
-    btn.textContent = '…';
-
-    try {
-        const res = await fetch(`/admin/users/${userId}/status`, {
-            method: 'PATCH',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ status: next }),
-        });
-
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-
-        // Swap badge
-        badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-        badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold ' +
-            (data.status === 'active'
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400');
-
-        btn.textContent = data.status === 'active' ? 'Ban' : 'Unban';
-        btn.dataset.status = data.status;
-        // Update onclick to reflect new current status
-        btn.setAttribute('onclick', `toggleUserStatus(${userId}, '${data.status}')`);
-    } catch (e) {
-        btn.textContent = currentStatus === 'active' ? 'Ban' : 'Unban';
-    } finally {
-        btn.disabled = false;
-    }
-}
-</script>

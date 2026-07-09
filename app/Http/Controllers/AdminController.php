@@ -154,7 +154,10 @@ class AdminController extends Controller
 
     public function updateUserStatus(Request $request, User $user)
     {
-        $request->validate(['status' => 'required|in:active,banned']);
+        $request->validate([
+            'status' => 'required|in:active,banned',
+            'reason' => 'nullable|string|max:1000',
+        ]);
 
         if ($user->id === auth()->id()) {
             abort(403, 'Cannot change your own status.');
@@ -209,6 +212,18 @@ class AdminController extends Controller
                         'lifted_by' => auth()->id(),
                     ]);
                 }
+
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'user_unbanned',
+                    'subject_type' => 'User',
+                    'subject_id' => $user->id,
+                    'properties' => array_filter([
+                        'username' => $user->username,
+                        'reason' => $request->reason,
+                    ]),
+                    'created_at' => now(),
+                ]);
 
                 $pendingAppeals = $user->appeals()
                     ->where('status', 'pending')
