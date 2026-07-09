@@ -629,9 +629,13 @@
 
                         if (this.currentSession > this.sessionsBeforeLongBreak) this.currentSession = 0;
 
-                        // Live-update the displayed time when idle.
-                        if (this.phase === 'ready' && !this.isRunning) {
-                            this.totalSeconds = this.focusMinutes * 60;
+                        // Live-update the displayed time when idle or paused.
+                        if (!this.isRunning) {
+                            const mins = this.phase === 'focus' ? this.focusMinutes
+                                : this.phase === 'short_break' ? this.shortBreakMinutes
+                                : this.phase === 'long_break' ? this.longBreakMinutes
+                                : this.focusMinutes;
+                            this.totalSeconds = mins * 60;
                             this.remainingSeconds = this.totalSeconds;
                         }
 
