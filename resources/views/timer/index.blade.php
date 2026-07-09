@@ -98,7 +98,8 @@
 
                 {{-- ── Sounds ── --}}
                 <div class="rounded-xl border border-line bg-surface overflow-hidden @guest lg:flex-1 lg:flex lg:flex-col @endguest"
-                     x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
+                     x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }"
+                     x-init="window.matchMedia('(min-width: 1024px)').addEventListener('change', e => { if (e.matches) open = true })">
                     <button type="button" @click="open = !open"
                             class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                         <span class="flex items-center gap-2">
@@ -136,7 +137,8 @@
                 {{-- ── Today (auth only) ── --}}
                 @auth
                     <div class="rounded-xl border border-line bg-surface overflow-hidden lg:flex-1 lg:flex lg:flex-col"
-                         x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
+                         x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }"
+                         x-init="window.matchMedia('(min-width: 1024px)').addEventListener('change', e => { if (e.matches) open = true })">
                         <button type="button" @click="open = !open"
                                 class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                             <span>Today</span>
@@ -164,7 +166,8 @@
              SETTINGS — full width, horizontal
         ════════════════════════════════════════════ --}}
         <div class="mt-6 rounded-xl border border-line bg-surface overflow-hidden"
-             x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }">
+             x-data="{ open: window.matchMedia('(min-width: 1024px)').matches }"
+             x-init="window.matchMedia('(min-width: 1024px)').addEventListener('change', e => { if (e.matches) open = true })">
             <button type="button" @click="open = !open"
                     class="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-line text-sm font-medium text-content lg:pointer-events-none lg:cursor-default">
                 <span class="flex items-center gap-2">
