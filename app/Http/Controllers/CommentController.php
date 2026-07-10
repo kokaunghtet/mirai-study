@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Rules\NoProfanity;
 use App\Services\NotificationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class CommentController extends Controller
     public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'content' => 'required|string|max:2000',
+            'content' => ['required', 'string', 'max:2000', new NoProfanity],
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
@@ -81,7 +82,7 @@ class CommentController extends Controller
         $this->authorize('update', $comment);
 
         $validated = $request->validate([
-            'content' => 'required|string|max:2000',
+            'content' => ['required', 'string', 'max:2000', new NoProfanity],
         ]);
 
         $comment->update($validated);

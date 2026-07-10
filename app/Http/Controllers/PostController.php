@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
+use App\Rules\NoProfanity;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -118,11 +119,13 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        $contentPresence = ($request->hasFile('media') || $request->hasFile('files'))
+            ? 'nullable'
+            : 'required';
+
         $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'content' => ($request->hasFile('media') || $request->hasFile('files'))
-                ? 'nullable|string|max:5000'
-                : 'required|string|max:5000',
+            'title' => ['nullable', 'string', 'max:255', new NoProfanity],
+            'content' => [$contentPresence, 'string', 'max:5000', new NoProfanity],
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
@@ -209,11 +212,13 @@ class PostController extends Controller
     {
         $this->authorize('update', $post);
 
+        $contentPresence = ($request->hasFile('media') || $request->hasFile('files'))
+            ? 'nullable'
+            : 'required';
+
         $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'content' => ($request->hasFile('media') || $request->hasFile('files'))
-                ? 'nullable|string|max:5000'
-                : 'required|string|max:5000',
+            'title' => ['nullable', 'string', 'max:255', new NoProfanity],
+            'content' => [$contentPresence, 'string', 'max:5000', new NoProfanity],
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:20480',
@@ -224,7 +229,7 @@ class PostController extends Controller
 
         $post->update([
             'title' => $validated['title'] ?? null,
-            'content' => $validated['content'],
+            'content' => $validated['content'] ?? null,
         ]);
 
         $post->revisions()->create([

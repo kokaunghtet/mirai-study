@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\ProfanityFilter;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -13,7 +14,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Singleton so title + content validation share one compiled pattern set.
+        $this->app->singleton(
+            ProfanityFilter::class,
+            fn () => new ProfanityFilter(config('moderation.blacklist', [])),
+        );
     }
 
     /**

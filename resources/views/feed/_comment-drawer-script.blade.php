@@ -131,7 +131,11 @@
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest',
                                 'X-CSRF-TOKEN': token,
-                                'Accept': 'text/html',
+                                // application/json so validation failures come back as
+                                // 422 JSON instead of a redirect (which fetch would
+                                // follow into the feed's JSON payload). Success still
+                                // returns the HTML partial.
+                                'Accept': 'application/json',
                             }
                         });
 
@@ -141,7 +145,12 @@
                                 ? Object.values(data.errors).flat()[0]
                                 : data.message || 'Validation failed.';
                             const errEl = document.createElement('p');
-                            errEl.className = 'js-reply-error text-red-500 text-xs mt-1';
+                            // flex-basis 100% drops the error onto its own row inside
+                            // the flex-wrap reply form (full width, under the box).
+                            // Inline style, not a Tailwind class, so it works without
+                            // a CSS rebuild.
+                            errEl.className = 'js-reply-error text-red-500 text-xs';
+                            errEl.style.flexBasis = '100%';
                             errEl.textContent = msg;
                             form.appendChild(errEl);
                             window.resetButtonLoading(submitBtn);

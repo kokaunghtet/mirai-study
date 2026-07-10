@@ -275,7 +275,7 @@
                         <form method="POST"
                               action="{{ route('comments.store', $post) }}"
                               data-loading
-                              class="mt-2 flex gap-2">
+                              class="mt-2 flex flex-wrap gap-2">
                             @csrf
                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                             <input type="text" name="content"
