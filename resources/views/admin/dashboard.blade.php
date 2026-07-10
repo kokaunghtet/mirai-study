@@ -139,16 +139,6 @@
                         </span>
                     @endif
                 </a>
-                <a href="{{ route('admin.papers') }}"
-                   class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
-                    <i data-lucide="file-text" class="h-4 w-4 text-accent shrink-0"></i>
-                    Exam Papers
-                </a>
-                <a href="{{ route('admin.questions') }}"
-                   class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
-                    <i data-lucide="brain" class="h-4 w-4 text-accent shrink-0"></i>
-                    Questions
-                </a>
                 <a href="{{ route('admin.appeals') }}"
                    class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
                     <i data-lucide="shield-check" class="h-4 w-4 text-accent shrink-0"></i>
@@ -158,6 +148,16 @@
                             {{ $stats['pending_appeals'] }}
                         </span>
                     @endif
+                </a>
+                <a href="{{ route('admin.papers') }}"
+                   class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                    <i data-lucide="file-text" class="h-4 w-4 text-accent shrink-0"></i>
+                    Exam Papers
+                </a>
+                <a href="{{ route('admin.questions') }}"
+                   class="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-content transition-colors hover:bg-surface-muted">
+                    <i data-lucide="brain" class="h-4 w-4 text-accent shrink-0"></i>
+                    Questions
                 </a>
             </div>
 
