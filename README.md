@@ -44,7 +44,7 @@ Combines a social study feed, Pomodoro focus timer, quiz/mock-test engine, and e
 |    🎨    | **Settings / Theming**  | Light/dark/system mode + 5 accent colors (venom, aurora, sangria, twilight, inferno) + gradient/solid fill. CSS-variable tokens with Tailwind opacity support. Live preview mockup. Instant-save 2FA toggle.                                                                                 |
 |    ⏱️    | **Focus Timer**         | Pomodoro timer with configurable focus/break durations, SVG ring progress, daily goal tracking. Ambient sounds via Web Audio API (rain, brown noise, binaural beats). Synthesized completion chime. Guest-accessible with lock overlay.                                                      |
 |    📝    | **Quiz Engine**         | 4-step wizard: category → level → section → question count. Random draws from 60 questions/pool. Server-side grading (answers never sent to client). Per-question review on results. Resume/discard in-progress quizzes. History with pagination. Config-driven catalog (`config/quiz.php`). |
-|    📄    | **Exam Paper Browser**  | Category/level/year/session filtering. Folder-style browser. Admin upload with PDF storage, auto-title from filename. Uploads capped at 20 MB — see [knowledge/compress-pdf-before-upload.md](knowledge/compress-pdf-before-upload.md) to shrink large scans first.                          |
+|    📄    | **Exam Paper Browser**  | Category/level/year/session filtering. Folder-style browser. Admin upload with PDF storage, auto-title from filename. Uploads capped at 20 MB — see [wiki/compress-pdf-before-upload.md](wiki/compress-pdf-before-upload.md) to shrink large scans first.                          |
 |    🔔    | **Notifications**       | Controller logic complete; view pending.                                                                                                                                                                                                                                                     |
 |    👑    | **Admin Area**          | Routes and middleware gated by `admin` middleware; dashboard/users/reports views pending.                                                                                                                                                                                                    |
 
@@ -232,8 +232,8 @@ Detailed guides for specific features:
 
 | Document                                                               | Description                                                                                                                 |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [Feed Ranking Algorithm](knowledge/feedalgo.md)                        | How the "For You" feed scores and orders posts — covers recency, engagement, follow boost, jitter, and pagination stability |
-| [Compress PDFs Before Upload](knowledge/compress-pdf-before-upload.md) | Step-by-step guide to shrink large scanned exam papers under the 20 MB upload limit using Ghostscript                       |
+| [Feed Ranking Algorithm](wiki/feedalgo.md)                        | How the "For You" feed scores and orders posts — covers recency, engagement, follow boost, jitter, and pagination stability |
+| [Compress PDFs Before Upload](wiki/compress-pdf-before-upload.md) | Step-by-step guide to shrink large scanned exam papers under the 20 MB upload limit using Ghostscript                       |
 
 ---
 
@@ -287,7 +287,7 @@ mirai-study/
 │       ├── FeedRankingTest.php  # Engagement-weighted sorting
 │       └── ThemeModeTest.php    # Theme persistence
 │
-└── knowledge/               # Project documentation & guides
+└── wiki/               # Project documentation & guides
 ```
 
 ---
@@ -348,6 +348,6 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 **Built with Love for students preparing for their future**
 
-[Report Bug](https://github.com/yourusername/mirai-study/issues) · [Request Feature](https://github.com/yourusername/mirai-study/issues) · [Documentation](knowledge/)
+[Report Bug](https://github.com/yourusername/mirai-study/issues) · [Request Feature](https://github.com/yourusername/mirai-study/issues) · [Documentation](wiki/)
 
 </div>

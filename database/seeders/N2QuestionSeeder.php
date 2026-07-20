@@ -26,9 +26,9 @@ class N2QuestionSeeder extends Seeder
         }
 
         $banks = [
-            'kanji' => base_path('knowledge/jlpt/N2kanji.txt'),
-            'vocab' => base_path('knowledge/jlpt/N2vocabulary.txt'),
-            'grammar' => base_path('knowledge/jlpt/N2grammar.txt'),
+            'kanji' => base_path('wiki/jlpt/N2kanji.txt'),
+            'vocab' => base_path('wiki/jlpt/N2vocabulary.txt'),
+            'grammar' => base_path('wiki/jlpt/N2grammar.txt'),
         ];
 
         foreach ($banks as $section => $path) {

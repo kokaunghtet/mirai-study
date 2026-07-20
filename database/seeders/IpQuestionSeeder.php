@@ -11,7 +11,7 @@ class IpQuestionSeeder extends Seeder
 {
     /**
      * Import the real FE Technology / FE Strategy questions from the plain-text
-     * banks in knowledge/ into their quiz pools (ITPEC → FE → technology|strategy),
+     * banks in wiki/ into their quiz pools (ITPEC → FE → technology|strategy),
      * replacing the Faker placeholders ExamSeeder created for those two pools.
      *
      * Idempotent: each pool is wiped then re-imported, so re-running this seeder
@@ -31,7 +31,7 @@ class IpQuestionSeeder extends Seeder
         }
 
         $banks = [
-            '' => base_path('knowledge/itpec/ipquiz.txt'),
+            '' => base_path('wiki/itpec/ipquiz.txt'),
         ];
 
         foreach ($banks as $section => $path) {

@@ -11,7 +11,7 @@ class FeQuestionSeeder extends Seeder
 {
     /**
      * Import the real FE Technology / FE Strategy questions from the plain-text
-     * banks in knowledge/ into their quiz pools (ITPEC → FE → technology|strategy),
+     * banks in wiki/ into their quiz pools (ITPEC → FE → technology|strategy),
      * replacing the Faker placeholders ExamSeeder created for those two pools.
      *
      * Idempotent: each pool is wiped then re-imported, so re-running this seeder
@@ -31,8 +31,8 @@ class FeQuestionSeeder extends Seeder
         }
 
         $banks = [
-            'technology' => base_path('knowledge/itpec/fetechnology.txt'),
-            'strategy' => base_path('knowledge/itpec/festrategy.txt'),
+            'technology' => base_path('wiki/itpec/fetechnology.txt'),
+            'strategy' => base_path('wiki/itpec/festrategy.txt'),
         ];
 
         foreach ($banks as $section => $path) {
