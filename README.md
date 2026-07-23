@@ -18,6 +18,7 @@ Combines a social study feed, Pomodoro focus timer, quiz/mock-test engine, and e
 
 ## 📖 Table of Contents
 
+- [Screenshots](#-screenshots)
 - [Features](#-features)
 - [Prerequisites](#-prerequisites)
 - [Quick Start](#-quick-start)
@@ -28,6 +29,26 @@ Combines a social study feed, Pomodoro focus timer, quiz/mock-test engine, and e
 - [Project Structure](#-project-structure)
 - [Testing](#-testing)
 - [Contributing](#-contributing)
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+| Welcome | Auth (OTP) | Feed |
+| :---: | :---: | :---: |
+| ![Welcome page](screenshots/welcome-page.png) | ![Auth form](screenshots/auth-form.png) | ![Feed](screenshots/feed.png) |
+
+| Focus Timer | Quiz | Exams |
+| :---: | :---: | :---: |
+| ![Timer](screenshots/timer.png) | ![Quiz](screenshots/quiz.png) | ![Exams](screenshots/exams.png) |
+
+| Bookmarks | Notifications |
+| :---: | :---: |
+| ![Bookmarks](screenshots/bookmark.png) | ![Notifications](screenshots/notification.png) |
+
+</div>
 
 ---
 
