@@ -365,6 +365,10 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ---
 
+## License
+
+Licensed under the [MIT License](LICENSE) — Copyright (c) 2026 KaungHtet.
+
 <div align="center">
 
 **Built with Love for students preparing for their future**
