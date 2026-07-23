@@ -325,8 +325,25 @@
                 <span x-show="!sidebarCollapsed">Feed</span>
             </a>
 
-            {{-- Exams --}}
-            <div>
+            @if (auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
+                <a href="{{ route('admin.papers') }}"
+                   @click="sidebarOpen = false"
+                   title="Manage Papers"
+                   class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.papers*') ? 'active' : 'text-muted' }}"
+                   :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                    <i data-lucide="upload" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.papers*') ? '' : 'text-muted' }}"></i>
+                    <span x-show="!sidebarCollapsed">Manage Papers</span>
+                </a>
+
+                <a href="{{ route('admin.questions') }}"
+                   @click="sidebarOpen = false"
+                   title="Manage Questions"
+                   class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.questions*') ? 'active' : 'text-muted' }}"
+                   :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
+                    <i data-lucide="clipboard-list" class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.questions*') ? '' : 'text-muted' }}"></i>
+                    <span x-show="!sidebarCollapsed">Manage Questions</span>
+                </a>
+            @else
                 <a href="{{ route('exams.index') }}"
                    @click="sidebarOpen = false"
                    title="Exams"
@@ -335,23 +352,7 @@
                     <i data-lucide="file-text" class="w-5 h-5 shrink-0 {{ request()->routeIs('exams.*') ? '' : 'text-muted' }}"></i>
                     <span x-show="!sidebarCollapsed">Exams</span>
                 </a>
-                @auth
-                    @if (auth()->user()->isAdmin() || auth()->user()->isModerator())
-                        <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
-                            <a href="{{ route('admin.papers') }}"
-                               @click="sidebarOpen = false"
-                               title="Manage Papers"
-                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.papers*') ? 'active' : 'text-muted' }}">
-                                <i data-lucide="upload" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.papers*') ? '' : 'text-muted' }}"></i>
-                                <span>Manage Papers</span>
-                            </a>
-                        </div>
-                    @endif
-                @endauth
-            </div>
 
-            {{-- Quiz --}}
-            <div>
                 <a href="{{ route('quiz.index') }}"
                    @click="sidebarOpen = false"
                    title="Quiz"
@@ -360,20 +361,7 @@
                     <i data-lucide="brain" class="w-5 h-5 shrink-0 {{ request()->routeIs('quiz.*') ? '' : 'text-muted' }}"></i>
                     <span x-show="!sidebarCollapsed">Quiz</span>
                 </a>
-                @auth
-                    @if (auth()->user()->isAdmin() || auth()->user()->isModerator())
-                        <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
-                            <a href="{{ route('admin.questions') }}"
-                               @click="sidebarOpen = false"
-                               title="Manage Questions"
-                               class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.questions*') ? 'active' : 'text-muted' }}">
-                                <i data-lucide="clipboard-list" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.questions*') ? '' : 'text-muted' }}"></i>
-                                <span>Manage Questions</span>
-                            </a>
-                        </div>
-                    @endif
-                @endauth
-            </div>
+            @endif
 
             {{-- Focus Timer --}}
             <a href="{{ route('timer.index') }}"
