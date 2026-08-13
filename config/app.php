@@ -125,5 +125,6 @@ return [
 
     'seed_admin_password' => env('ADMIN_PASSWORD', 'password'),
     'seed_mod_password' => env('MOD_PASSWORD', 'password'),
+    'seed_tester_password' => env('TESTER_PASSWORD', 'password'),
 
 ];

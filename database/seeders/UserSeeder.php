@@ -32,6 +32,16 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        $tester = User::create([
+            'username' => 'tester',
+            'display_name' => 'Tester',
+            'email' => 'tester@example.com',
+            'password' => Hash::make(config('app.seed_tester_password')),
+            'role' => 'user',
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ]);
+
         foreach ([$admin, $mod] as $user) {
             UserPreference::create([
                 'user_id' => $user->id,
