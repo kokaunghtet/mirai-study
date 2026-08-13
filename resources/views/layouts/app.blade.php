@@ -45,15 +45,22 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         [x-cloak] { display: none !important; }
-        /* Sidebar transition */
+        /* Sidebar transition — welcome-style */
         .sidebar-link {
-            transition: all 0.15s ease;
+            transition: color 0.25s ease, transform 0.2s ease;
+            position: relative;
         }
         .sidebar-link:hover {
-            background-color: rgb(var(--surface-muted));
+            background-color: transparent;
+            color: rgb(var(--accent));
+            transform: translateX(4px);
+        }
+        .sidebar-link:hover svg {
+            color: rgb(var(--accent));
+            transform: scale(1.1);
         }
         .sidebar-link.active {
-            background-color: rgb(var(--accent) / 0.1);
+            background-color: transparent;
             color: rgb(var(--accent));
         }
         .sidebar-link.active svg {
@@ -65,11 +72,26 @@
       x-data="{
         sidebarOpen: false,
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        pageLoading: false,
         toggleCollapse() {
             this.sidebarCollapsed = !this.sidebarCollapsed;
             localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
         }
-      }">
+      }"
+      x-init="window.addEventListener('pageshow', () => pageLoading = false)">
+
+    {{-- Page transition loader --}}
+    <div x-show="pageLoading"
+         x-cloak
+         class="fixed inset-0 z-[9999] bg-canvas/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <x-leaf-loader size="lg" />
+    </div>
 
     {{-- ═══════════════════════════════════════════════
          Mobile Top Bar (visible on small screens only)
@@ -222,21 +244,21 @@
          Sidebar
     ═══════════════════════════════════════════════ --}}
     <aside :class="[sidebarOpen ? 'translate-y-0' : '-translate-y-full', sidebarCollapsed ? 'w-16' : 'w-64']"
-           class="fixed top-0 left-0 z-50 h-full bg-surface/50 border-r border-line/70 flex flex-col transition-[width,transform] duration-200 ease-in-out -translate-y-full lg:translate-y-0">
+           class="fixed top-0 left-0 z-50 h-full bg-transparent border-r border-line/10 dark:border-white/[0.04] flex flex-col transition-[width,transform] duration-200 ease-in-out -translate-y-full lg:translate-y-0">
 
         {{-- Logo --}}
-        <div class="h-16 flex items-center border-b border-line shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">
+        <div class="h-16 flex items-center border-b border-line/10 dark:border-white/[0.04] shrink-0" :class="sidebarCollapsed ? '' : 'justify-between px-4 gap-2'">
             {{-- Logo link — hidden when collapsed --}}
             <div>
-                <a href="{{ route('feed.index') }}" x-show="!sidebarCollapsed" class="flex items-center gap-2.5 flex-1 min-w-0" @click="sidebarOpen = false">
-                    <x-application-logo class="w-20 h-20 fill-current text-muted" />
+                <a href="{{ route('feed.index') }}" x-show="!sidebarCollapsed" class="flex items-center gap-2.5 flex-1 min-w-0 group/logo" @click="sidebarOpen = false; pageLoading = true">
+                    <x-application-logo class="w-20 h-20 fill-current text-muted transition-transform duration-300 group-hover/logo:rotate-12" />
                 </a>
             </div>
 
             {{-- Collapse / expand toggle — desktop only --}}
             <button @click="toggleCollapse()"
                     :class="sidebarCollapsed ? 'w-full h-full p-3' : 'shrink-0 w-7 h-7'"
-                    class="hidden lg:flex items-center justify-center rounded-md text-muted hover:bg-surface-muted transition-colors"
+                    class="hidden lg:flex items-center justify-center rounded-md text-muted hover:text-accent hover:bg-accent/10 transition-colors duration-200"
                     :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
                 <i data-lucide="chevron-left" x-show="!sidebarCollapsed" class="w-4 h-4"></i>
                 
@@ -250,7 +272,7 @@
         </div>
 
         {{-- Navigation Links --}}
-        <nav class="flex-1 overflow-y-auto py-4 space-y-1" :class="sidebarCollapsed ? 'px-2' : 'px-3'">
+        <nav class="flex-1 overflow-y-auto py-4 space-y-1 flex flex-col justify-center" :class="sidebarCollapsed ? 'px-2' : 'px-3'">
 
             {{-- Admin Dashboard --}}
             @auth
@@ -258,7 +280,7 @@
                     {{-- Admin Dashboard --}}
                     <div>
                         <a href="{{ route('admin.dashboard') }}"
-                           @click="sidebarOpen = false"
+                           @click="sidebarOpen = false; pageLoading = true"
                            title="Dashboard"
                            class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'active' : 'text-muted' }}"
                            :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -267,28 +289,28 @@
                         </a>
                         <div x-show="!sidebarCollapsed" class="mt-0.5 ml-3 pl-3 border-l border-line">
                             <a href="{{ route('admin.users') }}"
-                               @click="sidebarOpen = false"
+                               @click="sidebarOpen = false; pageLoading = true"
                                title="Manage Users"
                                class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.users*') ? 'active' : 'text-muted' }}">
                                 <i data-lucide="users" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.users*') ? '' : 'text-muted' }}"></i>
                                 <span>Users</span>
                             </a>
                             <a href="{{ route('admin.reports') }}"
-                               @click="sidebarOpen = false"
+                               @click="sidebarOpen = false; pageLoading = true"
                                title="Reports"
                                class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.reports*') ? 'active' : 'text-muted' }}">
                                 <i data-lucide="flag" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.reports*') ? '' : 'text-muted' }}"></i>
                                 <span>Reports</span>
                             </a>
                             <a href="{{ route('admin.appeals') }}"
-                               @click="sidebarOpen = false"
+                               @click="sidebarOpen = false; pageLoading = true"
                                title="Appeals"
                                class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.appeals*') ? 'active' : 'text-muted' }}">
                                 <i data-lucide="shield-check" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.appeals*') ? '' : 'text-muted' }}"></i>
                                 <span>Appeals</span>
                             </a>
                             <a href="{{ route('admin.analytics') }}"
-                               @click="sidebarOpen = false"
+                               @click="sidebarOpen = false; pageLoading = true"
                                title="Analytics"
                                class="sidebar-link flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium {{ request()->routeIs('admin.analytics*') ? 'active' : 'text-muted' }}">
                                 <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 shrink-0 {{ request()->routeIs('admin.analytics*') ? '' : 'text-muted' }}"></i>
@@ -304,7 +326,7 @@
                 @if (auth()->user()->isModerator())
                     <div>
                         <a href="{{ route('admin.reports') }}"
-                           @click="sidebarOpen = false"
+                           @click="sidebarOpen = false; pageLoading = true"
                            title="Moderation"
                            class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.reports*') ? 'active' : 'text-muted' }}"
                            :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -317,7 +339,7 @@
 
             {{-- Feed --}}
             <a href="{{ route('feed.index') }}"
-               @click="sidebarOpen = false"
+               @click="sidebarOpen = false; pageLoading = true"
                title="Feed"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('feed.*') || request()->routeIs('posts.*') ? 'active' : 'text-muted' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -327,7 +349,7 @@
 
             @if (auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
                 <a href="{{ route('admin.papers') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Manage Papers"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.papers*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -336,7 +358,7 @@
                 </a>
 
                 <a href="{{ route('admin.questions') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Manage Questions"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.questions*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -345,7 +367,7 @@
                 </a>
             @else
                 <a href="{{ route('exams.index') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Exams"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('exams.*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -354,7 +376,7 @@
                 </a>
 
                 <a href="{{ route('quiz.index') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Quiz"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('quiz.*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -365,7 +387,7 @@
 
             {{-- Focus Timer --}}
             <a href="{{ route('timer.index') }}"
-               @click="sidebarOpen = false"
+               @click="sidebarOpen = false; pageLoading = true"
                title="Focus"
                class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('timer.*') ? 'active' : 'text-muted' }}"
                :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -374,7 +396,7 @@
             </a>
 
             {{-- Divider --}}
-            <div class="border-t border-line my-3"></div>
+            <div class="border-t border-line/10 dark:border-white/[0.04] my-3"></div>
 
             @auth
 
@@ -383,7 +405,7 @@
                     $unreadCount = auth()->user()->appNotifications()->whereNull('read_at')->count();
                 @endphp
                 <a href="{{ route('notifications.index') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Notifications"
                    x-data="notificationBell({ unread: {{ $unreadCount }}, userId: {{ auth()->id() }} })"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('notifications.*') ? 'active' : 'text-muted' }}"
@@ -400,7 +422,7 @@
 
                 {{-- Bookmarks --}}
                 <a href="{{ route('bookmarks.index') }}"
-                   @click="sidebarOpen = false"
+                   @click="sidebarOpen = false; pageLoading = true"
                    title="Bookmarks"
                    class="sidebar-link flex items-center py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('bookmarks.*') ? 'active' : 'text-muted' }}"
                    :class="sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-3'">
@@ -412,23 +434,23 @@
         </nav>
 
         {{-- User section at bottom --}}
-        <div class="shrink-0 border-t border-line p-3 space-y-2">
+        <div class="shrink-0 border-t border-line/10 dark:border-white/[0.04] p-3 space-y-2">
             {{-- Light / Dark mode toggle (available to everyone, incl. guests) --}}
             <button type="button"
                     x-data="themeToggle({ persistUrl: '{{ auth()->check() ? route('settings.theme-mode') : '' }}' })"
                     @click="toggle()"
-                    class="w-full flex items-center rounded-lg text-sm font-medium text-muted hover:bg-surface-muted hover:text-content transition-colors"
+                    class="w-full flex items-center rounded-lg text-sm font-medium text-muted hover:bg-accent/10 hover:text-accent transition-colors duration-200"
                     :class="sidebarCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2.5'"
                     :title="dark ? 'Switch to light mode' : 'Switch to dark mode'">
-                <i data-lucide="moon" x-show="!dark" class="w-5 h-5 shrink-0"></i>
-                <i data-lucide="sun" x-show="dark" class="w-5 h-5 shrink-0"></i>
+                <i data-lucide="moon" x-show="!dark" class="w-5 h-5 shrink-0 transition-transform duration-300 hover:scale-110"></i>
+                <i data-lucide="sun" x-show="dark" class="w-5 h-5 shrink-0 transition-transform duration-300 hover:scale-110"></i>
                 <span x-show="!sidebarCollapsed" x-text="dark ? 'Light mode' : 'Dark mode'"></span>
             </button>
 
             @auth
                 <div class="relative" x-data="{ userMenu: false }">
                     <button @click="userMenu = !userMenu"
-                            class="w-full flex items-center gap-3 rounded-lg hover:bg-surface-muted transition-colors"
+                            class="w-full flex items-center gap-3 rounded-lg hover:bg-accent/10 transition-colors duration-200"
                             :class="sidebarCollapsed ? 'justify-center p-2' : 'px-3 py-2.5'"
                             :title="sidebarCollapsed ? '{{ auth()->user()->display_name }}' : ''">
                         <div class="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center text-accent font-bold text-sm shrink-0">
@@ -460,38 +482,38 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          :class="sidebarCollapsed ? 'bottom-0 left-full ml-2 w-56' : 'bottom-full left-0 right-0 mb-1'"
-                         class="absolute bg-surface rounded-lg shadow-lg border border-line py-1 z-50">
+                         class="absolute bg-surface rounded-lg shadow-lg border border-line/10 dark:border-white/[0.06] py-1 z-50">
 
                         {{-- Account switcher --}}
                         <div class="px-2 pb-1 pt-1.5">
                             @include('layouts._account-switcher', ['compact' => true, 'close' => 'sidebarOpen = false; userMenu = false'])
                         </div>
-                        <hr class="my-1 border-line">
+                        <hr class="my-1 border-line/10 dark:border-white/[0.06]">
 
                         <a href="{{ route('profile.show', auth()->user()->username) }}"
-                           @click="sidebarOpen = false; userMenu = false"
-                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-surface-muted">
+                           @click="sidebarOpen = false; userMenu = false; pageLoading = true"
+                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-accent/10 hover:text-accent transition-colors duration-200">
                             <i data-lucide="user" class="w-4 h-4 text-muted"></i>
                             My Profile
                         </a>
                         <a href="{{ route('profile.edit') }}"
-                           @click="sidebarOpen = false; userMenu = false"
-                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-surface-muted {{ request()->routeIs('profile.edit') ? 'bg-surface-muted' : '' }}">
+                           @click="sidebarOpen = false; userMenu = false; pageLoading = true"
+                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-accent/10 hover:text-accent transition-colors duration-200 {{ request()->routeIs('profile.edit') ? 'bg-accent/10 text-accent' : '' }}">
                             <i data-lucide="square-pen" class="w-4 h-4 text-muted"></i>
                             Edit Profile
                         </a>
                         <a href="{{ route('settings.index') }}"
-                           @click="sidebarOpen = false; userMenu = false"
-                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-surface-muted {{ request()->routeIs('settings.*') ? 'bg-surface-muted' : '' }}">
+                           @click="sidebarOpen = false; userMenu = false; pageLoading = true"
+                           class="flex items-center gap-2.5 px-4 py-2 text-sm text-content hover:bg-accent/10 hover:text-accent transition-colors duration-200 {{ request()->routeIs('settings.*') ? 'bg-accent/10 text-accent' : '' }}">
                             <i data-lucide="settings" class="w-4 h-4 text-muted"></i>
                             Settings
                         </a>
                         
-                        <hr class="my-1 border-line">
+                        <hr class="my-1 border-line/10 dark:border-white/[0.06]">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                    class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-500/10 transition-colors duration-200">
                                 <i data-lucide="log-out" class="w-4 h-4"></i>
                                 Logout
                             </button>
@@ -501,13 +523,13 @@
             @else
                 <div class="flex flex-col gap-2" :class="sidebarCollapsed ? 'px-0' : 'px-1'">
                     <a href="{{ route('login') }}"
-                       class="flex items-center justify-center gap-2 text-sm font-medium text-muted hover:text-accent px-3 py-2 rounded-lg border border-line hover:border-accent/30 transition-colors"
+                       class="flex items-center justify-center gap-2 text-sm font-medium text-muted hover:text-accent px-3 py-2 rounded-lg border border-line/10 dark:border-white/[0.06] hover:border-accent/30 transition-colors duration-200"
                        :title="sidebarCollapsed ? 'Login' : ''">
                         <i data-lucide="log-in" class="w-4 h-4 shrink-0"></i>
                         <span x-show="!sidebarCollapsed">Login</span>
                     </a>
                     <a href="{{ route('register') }}"
-                       class="flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-tr from-accent-from to-accent-to text-white px-3 py-2 rounded-lg hover:opacity-90 transition-colors"
+                       class="flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-tr from-accent-from to-accent-to text-white px-3 py-2 rounded-lg hover:opacity-90 hover:shadow-lg hover:shadow-accent/20 transition-all duration-200"
                        :title="sidebarCollapsed ? 'Sign up' : ''">
                         <i data-lucide="user-plus" class="w-4 h-4 shrink-0"></i>
                         <span x-show="!sidebarCollapsed">Sign up</span>
