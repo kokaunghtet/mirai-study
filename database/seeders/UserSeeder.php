@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        foreach ([$admin, $mod] as $user) {
+        foreach ([$admin, $mod, $tester] as $user) {
             UserPreference::create([
                 'user_id' => $user->id,
                 'theme_mode' => 'light',
